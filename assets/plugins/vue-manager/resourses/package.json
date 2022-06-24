@@ -1,0 +1,55 @@
+{
+  "name": "crm-vue3",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "i18n:report": "vue-cli-service i18n:report --src \"./src/**/*.?(js|vue)\" --locales \"./src/locales/**/*.json\""
+  },
+  "dependencies": {
+    "@kyvg/vue3-notification": "^2.3.4",
+    "core-js": "^3.22.5",
+    "nprogress": "^0.2.0",
+    "vue": "^3.2.35",
+    "vue-i18n": "^9.1.10",
+    "vue-router": "^4.0.15",
+    "vuex": "^4.0.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.18.0",
+    "@babel/eslint-parser": "^7.17.0",
+    "@fortawesome/fontawesome-free": "^6.1.1",
+    "@intlify/vue-i18n-loader": "^5.0.0",
+    "@vue/cli-plugin-babel": "~5.0.4",
+    "@vue/cli-plugin-eslint": "~5.0.4",
+    "@vue/cli-plugin-router": "~5.0.4",
+    "@vue/cli-plugin-vuex": "~5.0.4",
+    "@vue/cli-service": "~5.0.4",
+    "eslint": "^8.16.0",
+    "eslint-plugin-vue": "^9.0.1",
+    "sass": "^1.52.1",
+    "sass-loader": "^13.0.0",
+    "vue-cli-plugin-i18n": "^2.3.1"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "parser": "@babel/eslint-parser"
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not ie 11"
+  ]
+}
