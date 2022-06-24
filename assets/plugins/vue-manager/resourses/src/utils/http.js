@@ -6,7 +6,7 @@ export default {
 
   setUrl (url) {
     if (!~url.indexOf('http')) {
-      url = this.baseUrl + 'api/' + url.split('/').filter(v => v !== '').join('/')
+      url = this.baseUrl + 'vue-manager/api/' + url.split('/').filter(v => v !== '').join('/')
     }
     return url
   },
@@ -91,6 +91,12 @@ export default {
   },
 
   login (body) {
+    this.baseUrl = body.get('host')
+
+    return this.fetch('post', '/auth/login', body)
+  },
+
+  loginOld (body) {
     this.baseUrl = body.get('host')
 
     return fetch(this.baseUrl + 'manager/processors/login.processor.php', {

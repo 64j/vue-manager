@@ -76,39 +76,30 @@ export default {
         this.isErrors = true
       }
 
-      const data = new FormData()
-      for (const i in this.data) {
-        data.append(i, this.data[i])
-      }
+      http.baseUrl = this.data.host
 
-      http.login(data).then(result => {
-        if (typeof result === 'string') {
-          const header = result.substr(0, 6)
-          if (header.toLowerCase() === 'token:') {
-            localStorage.setItem('x-access-token', result.substr(6))
-            http.settings().then(result => {
-              if (!result.error) {
-                if (this.data.rememberme) {
-                  if (!this.hosts[this.data.host]) {
-                    this.hosts[this.data.host] = this.data.host
-                  }
-                  localStorage['EVO.HOSTS'] = JSON.stringify(this.hosts)
-                  localStorage['EVO.HOST'] = this.data.host
+      http.post('/auth/login', this.data).then(result => {
+        if (result['token']) {
+          localStorage.setItem('x-access-token', result['token'])
+          http.settings().then(result => {
+            if (!result.error) {
+              if (this.data.rememberme) {
+                if (!this.hosts[this.data.host]) {
+                  this.hosts[this.data.host] = this.data.host
                 }
-
-                store.dispatch('Settings/set', result.data).then(settings => {
-                  if (result.data.config['lang_code']) {
-                    i18n.global.locale.value = settings.config['lang_code']
-                  }
-                  this.$router.push({ name: 'DashboardIndex' })
-                })
+                localStorage['EVO.HOSTS'] = JSON.stringify(this.hosts)
+                localStorage['EVO.HOST'] = this.data.host
               }
-            })
-          } else {
-            this.isErrors = true
-          }
-        } else {
-          this.isErrors = true
+              store.dispatch('Settings/set', result.data).then(settings => {
+                if (result.data.config['lang_code']) {
+                  i18n.global.locale.value = settings.config['lang_code']
+                }
+                this.$router.push({ name: 'DashboardIndex' })
+              })
+            } else {
+              this.isErrors = true
+            }
+          })
         }
       })
     },
