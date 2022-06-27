@@ -90,14 +90,13 @@ export default {
     return this.fetch('options', url, body)
   },
 
-  login (body) {
-    this.baseUrl = body.get('host')
+  login (data) {
+    this.baseUrl = data.host
 
-    return this.fetch('post', '/auth/login', body)
-  },
-
-  loginOld (body) {
-    this.baseUrl = body.get('host')
+    const body = new FormData()
+    for (const i in data) {
+      body.append(i, data[i])
+    }
 
     return fetch(this.baseUrl + 'manager/processors/login.processor.php', {
       method: 'post',
@@ -105,10 +104,21 @@ export default {
       credentials: 'include'
     }).then((res) => {
       if (res.status === 404) {
-        //
+        return {
+          errors: [
+            {
+              code: 404,
+              message: 'Not found'
+            }
+          ]
+        }
       }
 
-      return res.text()
+      if (/text\/html/.test(res.headers.get('content-type'))) {
+        return res.text()
+      }
+
+      return res.json()
     }).catch(this.handlerCatch)
   },
 

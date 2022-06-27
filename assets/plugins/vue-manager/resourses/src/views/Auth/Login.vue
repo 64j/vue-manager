@@ -76,13 +76,13 @@ export default {
         this.isErrors = true
       }
 
-      http.baseUrl = this.data.host
+      //http.baseUrl = this.data.host
 
-      http.post('/auth/login', this.data).then(result => {
+      http.login(this.data).then(result => {
         if (result['token']) {
           localStorage.setItem('x-access-token', result['token'])
-          http.settings().then(result => {
-            if (!result.error) {
+          http.settings(result => {
+            if (!result.errors) {
               if (this.data.rememberme) {
                 if (!this.hosts[this.data.host]) {
                   this.hosts[this.data.host] = this.data.host
