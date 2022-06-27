@@ -49,6 +49,10 @@ switch ($e->name) {
         $q = $_REQUEST['q'];
 
         if (stripos($q, 'vue-manager/api') !== false) {
+            $path = explode('/', explode('vue-manager/api/', $q)[1] ?? '') ?? [];
+            $id = intval($path[1] ?? 0);
+            $path = $path[0] ?? null;
+
             header('Content-Type: application/json; charset=utf-8');
 
             if (isset($_SERVER['HTTP_ORIGIN'])) {
@@ -94,8 +98,90 @@ switch ($e->name) {
                 $data = [];
                 $meta = [];
 
+                $app = new \VueManager\Application($_POST);
+
                 if ($user['id']) {
-                    $path = explode('vue-manager/api/', $q)[1] ?? null;
+                    switch ($path) {
+                        case 'settings':
+                            $data = $app->getSettings($user);
+                            break;
+
+                        case 'templates':
+                            $data = $app->getTemplates();
+                            break;
+
+                        case 'template':
+                            $data = $app->getTemplate($id);
+                            break;
+
+                        case 'tvs':
+                            $data = $app->getTvs();
+                            break;
+
+                        case 'tv':
+                            $data = $app->getTv($id);
+                            break;
+
+                        case 'chunks':
+                            $data = $app->getChunks();
+                            break;
+
+                        case 'chunk':
+                            $data = $app->getChunk($id);
+                            break;
+
+                        case 'snippets':
+                            $data = $app->getSnippets();
+                            break;
+
+                        case 'snippet':
+                            $data = $app->getSnippet($id);
+                            break;
+
+                        case 'plugins':
+                            $data = $app->getPlugins();
+                            break;
+
+                        case 'plugin':
+                            $data = $app->getPlugin($id);
+                            break;
+
+                        case 'modules':
+                            $data = $app->getModules();
+                            break;
+
+                        case 'module':
+                            $data = $app->getModule($id);
+                            break;
+
+                        case 'module-exec':
+                            $data = $app->getModuleExec($id);
+                            break;
+
+                        case 'users':
+                            [$data, $meta] = $app->getUsers();
+                            break;
+
+                        case 'user':
+                            $data = $app->getUser($id);
+                            break;
+
+                        case 'web-users':
+                            [$data, $meta] = $app->getWebUsers();
+                            break;
+
+                        case 'web-user':
+                            $data = $app->getWebUser($id);
+                            break;
+
+                        case 'roles':
+                            [$data, $meta] = $app->getRoles();
+                            break;
+
+                        case 'role':
+                            [$data, $meta] = $app->getRole($id);
+                            break;
+                    }
 
                     print json_encode([
                         'data' => $data,

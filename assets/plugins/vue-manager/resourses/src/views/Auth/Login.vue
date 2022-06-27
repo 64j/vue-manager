@@ -67,7 +67,6 @@ export default {
   },
   methods: {
     submit () {
-
       this.isErrors = false
 
       try {
@@ -75,8 +74,6 @@ export default {
       } catch (e) {
         this.isErrors = true
       }
-
-      //http.baseUrl = this.data.host
 
       http.login(this.data).then(result => {
         if (result['token']) {
@@ -100,6 +97,8 @@ export default {
               this.isErrors = true
             }
           })
+        } else {
+          this.isErrors = true
         }
       })
     },
