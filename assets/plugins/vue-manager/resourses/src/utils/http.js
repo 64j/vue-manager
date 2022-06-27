@@ -27,7 +27,7 @@ export default {
       'Cache': 'no-cache',
       'Accept': 'application/json',
       'Content-Type': 'application/json',
-      'x-access-token': localStorage.getItem('x-access-token') || ''
+      'x-access-token': localStorage['EVO.TOKEN'] || ''
     }, headers || {})
   },
 

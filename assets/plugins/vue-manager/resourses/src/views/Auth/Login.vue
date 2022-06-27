@@ -77,7 +77,7 @@ export default {
 
       http.login(this.data).then(result => {
         if (result['token']) {
-          localStorage.setItem('x-access-token', result['token'])
+          localStorage['EVO.TOKEN'] = result['token']
           http.settings(result => {
             if (!result.errors) {
               if (this.data.rememberme) {
