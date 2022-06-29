@@ -73,6 +73,11 @@ class AuthController
             'internalKey=' . $internalKey
         );
 
+        $_SESSION['mgrInternalKey'] = $internalKey;
+        $_SESSION['mgrValidated'] = true;
+
+        $evo->getUserSettings();
+
         return [
             'token' => base64_encode(md5($sessionId))
         ];
@@ -93,7 +98,8 @@ class AuthController
                     ua.internalKey as id,
                     ua.fullname,
                     mu.username,
-                    ua.role
+                    ua.role,
+                    ua.sessionid
                 FROM ' . $evo->getFullTableName('user_attributes') . ' ua
                 LEFT JOIN ' . $evo->getFullTableName('manager_users') . ' mu ON mu.id=ua.internalKey
                 WHERE
@@ -102,7 +108,15 @@ class AuthController
                     AND ua.verified=1
             '));
 
-            if (isset($user['id'])) {
+            if (!empty($user['id'])) {
+                session_destroy();
+                session_id($user['sessionid']);
+                session_start();
+
+                unset($user['sessionid']);
+
+                $evo->getUserSettings();
+
                 return $user;
             }
         }

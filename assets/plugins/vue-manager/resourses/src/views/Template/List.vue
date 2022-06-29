@@ -33,7 +33,7 @@ export default {
     }
   },
   mounted () {
-    http.post(this.controller).then(result => this.data = result.data)
+    http.post(this.controller, { categories: true }).then(result => this.data = result.data)
   },
   methods: {
     action(action, item, category) {

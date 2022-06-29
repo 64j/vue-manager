@@ -298,21 +298,17 @@ export default {
         this.$el.parentElement.classList.remove('active')
       }
     },
-    getSubMenu (url, list) {
+    getSubMenu (method, list) {
       for (let i in this.list) {
         if (this.list[i] !== list) {
           this.list[i] = []
         }
       }
       if (!list.length) {
-        http.post(url).then(result => {
+        http.post(method).then(result => {
           if (result.data) {
             for (let i in result.data) {
-              let items = result.data[i].items
-              for (let n in items) {
-                let item = items[n]
-                list.push(item)
-              }
+              list.push(result.data[i])
             }
           }
         })
