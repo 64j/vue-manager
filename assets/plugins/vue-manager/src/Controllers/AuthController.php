@@ -36,7 +36,7 @@ class AuthController
 
         $row = $evo->db->getRow($rs);
 
-        $internalKey = $row['internalKey'];
+        $internalKey = (int) $row['internalKey'];
         $dbasePassword = $row['password'];
         $matchPassword = false;
 
@@ -44,9 +44,9 @@ class AuthController
             // check user password - local authentication
             $hashType = $evo->manager->getHashType($dbasePassword);
             if ($hashType == 'phpass') {
-                $matchPassword = $this->login($username, $password, $dbasePassword);
+                $matchPassword = $this->login($password, $dbasePassword);
             } elseif ($hashType == 'md5') {
-                $matchPassword = $this->loginMD5($internalKey, $password, $dbasePassword, $username);
+                $matchPassword = $this->loginMD5($password, $dbasePassword, $username);
             } elseif ($hashType == 'v1') {
                 $matchPassword = $this->loginV1($internalKey, $password, $dbasePassword, $username);
             }
@@ -62,8 +62,16 @@ class AuthController
 
         $sessionId = session_id();
 
-        $evo->db->update('failedlogincount=0, ' . 'logincount=logincount+1, ' . 'lastlogin=thislogin, ' . 'thislogin=' . time() . ', ' . "sessionid='{$sessionId}'",
-            '[+prefix+]user_attributes', "internalKey='{$internalKey}'");
+        $evo->db->update([
+            'failedlogincount' => 0,
+            'logincount' => $row['logincount'] + 1,
+            'lastlogin' => $row['thislogin'],
+            'thislogin' => time(),
+            'sessionid' => $sessionId
+        ],
+            $evo->getFullTableName('user_attributes'),
+            'internalKey=' . $internalKey
+        );
 
         return [
             'token' => base64_encode(md5($sessionId))
@@ -103,24 +111,22 @@ class AuthController
     }
 
     /**
-     * @param string $username
      * @param string $givenPassword
      * @param string $dbasePassword
      * @return bool
      */
-    protected function login(string $username, string $givenPassword, string $dbasePassword): bool
+    protected function login(string $givenPassword, string $dbasePassword): bool
     {
         return evolutionCMS()->phpass->CheckPassword($givenPassword, $dbasePassword);
     }
 
     /**
-     * @param int $internalKey
      * @param string $givenPassword
      * @param string $dbasePassword
      * @param string $username
      * @return bool
      */
-    protected function loginMD5(int $internalKey, string $givenPassword, string $dbasePassword, string $username): bool
+    protected function loginMD5(string $givenPassword, string $dbasePassword, string $username): bool
     {
         if ($dbasePassword != md5($givenPassword)) {
             return false;
@@ -141,7 +147,7 @@ class AuthController
 
         $field = [];
         $field['password'] = $modx->phpass->HashPassword($password);
-        $modx->db->update($field, '[+prefix+]manager_users', "username='{$username}'");
+        $modx->db->update($field, '[+prefix+]manager_users', "username='$username'");
     }
 
     /**

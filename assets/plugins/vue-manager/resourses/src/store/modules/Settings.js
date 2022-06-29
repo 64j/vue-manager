@@ -17,7 +17,7 @@ const mutations = {
     for (let i in state) {
       state[i] = {}
     }
-    localStorage.removeItem('x-access-token')
+    localStorage.removeItem('EVO.TOKEN')
   }
 }
 

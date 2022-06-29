@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace VueManager;
 
-use VueManager\Controller\AuthController;
+use VueManager\Controllers\AuthController;
 use VueManager\Exceptions\Handler;
 use VueManager\Exceptions\NotFoundException;
 

@@ -103,33 +103,6 @@ export default {
           this.isErrors = true
         }
       })
-
-      // http.login(this.data).then(result => {
-      //   if (result['token']) {
-      //     localStorage['EVO.TOKEN'] = result['token']
-      //     http.settings(result => {
-      //       if (!result.errors) {
-      //         if (this.data.rememberme) {
-      //           if (!this.hosts[this.data.host]) {
-      //             this.hosts[this.data.host] = this.data.host
-      //           }
-      //           localStorage['EVO.HOSTS'] = JSON.stringify(this.hosts)
-      //           localStorage['EVO.HOST'] = this.data.host
-      //         }
-      //         store.dispatch('Settings/set', result.data).then(settings => {
-      //           if (result.data.config['lang_code']) {
-      //             i18n.global.locale.value = settings.config['lang_code']
-      //           }
-      //           this.$router.push({ name: 'DashboardIndex' })
-      //         })
-      //       } else {
-      //         this.isErrors = true
-      //       }
-      //     })
-      //   } else {
-      //     this.isErrors = true
-      //   }
-      // })
     },
     listOpen(event) {
       event.currentTarget.parentElement.classList.add('active')
