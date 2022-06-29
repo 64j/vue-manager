@@ -151,9 +151,8 @@ class Application
      */
     protected function response(array $response): string
     {
+        header('HTTP/1.1 200 OK');
         header('Content-Type: application/json; charset=utf-8');
-
-        http_response_code(200);
 
         return json_encode($response, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES);
     }
