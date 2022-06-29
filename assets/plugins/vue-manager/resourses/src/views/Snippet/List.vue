@@ -19,8 +19,9 @@ export default {
   name: 'SnippetList',
   components: { Panel },
   data () {
+    this.controller = 'Snippet@list'
+
     return {
-      url: '/snippets',
       data: null,
       actions: {
         copy: {
@@ -47,7 +48,7 @@ export default {
     }
   },
   mounted () {
-    http.get(this.url).then(result => this.data = result.data)
+    http.post(this.controller).then(result => this.data = result.data)
   },
   methods: {
     action(action, item, category) {

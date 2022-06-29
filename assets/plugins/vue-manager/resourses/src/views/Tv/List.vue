@@ -18,8 +18,9 @@ export default {
   name: 'TvList',
   components: { Panel },
   data () {
+    this.controller = 'Tv@list'
+
     return {
-      url: '/tvs',
       data: null,
       actions: {
         copy: {
@@ -32,7 +33,7 @@ export default {
     }
   },
   mounted () {
-    http.get(this.url).then(result => this.data = result.data)
+    http.post(this.controller).then(result => this.data = result.data)
   },
   methods: {
     action(action, item, category) {

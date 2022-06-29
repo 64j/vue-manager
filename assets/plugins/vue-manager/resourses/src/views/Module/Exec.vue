@@ -10,7 +10,7 @@ import http from '@/utils/http'
 export default {
   name: 'ModuleExec',
   data () {
-    this.url = '/module-exec/'
+    this.controller = 'Module@exec'
     this.icon = 'fa fa-cube'
 
     return {
@@ -31,7 +31,7 @@ export default {
   },
   methods: {
     get (id) {
-      http.get(this.url + id).then(result => {
+      http.post(this.controller, {id: id}).then(result => {
         this.data = result.data.result || ''
         this.$emit('titleTab', result.data.title)
         this.loading = true

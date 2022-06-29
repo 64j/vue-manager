@@ -12,7 +12,7 @@
             v-if="hasPermissions(['edit_template', 'edit_snippet', 'edit_chunk', 'edit_plugin'])">
           <a>{{ $t('elements') }}</a>
           <ul>
-            <li v-if="hasPermissions('edit_template')" @mouseenter="getSubMenu('/templates', list.templates)">
+            <li v-if="hasPermissions('edit_template')" @mouseenter="getSubMenu('Template@list', list.templates)">
               <router-link :to="{ name: 'ElementsIndex', query: { resourcesTab: 0 } }">
                 <i class="fa fa-newspaper"></i> {{ $t('manage_templates') }}
               </router-link>
@@ -31,7 +31,7 @@
                 </li>
               </ul>
             </li>
-            <li v-if="hasPermissions('edit_snippet')" @mouseenter="getSubMenu('/tvs', list.tvs)">
+            <li v-if="hasPermissions('edit_snippet')" @mouseenter="getSubMenu('Tv@list', list.tvs)">
               <router-link :to="{ name: 'ElementsIndex', query: { resourcesTab: 1 } }">
                 <i class="fa fa-list-alt"></i> {{ $t('tmplvars') }}
               </router-link>
@@ -50,7 +50,7 @@
                 </li>
               </ul>
             </li>
-            <li v-if="hasPermissions('edit_chunk')" @mouseenter="getSubMenu('/chunks', list.chunks)">
+            <li v-if="hasPermissions('edit_chunk')" @mouseenter="getSubMenu('Chunk@list', list.chunks)">
               <router-link :to="{ name: 'ElementsIndex', query: { resourcesTab: 2 } }">
                 <i class="fa fa-th-large"></i> {{ $t('manage_htmlsnippets') }}
               </router-link>
@@ -69,7 +69,7 @@
                 </li>
               </ul>
             </li>
-            <li v-if="hasPermissions('edit_snippet')" @mouseenter="getSubMenu('/snippets', list.snippets)">
+            <li v-if="hasPermissions('edit_snippet')" @mouseenter="getSubMenu('Snippet@list', list.snippets)">
               <router-link :to="{ name: 'ElementsIndex', query: { resourcesTab: 3 } }">
                 <i class="fa fa-code"></i> {{ $t('manage_snippets') }}
               </router-link>
@@ -88,7 +88,7 @@
                 </li>
               </ul>
             </li>
-            <li v-if="hasPermissions('edit_plugin')" @mouseenter="getSubMenu('/plugins', list.plugins)">
+            <li v-if="hasPermissions('edit_plugin')" @mouseenter="getSubMenu('Plugin@list', list.plugins)">
               <router-link :to="{ name: 'ElementsIndex', query: { resourcesTab: 4 } }">
                 <i class="fa fa-plug"></i> {{ $t('manage_plugins') }}
               </router-link>
@@ -107,7 +107,7 @@
                 </li>
               </ul>
             </li>
-            <li v-if="hasPermissions('edit_module')" @mouseenter="getSubMenu('/modules', list.modules)">
+            <li v-if="hasPermissions('edit_module')" @mouseenter="getSubMenu('Module@list', list.modules)">
               <router-link :to="{ name: 'ElementsIndex', query: { resourcesTab: 5 } }">
                 <i class="fa fa-cubes"></i> {{ $t('modules') }}
               </router-link>
@@ -128,7 +128,7 @@
             </li>
           </ul>
         </li>
-        <li class="parent" v-if="hasPermissions('exec_module')" @mouseenter="getSubMenu('/modules', list.modules)">
+        <li class="parent" v-if="hasPermissions('exec_module')" @mouseenter="getSubMenu('Module@list', list.modules)">
           <a>{{ $t('modules') }}</a>
           <ul v-if="list.modules.length">
             <li v-for="item in list.modules" :key="'item-module-exec-' + item.id" @mouseenter="subMenuEnter">
@@ -305,7 +305,7 @@ export default {
         }
       }
       if (!list.length) {
-        http.get(url).then(result => {
+        http.post(url).then(result => {
           if (result.data) {
             for (let i in result.data) {
               let items = result.data[i].items

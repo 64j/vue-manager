@@ -27,7 +27,7 @@ export default {
   name: 'TreeView',
   data () {
     return {
-      url: '/tree',
+      url: 'Tree@get',
       x: 0,
       elTree: null,
       elMain: null,
@@ -68,7 +68,7 @@ export default {
       this.elMain.style.width = window.innerWidth - this.x + 'px'
     },
     get() {
-      http.post('Tree@get').then(result => {
+      http.post(this.url).then(result => {
         this.data = result.data
         this.meta = result.meta
       })

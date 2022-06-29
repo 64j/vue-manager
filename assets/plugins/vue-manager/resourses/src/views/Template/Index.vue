@@ -88,7 +88,7 @@ export default {
   name: 'TemplateIndex',
   components: { ActionsButtons, TitleView, Tabs },
   data () {
-    this.url = '/template/'
+    this.controller = 'Template'
     this.icon = 'fa fa-code'
 
     this.events = {
@@ -130,7 +130,7 @@ export default {
   },
   methods: {
     get () {
-      http.get(this.url + this.data.id).then(result => {
+      http.post(this.controller + '@read', this.data).then(result => {
         this.data = result.data
         for (let i in result.meta.events || {}) {
           this.events[i] = Array.isArray(result.meta.events[i]) ? result.meta.events[i].join('') : result.meta.events[i]
@@ -142,13 +142,13 @@ export default {
     save () {
       this.loading = false
       if (this.data.id) {
-        http.put(this.url + this.data.id, this.data).then(result => {
+        http.post(this.controller + '@update', this.data).then(result => {
           this.data = result.data
           this.$emit('titleTab', this.title)
           this.loading = true
         })
       } else {
-        http.put(this.url, this.data).then(result => {
+        http.post(this.controller + '@create', this.data).then(result => {
           if (result.data.id) {
             this.$emit('replaceTab', { params: { id: result.data.id } })
           } else {

@@ -45,7 +45,8 @@ class Application
     ];
 
     /**
-     * @throws \Exception
+     * @throws \VueManager\Exceptions\NotFoundException
+     * @throws \VueManager\Exceptions\UnauthorizedException
      */
     public function __construct()
     {
@@ -72,7 +73,6 @@ class Application
 
     /**
      * @return \VueManager\Application
-     * @throws \Exception
      */
     public static function getInstance(): Application
     {
