@@ -21,11 +21,6 @@ class Application
     protected array $params;
 
     /**
-     * @var array
-     */
-    protected array $response = [];
-
-    /**
      * @var array|null
      */
     protected ?array $user = null;
@@ -34,11 +29,6 @@ class Application
      * @var array
      */
     protected array $lang = [];
-
-    /**
-     * @var int
-     */
-    protected int $responseCode = 200;
 
     /**
      * @var array
@@ -145,24 +135,27 @@ class Application
      */
     protected function responseFromMethod(): string
     {
-        $this->response = call_user_func([
-            new $this->method[0](),
-            $this->method[1]
-        ], $this->params);
+        $this->method[0] = get_class($this) === $this->method[0] ? $this : new $this->method[0]();
 
-        return $this->response();
+        return $this->response(
+            call_user_func([
+                $this->method[0],
+                $this->method[1]
+            ], $this->params)
+        );
     }
 
     /**
+     * @param array $response
      * @return string
      */
-    protected function response(): string
+    protected function response(array $response): string
     {
         header('Content-Type: application/json; charset=utf-8');
 
-        http_response_code($this->responseCode);
+        http_response_code(200);
 
-        return json_encode($this->response, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES);
+        return json_encode($response, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES);
     }
 
     /**
@@ -194,7 +187,7 @@ class Application
         $categories = [
             0 => [
                 'id' => 0,
-                'category' => $this->lang['no_category'] ?? 'No category',
+                'category' => $this->lang['no_category'],
                 'rank' => 0
             ]
         ];
