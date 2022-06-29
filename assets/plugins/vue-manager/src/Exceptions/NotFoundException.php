@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace VueManager\Exception;
+namespace VueManager\Exceptions;
 
 use Exception;
 
@@ -16,5 +16,5 @@ class NotFoundException extends Exception
     /**
      * @var string
      */
-    protected $message = 'Not found';
+    protected $message = 'Not Found';
 }

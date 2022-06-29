@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace VueManager\Auth;
+namespace VueManager\Controllers;
 
-use VueManager\Exception\UnauthorizedException;
+use VueManager\Exceptions\UnauthorizedException;
 
-class Auth
+class AuthController
 {
     /**
      * @param array $params
      * @return array
-     * @throws \VueManager\Exception\UnauthorizedException
+     * @throws \VueManager\Exceptions\UnauthorizedException
      */
     public function actionLogin(array $params): array
     {
@@ -72,7 +72,7 @@ class Auth
 
     /**
      * @return array
-     * @throws \VueManager\Exception\UnauthorizedException
+     * @throws \VueManager\Exceptions\UnauthorizedException
      */
     public function getUserByToken(): array
     {

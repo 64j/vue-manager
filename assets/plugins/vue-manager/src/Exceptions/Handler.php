@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace VueManager\Exception;
+namespace VueManager\Exceptions;
 
 use Error;
 use Throwable;

@@ -11,4 +11,5 @@ $modx->getSettings();
 
 require_once '__autoload.php';
 
-echo (new VueManager\Application())->run();
+echo VueManager\Application::getInstance()
+    ->run();

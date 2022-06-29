@@ -77,10 +77,10 @@ export default {
         this.isErrors = true
       }
 
-      http.post('Auth\\Auth@login', this.data).then(result => {
+      http.post('Auth@login', this.data).then(result => {
         if (result['token']) {
           localStorage['EVO.TOKEN'] = result['token']
-          http.post('Application@settings').then(result => {
+          http.post('Settings@get').then(result => {
             if (result.data) {
               if (this.data.rememberme) {
                 if (!this.hosts[this.data.host]) {

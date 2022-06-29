@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace VueManager;
 
-use VueManager\Auth\Auth;
-use VueManager\Exception\Handler;
-use VueManager\Exception\NotFoundException;
+use VueManager\Controller\AuthController;
+use VueManager\Exceptions\Handler;
+use VueManager\Exceptions\NotFoundException;
 
 class Application
 {
+    /**
+     * @var null|Application
+     */
+    private static ?Application $instance = null;
+
     /**
      * @var array
      */
@@ -34,7 +39,7 @@ class Application
      * @var array
      */
     protected array $exceptMethods = [
-        Auth::class => [
+        AuthController::class => [
             'actionLogin'
         ]
     ];
@@ -51,7 +56,7 @@ class Application
         $this->parseBody();
 
         if (!(isset($this->exceptMethods[$this->method[0]]) && in_array($this->method[1], $this->exceptMethods[$this->method[0]]))) {
-            $this->user = (new Auth())->getUserByToken();
+            $this->user = (new AuthController())->getUserByToken();
         }
 
         $_lang = [];
@@ -63,6 +68,19 @@ class Application
         }
 
         $this->lang = $_lang;
+    }
+
+    /**
+     * @return \VueManager\Application
+     * @throws \Exception
+     */
+    public static function getInstance(): Application
+    {
+        if (self::$instance === null) {
+            self::$instance = new static();
+        }
+
+        return self::$instance;
     }
 
     /**
@@ -93,7 +111,7 @@ class Application
 
     /**
      * @return void
-     * @throws \VueManager\Exception\NotFoundException
+     * @throws \VueManager\Exceptions\NotFoundException
      */
     protected function parseBody(): void
     {
@@ -103,7 +121,8 @@ class Application
             throw new NotFoundException('Method not found');
         }
 
-        $this->method = explode('@', 'VueManager\\' . $body['method'] ?? '');
+        $this->method = explode('@', 'VueManager\\Controllers\\' . $body['method'] ?? '');
+        $this->method[0] = isset($this->method[0]) ? $this->method[0] . 'Controller' : '';
         $this->method[1] = isset($this->method[1]) ? 'action' . ucfirst($this->method[1]) : '';
 
         $this->params = $body['params'] ?? [];
@@ -111,7 +130,7 @@ class Application
 
     /**
      * @return string
-     * @throws \VueManager\Exception\NotFoundException
+     * @throws \VueManager\Exceptions\NotFoundException
      */
     public function run(): string
     {
@@ -158,58 +177,20 @@ class Application
     }
 
     /**
-     * @return array
+     * @param string|null $key
+     * @return mixed
      */
-    public function actionSettings(): array
+    public function getUser(string $key = null)
     {
-        global $modx_lang_attribute;
-
-        $modx = evolutionCMS();
-
-        $data = [];
-
-        $data['config'] = $modx->config;
-        $data['config']['lang_attribute'] = $modx_lang_attribute;
-
-        $removeKeys = ['base_path', 'view', 'sys_files_checksum', 'check_files_onlogin', 'filemanager_path', 'rb_base_dir', 'site_manager_path'];
-        foreach ($removeKeys as $k) {
-            if (isset($data['config'][$k])) {
-                unset($data['config'][$k]);
-            }
-        }
-
-        $data['permissions'] = $modx->db->getRow($modx->db->select('*', $modx->getFullTableName('user_roles'), "id='{$this->user['role']}'"));
-
-        $data['user'] = $this->user;
-
-        $rs = $modx->db->makeArray($modx->db->select('*', '[+prefix+]categories'));
-        $categories = [
-            0 => [
-                'id' => 0,
-                'category' => $this->lang['no_category'],
-                'rank' => 0
-            ]
-        ];
-
-        foreach ($rs as $r) {
-            $categories[$r['id']] = $r;
-        }
-
-        $data['categories'] = $categories;
-
-        return [
-            'data' => $data
-        ];
+        return $this->user[$key] ?? $this->user;
     }
 
     /**
-     * @param array $params
-     * @return array[]
+     * @param string|null $key
+     * @return mixed
      */
-    public function actionTree(array $params = []): array
+    public function getLang(string $key = null)
     {
-        return [
-            'data' => []
-        ];
+        return $this->lang[$key] ?? $this->lang;
     }
 }
