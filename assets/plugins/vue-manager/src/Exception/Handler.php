@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace VueManager\Exception;
 
-use Exception;
+use Error;
+use Throwable;
 
 class Handler
 {
@@ -17,6 +18,11 @@ class Handler
      * @var string
      */
     protected string $defaultMessage = 'Internal Server Error';
+
+    /**
+     * @var bool
+     */
+    protected bool $debug = false;
 
     /**
      * @return void
@@ -48,34 +54,67 @@ class Handler
      */
     protected function handleError($level, $message, string $file = '', int $line = 0, array $context = []): void
     {
-        $code = $this->defaultCode;
-        $message = $message ?: $this->defaultMessage;
+        if (error_reporting() & $level) {
+            $code = $this->defaultCode;
+            $message = $message ?: $this->defaultMessage;
+            $add = $this->debug ? [
+                'line' => $line,
+                'file' => $file,
+            ] : [];
 
-        $this->report([
-            'line' => $line,
-            'file' => $file,
-            'code' => $code,
-            'message' => $message,
-        ], $code);
+            $this->report([
+                    'code' => $code,
+                    'message' => $message,
+                ] + $add, $code);
+        }
     }
 
     /**
-     * @param \Exception $e
+     * @param \Throwable $e
      * @return void
      */
-    protected function handleException(Exception $e): void
+    protected function handleException(Throwable $e): void
     {
         $code = $e->getCode() ?: $this->defaultCode;
         $message = $e->getMessage() ?: $this->defaultMessage;
+        $add = $this->debug ? [
+            'line' => $e->getLine(),
+            'file' => $e->getFile(),
+        ] : [];
 
         $this->report([
-            'code' => $code,
-            'message' => $message,
-        ], $code);
+                'code' => $code,
+                'message' => $message,
+            ] + $add, $code);
     }
 
-    protected function handleShutdown()
+    /**
+     * @return void
+     */
+    protected function handleShutdown(): void
     {
+        if (!is_null($error = error_get_last()) && $this->isFatal($error['type'])) {
+            $this->handleException($this->fatalErrorFromPhpError($error, 0));
+        }
+    }
+
+    /**
+     * @param array $error
+     * @param int|null $traceOffset
+     * @return \Error
+     */
+    protected function fatalErrorFromPhpError(array $error, int $traceOffset = null): Error
+    {
+        return new Error($error['message'], 0);
+    }
+
+    /**
+     * @param $type
+     * @return bool
+     */
+    protected function isFatal($type): bool
+    {
+        return in_array($type, [E_COMPILE_ERROR, E_CORE_ERROR, E_ERROR, E_PARSE]);
     }
 
     /**

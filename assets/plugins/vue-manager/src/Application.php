@@ -6,7 +6,6 @@ namespace VueManager;
 
 use VueManager\Auth\Auth;
 use VueManager\Exception\Handler;
-use VueManager\Exception\UnauthorizedException;
 
 class Application
 {
@@ -69,24 +68,41 @@ class Application
 
     /**
      * @return string
+     * @throws \ErrorException
      * @throws \VueManager\Exception\UnauthorizedException
      */
     public function run(): string
     {
-        if (count($this->method) == 2 && method_exists(...$this->method) && is_callable($this->method)) {
-            if (!(isset($this->exceptMethods[$this->method[0]]) && in_array($this->method[1], $this->exceptMethods[$this->method[0]]))) {
-                $this->user = (new Auth())->getUserByToken();
-            }
-
-            $this->response = call_user_func([
-                new $this->method[0](),
-                $this->method[1]
-            ], $this->params);
-
-            return $this->response();
+        if (!(isset($this->exceptMethods[$this->method[0]]) && in_array($this->method[1], $this->exceptMethods[$this->method[0]]))) {
+            $this->user = (new Auth())->getUserByToken();
         }
 
-        throw new \Exception();
+        if ($this->checkMethod()) {
+            return $this->responseFromMethod();
+        }
+
+        throw new \ErrorException('Method not found');
+    }
+
+    /**
+     * @return bool
+     */
+    protected function checkMethod(): bool
+    {
+        return method_exists(...$this->method) && is_callable($this->method);
+    }
+
+    /**
+     * @return string
+     */
+    protected function responseFromMethod(): string
+    {
+        $this->response = call_user_func([
+            new $this->method[0](),
+            $this->method[1]
+        ], $this->params);
+
+        return $this->response();
     }
 
     /**

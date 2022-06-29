@@ -66,7 +66,7 @@ class Auth
             '[+prefix+]user_attributes', "internalKey='{$internalKey}'");
 
         return [
-            'token' => md5($sessionId)
+            'token' => base64_encode(md5($sessionId))
         ];
     }
 
@@ -94,14 +94,12 @@ class Auth
                     AND ua.verified=1
             '));
 
-            if (!isset($user['id'])) {
-                throw new UnauthorizedException('Wrong login or password');
+            if (isset($user['id'])) {
+                return $user;
             }
-        } else {
-            throw new UnauthorizedException('Error authorization token');
         }
 
-        return $user;
+        throw new UnauthorizedException('Error authorization token');
     }
 
     /**
