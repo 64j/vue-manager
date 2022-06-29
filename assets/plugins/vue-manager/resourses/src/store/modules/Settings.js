@@ -30,7 +30,7 @@ const actions = {
   },
   get ({ commit, state }) {
     return new Promise(resolve => {
-      return http.settings(result => {
+      return http.post('Application@settings').then(result => {
         if (result.data) {
           commit('SET_SETTINGS', result.data)
         }

@@ -1,5 +1,7 @@
 <template>
   <div class="main w-100 h-100 d-flex flex-nowrap bg-dark">
+    <notifications style="top: .5rem"/>
+
     <div class="col-auto sidebar p-5 bg-dark bg-opacity-75 text-white text-opacity-75">
       <form @submit.prevent="submit">
 
@@ -75,11 +77,11 @@ export default {
         this.isErrors = true
       }
 
-      http.login(this.data).then(result => {
+      http.post('Auth\\Auth@login', this.data).then(result => {
         if (result['token']) {
           localStorage['EVO.TOKEN'] = result['token']
-          http.settings(result => {
-            if (!result.errors) {
+          http.post('Application@settings').then(result => {
+            if (result.data) {
               if (this.data.rememberme) {
                 if (!this.hosts[this.data.host]) {
                   this.hosts[this.data.host] = this.data.host
@@ -101,6 +103,33 @@ export default {
           this.isErrors = true
         }
       })
+
+      // http.login(this.data).then(result => {
+      //   if (result['token']) {
+      //     localStorage['EVO.TOKEN'] = result['token']
+      //     http.settings(result => {
+      //       if (!result.errors) {
+      //         if (this.data.rememberme) {
+      //           if (!this.hosts[this.data.host]) {
+      //             this.hosts[this.data.host] = this.data.host
+      //           }
+      //           localStorage['EVO.HOSTS'] = JSON.stringify(this.hosts)
+      //           localStorage['EVO.HOST'] = this.data.host
+      //         }
+      //         store.dispatch('Settings/set', result.data).then(settings => {
+      //           if (result.data.config['lang_code']) {
+      //             i18n.global.locale.value = settings.config['lang_code']
+      //           }
+      //           this.$router.push({ name: 'DashboardIndex' })
+      //         })
+      //       } else {
+      //         this.isErrors = true
+      //       }
+      //     })
+      //   } else {
+      //     this.isErrors = true
+      //   }
+      // })
     },
     listOpen(event) {
       event.currentTarget.parentElement.classList.add('active')

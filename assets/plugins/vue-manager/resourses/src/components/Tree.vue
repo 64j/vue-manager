@@ -68,7 +68,7 @@ export default {
       this.elMain.style.width = window.innerWidth - this.x + 'px'
     },
     get() {
-      http.get(this.url).then(result => {
+      http.post('Application@tree').then(result => {
         this.data = result.data
         this.meta = result.meta
       })

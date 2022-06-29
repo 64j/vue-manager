@@ -4,11 +4,8 @@ import router from '@/router'
 export default {
   baseUrl: localStorage['EVO.HOST'] || '',
 
-  setUrl (url) {
-    if (!~url.indexOf('http')) {
-      url = this.baseUrl + 'vue-manager/api/' + url.split('/').filter(v => v !== '').join('/')
-    }
-    return url
+  setUrl () {
+    return this.baseUrl + 'assets/plugins/vue-manager/'
   },
 
   setBody (body) {
@@ -32,7 +29,11 @@ export default {
   },
 
   handlerResponse (response) {
-    if (response.status === 403) {
+    if (response.ok) {
+      return response.json()
+    }
+
+    if (response.status !== 404) {
       if (location.hash !== '#/login') {
         store.dispatch('Settings/del').then(() => {
           store.dispatch('MultiTabs/delAllTabs').then(() => {
@@ -42,26 +43,28 @@ export default {
       }
     }
 
-    if (response.status === 404) {
-      return {}
-    }
-
-    return response.json()
+    return {}
   },
 
   handlerCatch (error) {
-    console.error(error.message)
-
     return {
       errors: [error.message || '']
     }
   },
 
   fetch (method, url, body) {
-    return fetch(this.setUrl(url), {
+    if (method === 'get') {
+      body = null
+    } else {
+      body = {
+        method: url,
+        params: body || []
+      }
+    }
+    return fetch(this.setUrl(), {
       method: method,
       body: this.setBody(body || ''),
-      headers: this.setHeaders(),
+      headers: this.setHeaders()
       //credentials: 'include'
     }).then(this.handlerResponse).catch(this.handlerCatch)
   },

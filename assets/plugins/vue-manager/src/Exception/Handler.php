@@ -22,7 +22,7 @@ class Handler
     /**
      * @var bool
      */
-    protected bool $debug = false;
+    protected bool $debug = true;
 
     /**
      * @return void
@@ -59,7 +59,7 @@ class Handler
             $message = $message ?: $this->defaultMessage;
             $add = $this->debug ? [
                 'line' => $line,
-                'file' => $file,
+                'file' => str_replace(dirname(__DIR__, 3), '', $file),
             ] : [];
 
             $this->report([
@@ -79,7 +79,7 @@ class Handler
         $message = $e->getMessage() ?: $this->defaultMessage;
         $add = $this->debug ? [
             'line' => $e->getLine(),
-            'file' => $e->getFile(),
+            'file' => str_replace(dirname(__DIR__, 3), '', $e->getFile()),
         ] : [];
 
         $this->report([
