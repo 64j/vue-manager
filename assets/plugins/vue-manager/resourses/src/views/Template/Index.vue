@@ -1,7 +1,7 @@
 <template>
   <div>
 
-    <ActionsButtons @save="save" @cancel="cancel"/>
+    <ActionsButtons @actions="actions" />
 
     <form name="mutate" v-show="loading">
 
@@ -129,6 +129,44 @@ export default {
     }
   },
   methods: {
+    actions(name) {
+      switch (name) {
+        case 'save':
+          this.loading = false
+          if (this.data.id) {
+            http.post(this.controller + '@update', this.data).then(result => {
+              this.data = result.data
+              this.$emit('titleTab', this.title)
+              this.loading = true
+            })
+          } else {
+            http.post(this.controller + '@create', this.data).then(result => {
+              if (result.data.id) {
+                this.$emit('replaceTab', { params: { id: result.data.id } })
+              } else {
+                this.data = result.data
+                this.$emit('titleTab', this.title)
+              }
+              this.loading = true
+            })
+          }
+          break;
+
+        case 'delete':
+          if (this.data.id) {
+            http.post(this.controller + '@delete', this.data).then(result => {
+              if (result) {
+                this.actions('cancel')
+              }
+            })
+          }
+          break;
+
+        case 'cancel':
+          this.$emit('toTab', { name: 'ElementsIndex', query: { resourcesTab: 0 } })
+          break;
+      }
+    },
     get () {
       http.post(this.controller + '@read', this.data).then(result => {
         this.data = result.data
@@ -138,29 +176,6 @@ export default {
         this.$emit('titleTab', this.title)
         this.loading = true
       })
-    },
-    save () {
-      this.loading = false
-      if (this.data.id) {
-        http.post(this.controller + '@update', this.data).then(result => {
-          this.data = result.data
-          this.$emit('titleTab', this.title)
-          this.loading = true
-        })
-      } else {
-        http.post(this.controller + '@create', this.data).then(result => {
-          if (result.data.id) {
-            this.$emit('replaceTab', { params: { id: result.data.id } })
-          } else {
-            this.data = result.data
-            this.$emit('titleTab', this.title)
-          }
-          this.loading = true
-        })
-      }
-    },
-    cancel () {
-      this.$emit('toTab', { name: 'ElementsIndex', query: { resourcesTab: 0 } })
     }
   }
 }

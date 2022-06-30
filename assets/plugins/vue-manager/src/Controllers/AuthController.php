@@ -16,7 +16,6 @@ class AuthController
     public function actionLogin(array $params): array
     {
         $evo = evolutionCMS();
-        $evo->loadExtension('ManagerAPI');
         $evo->loadExtension('phpass');
 
         $username = (string) $evo->db->escape($evo->htmlspecialchars($params['username'] ?? '', ENT_NOQUOTES));

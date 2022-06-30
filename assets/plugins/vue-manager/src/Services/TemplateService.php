@@ -12,10 +12,18 @@ class TemplateService
     /**
      * @param array $params
      * @return array
+     * @throws \VueManager\Exceptions\NotFoundException
      */
     public function create(array $params = []): array
     {
+        $app = evolutionCMS();
         $data = [];
+
+        if (!empty($params)) {
+            $data = $this->read([
+                'id' => $app->db->insert($params, $app->getFullTableName('site_templates'))
+            ]);
+        }
 
         return $data;
     }
@@ -27,11 +35,11 @@ class TemplateService
      */
     public function read(array $params = []): array
     {
-        $modx = evolutionCMS();
+        $app = evolutionCMS();
         $data = [];
 
         if (!empty($params['id'])) {
-            $data = $modx->db->getRow($modx->db->select('*', $modx->getFullTableName('site_templates'), 'id=' . (int) $params['id']));
+            $data = $app->db->getRow($app->db->select('*', $app->getFullTableName('site_templates'), 'id=' . (int) $params['id']));
         }
 
         if (!empty($data)) {
@@ -48,7 +56,9 @@ class TemplateService
      */
     public function update(array $params = []): array
     {
-        $data = $this->read($params);
+        $app = evolutionCMS();
+        $data = array_merge($this->read($params), $params);
+        $app->db->update($data, $app->getFullTableName('site_templates'), 'id=' . $data['id']);
 
         return $data;
     }
@@ -60,7 +70,9 @@ class TemplateService
      */
     public function delete(array $params = []): array
     {
+        $app = evolutionCMS();
         $data = $this->read($params);
+        $app->db->delete($app->getFullTableName('site_templates'), 'id=' . $data['id']);
 
         return $data;
     }
@@ -71,12 +83,12 @@ class TemplateService
      */
     public function list(array $params = []): array
     {
-        $modx = evolutionCMS();
+        $app = evolutionCMS();
         $data = [];
 
         if (!empty($params['categories'])) {
-            $rs = $modx->db->makeArray(
-                $modx->db->query('
+            $rs = $app->db->makeArray(
+                $app->db->query('
                     SELECT
                     t.id,
                     t.templatename AS name,
@@ -86,8 +98,8 @@ class TemplateService
                     t.category,
                     IF(t.category=0,"' . Application::getInstance()
                         ->getLang('no_category') . '",c.category) AS category_name
-                    FROM ' . $modx->getFullTableName('site_templates') . ' t
-                    LEFT JOIN ' . $modx->getFullTableName('categories') . ' c ON c.id=t.category
+                    FROM ' . $app->getFullTableName('site_templates') . ' t
+                    LEFT JOIN ' . $app->getFullTableName('categories') . ' c ON c.id=t.category
                     ORDER BY c.rank
                 ')
             );
@@ -106,8 +118,8 @@ class TemplateService
                 $data[$r['category']]['items'][$r['id']] = $r;
             }
         } else {
-            $data = $modx->db->makeArray(
-                $modx->db->query('
+            $data = $app->db->makeArray(
+                $app->db->query('
                     SELECT
                     t.id,
                     t.templatename AS name,
@@ -115,7 +127,7 @@ class TemplateService
                     t.description,
                     t.locked,
                     t.category
-                    FROM ' . $modx->getFullTableName('site_templates') . ' t
+                    FROM ' . $app->getFullTableName('site_templates') . ' t
                     ORDER BY t.templatename
                 ')
             );

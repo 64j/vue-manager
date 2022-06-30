@@ -72,7 +72,7 @@ export default {
     isActive (tab) {
       const active = tab.name === this.$route.name && (tab.meta.groupTab || !tab.meta.groupTab && diff(tab.params, this.$route.params))
       if (active) {
-        const title = tab.title.replace(/<\/?[^>]+>/ig, '').trim()
+        const title = tab.title && tab.title.replace(/<\/?[^>]+>/ig, '').trim() || ''
         document.title = (title && title + ' - ' || '') + this.$store.state.Settings.config['site_name'] + ' (EVO CMS Manager)'
       }
       return active

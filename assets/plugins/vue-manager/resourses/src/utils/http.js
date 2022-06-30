@@ -1,5 +1,6 @@
 import store from '@/store'
 import router from '@/router'
+import { toRaw } from 'vue'
 
 export default {
   baseUrl: localStorage['EVO.HOST'] || '',
@@ -14,7 +15,7 @@ export default {
     }
     body = body || {}
     if (typeof body !== 'string') {
-      body = JSON.stringify(body)
+      body = JSON.stringify(toRaw(body))
     }
     return body
   },
@@ -64,8 +65,8 @@ export default {
     return fetch(this.setUrl(), {
       method: method,
       body: this.setBody(body || ''),
-      headers: this.setHeaders()
-      //credentials: 'include'
+      headers: this.setHeaders(),
+      credentials: 'include'
     }).then(this.handlerResponse).catch(this.handlerCatch)
   },
 

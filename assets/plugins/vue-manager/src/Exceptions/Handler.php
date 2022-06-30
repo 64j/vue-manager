@@ -59,7 +59,7 @@ class Handler
             $message = $message ?: $this->defaultMessage;
             $add = $this->debug ? [
                 'line' => $line,
-                'file' => str_replace(dirname(__DIR__, 3), '', $file),
+                'file' => str_replace(dirname(__DIR__, 3), '', $file)
             ] : [];
 
             $this->report([
@@ -80,6 +80,7 @@ class Handler
         $add = $this->debug ? [
             'line' => $e->getLine(),
             'file' => str_replace(dirname(__DIR__, 3), '', $e->getFile()),
+            'stack' => $e->getTrace()
         ] : [];
 
         $this->report([

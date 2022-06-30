@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace VueManager;
 
+use ErrorException;
 use VueManager\Controllers\AuthController;
 use VueManager\Exceptions\Handler;
 use VueManager\Exceptions\NotFoundException;
@@ -45,12 +46,13 @@ class Application
     ];
 
     /**
-     * @throws \VueManager\Exceptions\NotFoundException
+     * @throws \ErrorException
      * @throws \VueManager\Exceptions\UnauthorizedException
      */
     public function __construct()
     {
         $evo = evolutionCMS();
+        $evo->loadExtension('ManagerAPI');
         (new Handler)->registerErrorHandling();
 
         $this->setCors();
@@ -85,6 +87,7 @@ class Application
 
     /**
      * @return void
+     * @throws \ErrorException
      */
     protected function setCors(): void
     {
@@ -94,34 +97,33 @@ class Application
             header('Access-Control-Max-Age: 86400');
         }
 
-        /*if(isset($_COOKIE["PHPSESSID"])){
-          header('Set-Cookie: PHPSESSID='.$_COOKIE["PHPSESSID"].'; SameSite=None');
-        }*/
+//        if (isset($_COOKIE['PHPSESSID'])) {
+//            header('Set-Cookie: PHPSESSID=' . $_COOKIE['PHPSESSID'] . '; SameSite=None');
+//        }
 
         if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
             if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'])) {
-                header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+                header("Access-Control-Allow-Methods: POST");
             }
             if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'])) {
                 header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
             }
             exit(0);
         }
+
+        if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+            throw new ErrorException('Method Not Allowed', 405);
+        }
     }
 
     /**
      * @return void
-     * @throws \VueManager\Exceptions\NotFoundException
      */
     protected function parseBody(): void
     {
         $body = $_POST + (json_decode(file_get_contents('php://input'), true) ?? []);
 
-        if (!isset($body['method'])) {
-            throw new NotFoundException('Method not found');
-        }
-
-        $this->method = explode('@', 'VueManager\\Controllers\\' . $body['method'] ?? '');
+        $this->method = explode('@', 'VueManager\\Controllers\\' . ($body['method'] ?? ''));
         $this->method[0] = isset($this->method[0]) ? $this->method[0] . 'Controller' : '';
         $this->method[1] = isset($this->method[1]) ? 'action' . ucfirst($this->method[1]) : '';
 
@@ -138,7 +140,7 @@ class Application
             return $this->responseFromMethod();
         }
 
-        throw new NotFoundException('Method not found');
+        throw new NotFoundException('Method Not Found');
     }
 
     /**
