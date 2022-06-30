@@ -1,6 +1,6 @@
 <template>
   <div>
-    <iframe :srcdoc="data" class="w-100 h-100 overflow-auto border-0" />
+    <iframe :srcdoc="data" class="w-100 h-100 overflow-auto border-0"/>
   </div>
 </template>
 
@@ -31,12 +31,12 @@ export default {
   },
   methods: {
     get (id) {
-      http.post(this.controller, {id: id}).then(result => {
+      http.post(this.controller, { id: id }).then(result => {
         this.data = result.data.result || ''
         this.$emit('titleTab', result.data.title)
         this.loading = true
       })
-    },
+    }
   }
 }
 </script>

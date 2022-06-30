@@ -2,20 +2,28 @@
 
 declare(strict_types=1);
 
-namespace VueManager\Services;
+namespace VueManager\Services\v1;
 
 use VueManager\Application;
 use VueManager\Exceptions\NotFoundException;
 
-class PluginService
+class TemplateService
 {
     /**
      * @param array $params
      * @return array
+     * @throws \VueManager\Exceptions\NotFoundException
      */
     public function create(array $params = []): array
     {
+        $app = evolutionCMS();
         $data = [];
+
+        if (!empty($params)) {
+            $data = $this->read([
+                'id' => $app->db->insert($params, $app->getFullTableName('site_templates'))
+            ]);
+        }
 
         return $data;
     }
@@ -27,11 +35,11 @@ class PluginService
      */
     public function read(array $params = []): array
     {
-        $modx = evolutionCMS();
+        $app = evolutionCMS();
         $data = [];
 
         if (!empty($params['id'])) {
-            $data = $modx->db->getRow($modx->db->select('*', $modx->getFullTableName('site_plugins'), 'id=' . (int) $params['id']));
+            $data = $app->db->getRow($app->db->select('*', $app->getFullTableName('site_templates'), 'id=' . (int) $params['id']));
         }
 
         if (!empty($data)) {
@@ -48,7 +56,9 @@ class PluginService
      */
     public function update(array $params = []): array
     {
-        $data = $this->read($params);
+        $app = evolutionCMS();
+        $data = array_merge($this->read($params), $params);
+        $app->db->update($data, $app->getFullTableName('site_templates'), 'id=' . $data['id']);
 
         return $data;
     }
@@ -60,7 +70,9 @@ class PluginService
      */
     public function delete(array $params = []): array
     {
+        $app = evolutionCMS();
         $data = $this->read($params);
+        $app->db->delete($app->getFullTableName('site_templates'), 'id=' . $data['id']);
 
         return $data;
     }
@@ -71,23 +83,23 @@ class PluginService
      */
     public function list(array $params = []): array
     {
-        $modx = evolutionCMS();
+        $app = evolutionCMS();
         $data = [];
 
         if (!empty($params['categories'])) {
-            $rs = $modx->db->makeArray(
-                $modx->db->query('
+            $rs = $app->db->makeArray(
+                $app->db->query('
                     SELECT
                     t.id,
-                    t.name,
+                    t.templatename AS name,
+                    t.templatealias AS alias,
                     t.description,
                     t.locked,
-                    t.disabled,
                     t.category,
                     IF(t.category=0,"' . Application::getInstance()
                         ->getLang('no_category') . '",c.category) AS category_name
-                    FROM ' . $modx->getFullTableName('site_plugins') . ' t
-                    LEFT JOIN ' . $modx->getFullTableName('categories') . ' c ON c.id=t.category
+                    FROM ' . $app->getFullTableName('site_templates') . ' t
+                    LEFT JOIN ' . $app->getFullTableName('categories') . ' c ON c.id=t.category
                     ORDER BY c.rank
                 ')
             );
@@ -106,17 +118,17 @@ class PluginService
                 $data[$r['category']]['items'][$r['id']] = $r;
             }
         } else {
-            $data = $modx->db->makeArray(
-                $modx->db->query('
+            $data = $app->db->makeArray(
+                $app->db->query('
                     SELECT
                     t.id,
-                    t.name,
+                    t.templatename AS name,
+                    t.templatealias AS alias,
                     t.description,
                     t.locked,
-                    t.disabled,
                     t.category
-                    FROM ' . $modx->getFullTableName('site_plugins') . ' t
-                    ORDER BY t.name
+                    FROM ' . $app->getFullTableName('site_templates') . ' t
+                    ORDER BY t.templatename
                 ')
             );
         }

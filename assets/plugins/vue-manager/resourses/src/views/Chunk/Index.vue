@@ -1,7 +1,7 @@
 <template>
   <div>
 
-    <ActionsButtons @save="save" @cancel="cancel"/>
+    <ActionsButtons @action="action"/>
 
     <form name="mutate" v-show="loading">
 
@@ -117,25 +117,6 @@ export default {
     }
   },
   methods: {
-    save() {
-      this.loading = false
-      if (this.data.id) {
-        http.post(this.controller + '@update', this.data).then(result => {
-          this.data = result.data
-          this.$emit('titleTab', this.title)
-          this.loading = true
-        })
-      } else {
-        http.post(this.controller + '@create', this.data).then(result => {
-          this.data = result.data
-          this.$emit('titleTab', this.title)
-          this.loading = true
-        })
-      }
-    },
-    cancel() {
-      this.$emit('toTab', { name: 'ElementsIndex', query: { resourcesTab: 2 } })
-    },
     get () {
       http.post(this.controller + '@read', this.data).then(result => {
         this.data = result.data
@@ -146,6 +127,38 @@ export default {
         this.loading = true
       })
     },
+    action(action) {
+      switch (action) {
+        case 'save':
+          this.loading = false
+          if (this.data.id) {
+            http.post(this.controller + '@update', this.data).then(result => {
+              this.data = result.data
+              this.$emit('titleTab', this.title)
+              this.loading = true
+            })
+          } else {
+            http.post(this.controller + '@create', this.data).then(result => {
+              this.data = result.data
+              this.$emit('titleTab', this.title)
+              this.loading = true
+            })
+          }
+          break;
+
+        case 'cancel':
+          this.$emit('toTab', { name: 'ElementsIndex', query: { resourcesTab: 2 } })
+          break;
+
+        case 'delete':
+          http.post(this.controller + '@create', this.data).then(result => {
+            if (result) {
+              this.action('cancel')
+            }
+          });
+          break;
+      }
+    }
   }
 }
 </script>

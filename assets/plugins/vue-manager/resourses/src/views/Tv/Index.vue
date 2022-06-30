@@ -2,7 +2,7 @@
   <div>
     <h1>Tv</h1>
 
-    <ActionsButtons/>
+    <ActionsButtons @action="action"/>
 
     <Tabs :tabs="['Tab 1', 'Tab 2', 'Tab 3', 'Tab 4']">
       <template v-slot:0> Content 1</template>
@@ -21,12 +21,17 @@ import Tabs from '@/components/Tabs'
 export default {
   name: 'TvIndex',
   components: { ActionsButtons, Tabs },
-  data() {
+  data () {
     return {
       data: {
         id: null,
         name: ''
       }
+    }
+  },
+  methods: {
+    action () {
+
     }
   }
 }

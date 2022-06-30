@@ -1,7 +1,7 @@
 <template>
   <div>
 
-    <ActionsButtons @actions="actions" />
+    <ActionsButtons @action="action"/>
 
     <form name="mutate" v-show="loading">
 
@@ -129,7 +129,7 @@ export default {
     }
   },
   methods: {
-    actions(name) {
+    action (name) {
       switch (name) {
         case 'save':
           this.loading = false
@@ -150,21 +150,21 @@ export default {
               this.loading = true
             })
           }
-          break;
+          break
 
         case 'delete':
           if (this.data.id) {
             http.post(this.controller + '@delete', this.data).then(result => {
               if (result) {
-                this.actions('cancel')
+                this.action('cancel')
               }
             })
           }
-          break;
+          break
 
         case 'cancel':
           this.$emit('toTab', { name: 'ElementsIndex', query: { resourcesTab: 0 } })
-          break;
+          break
       }
     },
     get () {

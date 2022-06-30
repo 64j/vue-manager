@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace VueManager\Services;
+namespace VueManager\Services\v1;
 
 use VueManager\Application;
 use VueManager\Exceptions\NotFoundException;
 
-class ChunkService
+class SnippetService
 {
     /**
      * @param array $params
@@ -31,7 +31,7 @@ class ChunkService
         $data = [];
 
         if (!empty($params['id'])) {
-            $data = $modx->db->getRow($modx->db->select('*', $modx->getFullTableName('site_htmlsnippets'), 'id=' . (int) $params['id']));
+            $data = $modx->db->getRow($modx->db->select('*', $modx->getFullTableName('site_snippets'), 'id=' . (int) $params['id']));
         }
 
         if (!empty($data)) {
@@ -86,7 +86,7 @@ class ChunkService
                     t.category,
                     IF(t.category=0,"' . Application::getInstance()
                         ->getLang('no_category') . '",c.category) AS category_name
-                    FROM ' . $modx->getFullTableName('site_htmlsnippets') . ' t
+                    FROM ' . $modx->getFullTableName('site_snippets') . ' t
                     LEFT JOIN ' . $modx->getFullTableName('categories') . ' c ON c.id=t.category
                     ORDER BY c.rank
                 ')
@@ -105,6 +105,7 @@ class ChunkService
 
                 $data[$r['category']]['items'][$r['id']] = $r;
             }
+
         } else {
             $data = $modx->db->makeArray(
                 $modx->db->query('
@@ -115,7 +116,7 @@ class ChunkService
                     t.locked,
                     t.disabled,
                     t.category
-                    FROM ' . $modx->getFullTableName('site_htmlsnippets') . ' t
+                    FROM ' . $modx->getFullTableName('site_snippets') . ' t
                     ORDER BY t.name
                 ')
             );

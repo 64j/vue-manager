@@ -124,8 +124,8 @@ class Application
         $body = $_POST + (json_decode(file_get_contents('php://input'), true) ?? []);
 
         $this->method = explode('@', 'VueManager\\Controllers\\' . ($body['method'] ?? ''));
-        $this->method[0] = isset($this->method[0]) ? $this->method[0] . 'Controller' : '';
-        $this->method[1] = isset($this->method[1]) ? 'action' . ucfirst($this->method[1]) : '';
+        $this->method[0] = !empty($this->method[0]) ? $this->method[0] . 'Controller' : '';
+        $this->method[1] = !empty($this->method[1]) ? 'action' . ucfirst($this->method[1]) : '';
 
         $this->params = $body['params'] ?? [];
     }
@@ -156,11 +156,17 @@ class Application
      */
     protected function responseFromMethod(): string
     {
-        $this->method[0] = get_class($this) === $this->method[0] ? $this : new $this->method[0]();
+        $evo = evolutionCMS();
+        $version = max(1, substr($evo->getConfig('settings_version'), 0, 1));
+
+        $params = [
+            'service' => 'VueManager\Services\v' . $version . '\\',
+            'model' => 'VueManager\Models\v' . $version . '\\',
+        ];
 
         return $this->response(
             call_user_func([
-                $this->method[0],
+                new $this->method[0]($params),
                 $this->method[1]
             ], $this->params)
         );

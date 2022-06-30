@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace VueManager\Services;
+namespace VueManager\Services\v1;
 
 use VueManager\Application;
 use VueManager\Exceptions\NotFoundException;

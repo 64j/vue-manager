@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace VueManager\Controllers;
 
-use VueManager\Services\ModuleService;
 use VueManager\Traits\CrudControllerTrait;
 
 class ModuleController
 {
     use CrudControllerTrait;
 
-    public function __construct()
+    public function __construct(array $params = [])
     {
-        $this->service = new ModuleService();
+        $params['service'] .= 'ModuleService';
+        $params['model'] .= 'Module';
+
+        $this->service = new $params['service']();
+        $this->model = new $params['model']();
     }
 }

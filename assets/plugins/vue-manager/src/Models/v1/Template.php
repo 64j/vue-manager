@@ -2,12 +2,16 @@
 
 declare(strict_types=1);
 
-namespace VueManager\Models;
+namespace VueManager\Models\v1;
 
 use VueManager\Application;
+use VueManager\Models\AbstractModel;
+use VueManager\Models\Traits\TimestampTrait;
 
 class Template extends AbstractModel
 {
+    use TimestampTrait;
+
     /**
      * @var int
      */
@@ -49,37 +53,11 @@ class Template extends AbstractModel
     public int $selectable = 1;
 
     /**
-     * @var int
-     */
-    public int $createdon = 0;
-
-    /**
-     * @var int
-     */
-    public int $editedon = 0;
-
-    /**
      * @param string $templatename
      */
     public function setTemplatename(string $templatename): void
     {
         $this->templatename = $templatename != '' ? $templatename : Application::getInstance()
             ->getLang('new_template');
-    }
-
-    /**
-     * @param int $createdon
-     */
-    public function setCreatedon(int $createdon): void
-    {
-        $this->createdon = $createdon ?: time();
-    }
-
-    /**
-     * @param int $editedon
-     */
-    public function setEditedon(int $editedon): void
-    {
-        $this->editedon = time();
     }
 }

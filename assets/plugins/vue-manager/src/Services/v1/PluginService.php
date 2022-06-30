@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace VueManager\Services;
+namespace VueManager\Services\v1;
 
 use VueManager\Application;
 use VueManager\Exceptions\NotFoundException;
 
-class SnippetService
+class PluginService
 {
     /**
      * @param array $params
@@ -31,7 +31,7 @@ class SnippetService
         $data = [];
 
         if (!empty($params['id'])) {
-            $data = $modx->db->getRow($modx->db->select('*', $modx->getFullTableName('site_snippets'), 'id=' . (int) $params['id']));
+            $data = $modx->db->getRow($modx->db->select('*', $modx->getFullTableName('site_plugins'), 'id=' . (int) $params['id']));
         }
 
         if (!empty($data)) {
@@ -86,7 +86,7 @@ class SnippetService
                     t.category,
                     IF(t.category=0,"' . Application::getInstance()
                         ->getLang('no_category') . '",c.category) AS category_name
-                    FROM ' . $modx->getFullTableName('site_snippets') . ' t
+                    FROM ' . $modx->getFullTableName('site_plugins') . ' t
                     LEFT JOIN ' . $modx->getFullTableName('categories') . ' c ON c.id=t.category
                     ORDER BY c.rank
                 ')
@@ -105,7 +105,6 @@ class SnippetService
 
                 $data[$r['category']]['items'][$r['id']] = $r;
             }
-
         } else {
             $data = $modx->db->makeArray(
                 $modx->db->query('
@@ -116,7 +115,7 @@ class SnippetService
                     t.locked,
                     t.disabled,
                     t.category
-                    FROM ' . $modx->getFullTableName('site_snippets') . ' t
+                    FROM ' . $modx->getFullTableName('site_plugins') . ' t
                     ORDER BY t.name
                 ')
             );

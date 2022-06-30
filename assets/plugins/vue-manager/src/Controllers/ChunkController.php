@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace VueManager\Controllers;
 
-use VueManager\Services\ChunkService;
 use VueManager\Traits\CrudControllerTrait;
 
 class ChunkController
 {
     use CrudControllerTrait;
 
-    public function __construct()
+    public function __construct(array $params = [])
     {
-        $this->service = new ChunkService();
+        $params['service'] .= 'ChunkService';
+        $params['model'] .= 'Chunk';
+
+        $this->service = new $params['service']();
+        $this->model = new $params['model']();
     }
 }

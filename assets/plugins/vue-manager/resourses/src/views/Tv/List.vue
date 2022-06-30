@@ -36,17 +36,17 @@ export default {
     http.post(this.controller, { categories: true }).then(result => this.data = result.data)
   },
   methods: {
-    action(action, item, category) {
+    action (action, item, category) {
       switch (action) {
         case 'copy':
           alert(action + ' ' + item.id)
-          break;
+          break
 
         case 'delete':
           delete category.items[item.id]
-          break;
+          break
       }
-    },
+    }
   }
 }
 </script>
