@@ -64,6 +64,6 @@ trait CrudControllerTrait
      */
     public function actionList(array $params = []): array
     {
-        return $this->ok($this->service->list($params));
+        return $this->ok(...$this->service->list($params));
     }
 }

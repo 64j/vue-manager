@@ -116,6 +116,6 @@ class TvService implements ServiceInterface
             );
         }
 
-        return $data;
+        return [$data];
     }
 }

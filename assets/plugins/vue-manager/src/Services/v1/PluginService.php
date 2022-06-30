@@ -122,6 +122,6 @@ class PluginService implements ServiceInterface
             );
         }
 
-        return $data;
+        return [$data];
     }
 }

@@ -122,6 +122,6 @@ class ChunkService implements ServiceInterface
             );
         }
 
-        return $data;
+        return [$data];
     }
 }

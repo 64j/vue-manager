@@ -134,6 +134,6 @@ class TemplateService implements ServiceInterface
             );
         }
 
-        return $data;
+        return [$data];
     }
 }

@@ -123,6 +123,6 @@ class SnippetService implements ServiceInterface
             );
         }
 
-        return $data;
+        return [$data];
     }
 }
