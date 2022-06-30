@@ -6,11 +6,11 @@ namespace VueManager\Models\v1;
 
 use VueManager\Application;
 use VueManager\Models\AbstractModel;
-use VueManager\Models\Traits\TimestampTrait;
+use VueManager\Traits\ModelTimestampTrait;
 
 class Snippet extends AbstractModel
 {
-    use TimestampTrait;
+    use ModelTimestampTrait;
 
     /**
      * @var int

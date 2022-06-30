@@ -6,8 +6,9 @@ namespace VueManager\Services\v1;
 
 use VueManager\Application;
 use VueManager\Exceptions\NotFoundException;
+use VueManager\Interfaces\ServiceInterface;
 
-class TemplateService
+class TemplateService implements ServiceInterface
 {
     /**
      * @param array $params

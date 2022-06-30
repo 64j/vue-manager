@@ -10,6 +10,9 @@ class TvController
 {
     use CrudControllerTrait;
 
+    /**
+     * @param array $params
+     */
     public function __construct(array $params = [])
     {
         $params['service'] .= 'TvService';

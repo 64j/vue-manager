@@ -1,8 +1,8 @@
 <?php
 
-namespace VueManager\Models\Traits;
+namespace VueManager\Traits;
 
-trait TimestampTrait
+trait ModelTimestampTrait
 {
     /**
      * @var int

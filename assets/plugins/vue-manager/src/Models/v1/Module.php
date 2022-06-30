@@ -1,8 +1,4 @@
 <?php
-/**
- * @author 64j
- * @license MIT
- */
 
 declare(strict_types=1);
 
@@ -10,11 +6,11 @@ namespace VueManager\Models\v1;
 
 use VueManager\Application;
 use VueManager\Models\AbstractModel;
-use VueManager\Models\Traits\TimestampTrait;
+use VueManager\Traits\ModelTimestampTrait;
 
 class Module extends AbstractModel
 {
-    use TimestampTrait;
+    use ModelTimestampTrait;
 
     /**
      * @var int
