@@ -6,12 +6,25 @@ namespace VueManager\Services\v1;
 
 use VueManager\Application;
 use VueManager\Exceptions\NotFoundException;
-use VueManager\Exceptions\PermissionException;
 use VueManager\Interfaces\ServiceInterface;
 use VueManager\Models\v1\SiteTemplates;
+use VueManager\Traits\ServicePermissionTrait;
 
 class TemplateService implements ServiceInterface
 {
+    use ServicePermissionTrait;
+
+    /**
+     * @var array
+     */
+    protected array $permissions = [
+        'create' => ['new_template', 'save_template'],
+        'read' => ['edit_template'],
+        'update' => ['edit_template', 'save_template'],
+        'delete' => ['delete_template'],
+        'list' => ['edit_template']
+    ];
+
     /**
      * @param SiteTemplates $model
      * @return \VueManager\Models\v1\SiteTemplates
@@ -20,11 +33,9 @@ class TemplateService implements ServiceInterface
      */
     public function create($model): SiteTemplates
     {
-        $app = evolutionCMS();
+        $this->hasCreate();
 
-        if (!($app->hasPermission('new_template') || $app->hasPermission('save_template'))) {
-            throw new PermissionException();
-        }
+        $app = evolutionCMS();
 
         $model->id = $app->db->insert($model->toData(), $app->getFullTableName('site_templates'));
 
@@ -43,11 +54,9 @@ class TemplateService implements ServiceInterface
      */
     public function read($model): SiteTemplates
     {
-        $app = evolutionCMS();
+        $this->hasRead();
 
-        if (!$app->hasPermission('edit_template')) {
-            throw new PermissionException();
-        }
+        $app = evolutionCMS();
 
         if (!empty($model->id)) {
             $data = $app->db->getRow(
@@ -70,11 +79,9 @@ class TemplateService implements ServiceInterface
      */
     public function update($model): SiteTemplates
     {
-        $app = evolutionCMS();
+        $this->hasUpdate();
 
-        if (!($app->hasPermission('edit_template') || $app->hasPermission('save_template'))) {
-            throw new PermissionException();
-        }
+        $app = evolutionCMS();
 
         $data = $model->toArray();
         $model = $this->read($model)
@@ -94,11 +101,9 @@ class TemplateService implements ServiceInterface
      */
     public function delete($model): SiteTemplates
     {
-        $app = evolutionCMS();
+        $this->hasDelete();
 
-        if (!$app->hasPermission('delete_template')) {
-            throw new PermissionException();
-        }
+        $app = evolutionCMS();
 
         $model = $this->read($model);
         $app->db->delete($app->getFullTableName('site_templates'), 'id=' . $model->id);
@@ -113,11 +118,9 @@ class TemplateService implements ServiceInterface
      */
     public function list(array $params = []): array
     {
-        $app = evolutionCMS();
+        $this->hasList();
 
-        if (!$app->hasPermission('edit_template')) {
-            throw new PermissionException();
-        }
+        $app = evolutionCMS();
 
         $data = [];
 
