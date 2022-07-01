@@ -7,75 +7,81 @@ namespace VueManager\Services\v1;
 use VueManager\Application;
 use VueManager\Exceptions\NotFoundException;
 use VueManager\Interfaces\ServiceInterface;
+use VueManager\Models\v1\SiteTemplates;
 
 class TemplateService implements ServiceInterface
 {
     /**
-     * @param array $params
-     * @return array
+     * @param SiteTemplates $model
+     * @return \VueManager\Models\v1\SiteTemplates
      * @throws \VueManager\Exceptions\NotFoundException
      */
-    public function create(array $params = []): array
+    public function create($model): SiteTemplates
     {
         $app = evolutionCMS();
-        $data = [];
 
-        if (!empty($params)) {
-            $data = $this->read([
-                'id' => $app->db->insert($params, $app->getFullTableName('site_templates'))
-            ]);
+        $model->id = $app->db->insert($model->toArray(), $app->getFullTableName('site_templates'));
+
+        if (!$model->id) {
+            throw new NotFoundException();
         }
 
-        return $data;
+        return $this->read($model);
     }
 
     /**
-     * @param array $params
-     * @return array
+     * @param SiteTemplates $model
+     * @return SiteTemplates
      * @throws \VueManager\Exceptions\NotFoundException
      */
-    public function read(array $params = []): array
+    public function read($model): SiteTemplates
     {
         $app = evolutionCMS();
-        $data = [];
 
-        if (!empty($params['id'])) {
-            $data = $app->db->getRow($app->db->select('*', $app->getFullTableName('site_templates'), 'id=' . (int) $params['id']));
-        }
+        if (!empty($model->id)) {
+            $data = $app->db->getRow(
+                $app->db->select('*', $app->getFullTableName('site_templates'), 'id=' . $model->id)
+            );
 
-        if (!empty($data)) {
-            return $data;
+            if (!empty($data)) {
+                return $model->hydrate($data);
+            }
         }
 
         throw new NotFoundException();
     }
 
     /**
-     * @param array $params
-     * @return array
+     * @param SiteTemplates $model
+     * @return SiteTemplates
      * @throws \VueManager\Exceptions\NotFoundException
      */
-    public function update(array $params = []): array
+    public function update($model): SiteTemplates
     {
         $app = evolutionCMS();
-        $data = array_merge($this->read($params), $params);
-        $app->db->update($data, $app->getFullTableName('site_templates'), 'id=' . $data['id']);
 
-        return $data;
+        $data = $model->toArray();
+        $model = $this->read($model)
+            ->hydrate($data);
+
+        $app->db->update($model->toArray(), $app->getFullTableName('site_templates'), 'id=' . $model->id);
+
+        return $model;
     }
 
     /**
-     * @param array $params
-     * @return array
+     * @param SiteTemplates $model
+     * @return \VueManager\Models\v1\SiteTemplates
      * @throws \VueManager\Exceptions\NotFoundException
      */
-    public function delete(array $params = []): array
+    public function delete($model): SiteTemplates
     {
         $app = evolutionCMS();
-        $data = $this->read($params);
-        $app->db->delete($app->getFullTableName('site_templates'), 'id=' . $data['id']);
 
-        return $data;
+        $model = $this->read($model);
+        $app->db->delete($app->getFullTableName('site_templates'), 'id=' . $model->id);
+
+        return $model;
     }
 
     /**

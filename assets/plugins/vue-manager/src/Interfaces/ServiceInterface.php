@@ -2,38 +2,40 @@
 
 namespace VueManager\Interfaces;
 
+use VueManager\Models\AbstractModel;
+
 interface ServiceInterface
 {
     /**
-     * @param array $params
-     * @return array
+     * @param \VueManager\Models\AbstractModel $model
+     * @return \VueManager\Models\AbstractModel
      */
-    public function create(array $params = []): array;
+    public function create(AbstractModel $model): AbstractModel;
 
     /**
-     * @param array $params
-     * @return array
+     * @param \VueManager\Models\AbstractModel $model
+     * @return \VueManager\Models\AbstractModel
      * @throws \VueManager\Exceptions\NotFoundException
      */
-    public function read(array $params = []): array;
+    public function read(AbstractModel $model): AbstractModel;
 
     /**
-     * @param array $params
-     * @return array
+     * @param \VueManager\Models\AbstractModel $model
+     * @return \VueManager\Models\AbstractModel
      * @throws \VueManager\Exceptions\NotFoundException
      */
-    public function update(array $params = []): array;
+    public function update(AbstractModel $model): AbstractModel;
 
     /**
-     * @param array $params
-     * @return array
+     * @param \VueManager\Models\AbstractModel $model
+     * @return \VueManager\Models\AbstractModel
      * @throws \VueManager\Exceptions\NotFoundException
      */
-    public function delete(array $params = []): array;
+    public function delete(AbstractModel $model): AbstractModel;
 
     /**
      * @param array $params
-     * @return array
+     * @return AbstractModel[]|array
      */
     public function list(array $params = []): array;
 }

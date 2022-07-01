@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace VueManager\Models;
 
+use JsonSerializable;
 use ReflectionClass;
 use ReflectionProperty;
+use VueManager\Interfaces\ArrayableInterface;
 
-abstract class AbstractModel
+abstract class AbstractModel implements JsonSerializable, ArrayableInterface
 {
     /**
      * @param array $params
@@ -41,7 +43,55 @@ abstract class AbstractModel
      */
     public function convert(array $params = []): array
     {
+        return $this->toCamel($params);
+    }
+
+    /**
+     * @param array $params
+     * @return array
+     */
+    public function toCamel(array $params = []): array
+    {
+        $fn = fn($c) => strtoupper($c[1]);
+
+        foreach ($params as $key => $value) {
+            $k = preg_replace_callback('/_([a-z])/', $fn, $key);
+
+            if (!isset($params[$k])) {
+                unset($params[$key]);
+                $params[$k] = $value;
+            }
+        }
+
         return $params;
+    }
+
+    /**
+     * @param array $params
+     * @return array
+     */
+    public function fromCamel(array $params = []): array
+    {
+        $fn = fn($c) => '_' . strtolower($c[1]);
+
+        foreach ($params as $key => $value) {
+            $k = preg_replace_callback('/([A-Z])/', $fn, $key);
+
+            if (!isset($params[$k])) {
+                unset($params[$key]);
+                $params[$k] = $value;
+            }
+        }
+
+        return $params;
+    }
+
+    /**
+     * @return string
+     */
+    public function jsonSerialize(): string
+    {
+        return json_encode($this->__toArray());
     }
 
     /**
@@ -57,6 +107,8 @@ abstract class AbstractModel
      */
     public function __toArray(): array
     {
-        return evolutionCMS()->db->escape(get_object_vars($this));
+        $data = $this->fromCamel(get_object_vars($this));
+
+        return evolutionCMS()->db->escape($data);
     }
 }

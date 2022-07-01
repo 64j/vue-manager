@@ -21,8 +21,7 @@ trait CrudControllerTrait
      */
     public function actionCreate(array $params = []): array
     {
-        return $this->ok($this->service->create($this->model->hydrate($params)
-            ->toArray()));
+        return $this->ok($this->service->create($this->model->hydrate($params)));
     }
 
     /**
@@ -32,8 +31,7 @@ trait CrudControllerTrait
      */
     public function actionRead(array $params = []): array
     {
-        return $this->ok($this->service->read($this->model->hydrate($params)
-            ->toArray()));
+        return $this->ok($this->service->read($this->model->hydrate($params)));
     }
 
     /**
@@ -43,8 +41,7 @@ trait CrudControllerTrait
      */
     public function actionUpdate(array $params = []): array
     {
-        return $this->ok($this->service->update($this->model->hydrate($params)
-            ->toArray()));
+        return $this->ok($this->service->update($this->model->hydrate($params)));
     }
 
     /**
@@ -54,8 +51,7 @@ trait CrudControllerTrait
      */
     public function actionDelete(array $params = []): array
     {
-        return $this->ok($this->service->delete($this->model->hydrate($params)
-            ->toArray()));
+        return $this->ok($this->service->delete($this->model->hydrate($params)));
     }
 
     /**

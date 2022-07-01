@@ -6,7 +6,7 @@ namespace VueManager\Controllers;
 
 use VueManager\Traits\CrudControllerTrait;
 
-class TemplateController
+class UserController
 {
     use CrudControllerTrait;
 
@@ -15,8 +15,8 @@ class TemplateController
      */
     public function __construct(array $params = [])
     {
-        $params['service'] .= 'TemplateService';
-        $params['model'] .= 'SiteTemplates';
+        $params['service'] .= 'UserService';
+        $params['model'] .= 'UserAttributes';
 
         $this->service = new $params['service']();
         $this->model = new $params['model']();
