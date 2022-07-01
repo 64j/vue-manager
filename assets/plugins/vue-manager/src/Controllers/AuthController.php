@@ -15,33 +15,33 @@ class AuthController
      */
     public function actionLogin(array $params): array
     {
-        $evo = evolutionCMS();
-        $evo->loadExtension('phpass');
+        $app = evolutionCMS();
+        $app->loadExtension('phpass');
 
-        $username = (string) $evo->db->escape($evo->htmlspecialchars($params['username'] ?? '', ENT_NOQUOTES));
-        $password = (string) $evo->htmlspecialchars($params['password'] ?? '', ENT_NOQUOTES);
+        $username = (string) $app->db->escape($app->htmlspecialchars($params['username'] ?? '', ENT_NOQUOTES));
+        $password = (string) $app->htmlspecialchars($params['password'] ?? '', ENT_NOQUOTES);
 
-        $rs = $evo->db->select(
+        $rs = $app->db->select(
             'mu.*, ua.*',
             '[+prefix+]manager_users AS mu, [+prefix+]user_attributes AS ua',
             'BINARY mu.username="' . $username . '" and ua.internalKey=mu.id'
         );
 
-        $limit = $evo->db->getRecordCount($rs);
+        $limit = $app->db->getRecordCount($rs);
 
         if ($limit == 0 || $limit > 1) {
             throw new UnauthorizedException();
         }
 
-        $row = $evo->db->getRow($rs);
+        $user = $app->db->getRow($rs);
 
-        $internalKey = (int) $row['internalKey'];
-        $dbasePassword = $row['password'];
+        $internalKey = (int) $user['internalKey'];
+        $dbasePassword = $user['password'];
         $matchPassword = false;
 
         if (!isset($rt) || !$rt || (is_array($rt) && !in_array(true, $rt))) {
             // check user password - local authentication
-            $hashType = $evo->manager->getHashType($dbasePassword);
+            $hashType = $app->manager->getHashType($dbasePassword);
             if ($hashType == 'phpass') {
                 $matchPassword = $this->login($password, $dbasePassword);
             } elseif ($hashType == 'md5') {
@@ -61,21 +61,27 @@ class AuthController
 
         $sessionId = session_id();
 
-        $evo->db->update([
+        $app->db->update([
             'failedlogincount' => 0,
-            'logincount' => $row['logincount'] + 1,
-            'lastlogin' => $row['thislogin'],
+            'logincount' => $user['logincount'] + 1,
+            'lastlogin' => $user['thislogin'],
             'thislogin' => time(),
             'sessionid' => $sessionId
         ],
-            $evo->getFullTableName('user_attributes'),
+            $app->getFullTableName('user_attributes'),
             'internalKey=' . $internalKey
         );
 
+        $_SESSION['usertype'] = 'manager';
+        $_SESSION['mgrValidated'] = 1;
         $_SESSION['mgrInternalKey'] = $internalKey;
-        $_SESSION['mgrValidated'] = true;
+        $_SESSION['mgrRole'] = $user['role'];
+        $_SESSION['mgrPermissions'] = $app->db->getRow(
+            $app->db->select('*', $app->getFullTableName('user_roles'), 'id=' . $internalKey)
+        );
+        ksort($_SESSION['mgrPermissions']);
 
-        $evo->getUserSettings();
+        $app->getUserSettings();
 
         return [
             'token' => base64_encode(md5($sessionId))
@@ -88,21 +94,21 @@ class AuthController
      */
     public function getUserByToken(): array
     {
-        $evo = evolutionCMS();
+        $app = evolutionCMS();
         $token = isset($_SERVER['HTTP_X_ACCESS_TOKEN']) ? base64_decode($_SERVER['HTTP_X_ACCESS_TOKEN']) : '';
 
         if ($token) {
-            $user = $evo->db->getRow($evo->db->query('
+            $user = $app->db->getRow($app->db->query('
                 SELECT
                     ua.internalKey as id,
                     ua.fullname,
                     mu.username,
                     ua.role,
                     ua.sessionid
-                FROM ' . $evo->getFullTableName('user_attributes') . ' ua
-                LEFT JOIN ' . $evo->getFullTableName('manager_users') . ' mu ON mu.id=ua.internalKey
+                FROM ' . $app->getFullTableName('user_attributes') . ' ua
+                LEFT JOIN ' . $app->getFullTableName('manager_users') . ' mu ON mu.id=ua.internalKey
                 WHERE
-                    md5(ua.sessionid)="' . $evo->db->escape($token) . '"
+                    md5(ua.sessionid)="' . $app->db->escape($token) . '"
                     AND ua.blocked=0
                     AND ua.verified=1
             '));
@@ -112,9 +118,18 @@ class AuthController
                 session_id($user['sessionid']);
                 session_start();
 
+                $_SESSION['usertype'] = 'manager';
+                $_SESSION['mgrValidated'] = 1;
+                $_SESSION['mgrInternalKey'] = $user['id'];
+                $_SESSION['mgrRole'] = $user['role'];
+                $_SESSION['mgrPermissions'] = $app->db->getRow(
+                    $app->db->select('*', $app->getFullTableName('user_roles'), 'id=' . $user['id'])
+                );
+                ksort($_SESSION['mgrPermissions']);
+
                 unset($user['sessionid']);
 
-                $evo->getUserSettings();
+                $app->getUserSettings();
 
                 return $user;
             }
