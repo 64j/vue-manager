@@ -27,6 +27,8 @@ trait ModelTimestampTrait
      */
     public function setEditedon(int $editedon): void
     {
-        $this->editedon = time();
+        if ($this->__saved) {
+            $this->editedon = time();
+        }
     }
 }

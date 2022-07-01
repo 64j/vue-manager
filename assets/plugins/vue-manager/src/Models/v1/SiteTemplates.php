@@ -3,6 +3,7 @@
 namespace VueManager\Models\v1;
 
 use Doctrine\ORM\Mapping as ORM;
+use VueManager\Application;
 use VueManager\Models\AbstractModel;
 use VueManager\Traits\ModelTimestampTrait;
 
@@ -108,4 +109,13 @@ class SiteTemplates extends AbstractModel
      * @ORM\Column(name="editedon", type="integer", nullable=false)
      */
     public int $editedon = 0;
+
+    /**
+     * @param string $templatename
+     */
+    public function setTemplatename(string $templatename): void
+    {
+        $this->templatename = $templatename != '' ? $templatename : Application::getInstance()
+            ->getLang('new_template');
+    }
 }

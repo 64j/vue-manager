@@ -12,6 +12,11 @@ use VueManager\Interfaces\ArrayableInterface;
 abstract class AbstractModel implements JsonSerializable, ArrayableInterface
 {
     /**
+     * @var bool
+     */
+    protected bool $__saved = false;
+
+    /**
      * @param array $params
      * @return self
      */
@@ -107,6 +112,8 @@ abstract class AbstractModel implements JsonSerializable, ArrayableInterface
      */
     public function toData(): array
     {
+        $this->__saved = true;
+
         return evolutionCMS()->db->escape($this->__toArray());
     }
 
