@@ -20,7 +20,7 @@ class TemplateService implements ServiceInterface
     {
         $app = evolutionCMS();
 
-        $model->id = $app->db->insert($model->toArray(), $app->getFullTableName('site_templates'));
+        $model->id = $app->db->insert($model->toData(), $app->getFullTableName('site_templates'));
 
         if (!$model->id) {
             throw new NotFoundException();
@@ -64,7 +64,7 @@ class TemplateService implements ServiceInterface
         $model = $this->read($model)
             ->hydrate($data);
 
-        $app->db->update($model->toArray(), $app->getFullTableName('site_templates'), 'id=' . $model->id);
+        $app->db->update($model->toData(), $app->getFullTableName('site_templates'), 'id=' . $model->id);
 
         return $model;
     }

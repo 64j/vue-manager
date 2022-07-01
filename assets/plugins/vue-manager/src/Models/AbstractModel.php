@@ -50,7 +50,7 @@ abstract class AbstractModel implements JsonSerializable, ArrayableInterface
      * @param array $params
      * @return array
      */
-    public function toCamel(array $params = []): array
+    protected function toCamel(array $params = []): array
     {
         $fn = fn($c) => strtoupper($c[1]);
 
@@ -70,7 +70,7 @@ abstract class AbstractModel implements JsonSerializable, ArrayableInterface
      * @param array $params
      * @return array
      */
-    public function fromCamel(array $params = []): array
+    protected function fromCamel(array $params = []): array
     {
         $fn = fn($c) => '_' . strtolower($c[1]);
 
@@ -105,10 +105,16 @@ abstract class AbstractModel implements JsonSerializable, ArrayableInterface
     /**
      * @return array
      */
+    public function toData(): array
+    {
+        return evolutionCMS()->db->escape($this->__toArray());
+    }
+
+    /**
+     * @return array
+     */
     public function __toArray(): array
     {
-        $data = $this->fromCamel(get_object_vars($this));
-
-        return evolutionCMS()->db->escape($data);
+        return $this->fromCamel(get_object_vars($this));
     }
 }
