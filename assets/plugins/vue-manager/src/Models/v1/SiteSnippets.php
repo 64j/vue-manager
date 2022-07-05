@@ -3,7 +3,9 @@
 namespace VueManager\Models\v1;
 
 use Doctrine\ORM\Mapping as ORM;
+use VueManager\Application;
 use VueManager\Models\AbstractModel;
+use VueManager\Traits\ModelTimestampTrait;
 
 /**
  * SiteSnippets
@@ -13,6 +15,8 @@ use VueManager\Models\AbstractModel;
  */
 class SiteSnippets extends AbstractModel
 {
+    use ModelTimestampTrait;
+
     /**
      * @var int
      *
@@ -86,23 +90,18 @@ class SiteSnippets extends AbstractModel
     public $moduleguid = '';
 
     /**
-     * @var int
-     *
-     * @ORM\Column(name="createdon", type="integer", nullable=false)
-     */
-    public $createdon = 0;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="editedon", type="integer", nullable=false)
-     */
-    public $editedon = 0;
-
-    /**
      * @var bool
      *
      * @ORM\Column(name="disabled", type="boolean", nullable=false, options={"comment"="Disables the snippet"})
      */
     public $disabled = 0;
+
+    /**
+     * @param string $name
+     */
+    public function setName(string $name): void
+    {
+        $this->name = $name != '' ? $name : Application::getInstance()
+            ->getLang('new_snippet');
+    }
 }

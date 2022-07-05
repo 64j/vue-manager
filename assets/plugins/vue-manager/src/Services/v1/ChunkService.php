@@ -7,36 +7,108 @@ namespace VueManager\Services\v1;
 use VueManager\Application;
 use VueManager\Exceptions\NotFoundException;
 use VueManager\Interfaces\ServiceInterface;
+use VueManager\Models\v1\SiteHtmlsnippets;
+use VueManager\Traits\ServicePermissionTrait;
 
 class ChunkService implements ServiceInterface
 {
-    /**
-     * @param array $params
-     * @return array
-     */
-    public function create(array $params = []): array
-    {
-        $data = [];
+    use ServicePermissionTrait;
 
-        return $data;
+    /**
+     * @var array
+     */
+    protected array $permissions = [
+        'create' => ['new_chunk', 'save_chunk'],
+        'read' => ['edit_chunk'],
+        'update' => ['edit_chunk', 'save_chunk'],
+        'delete' => ['delete_chunk'],
+        'list' => ['edit_chunk']
+    ];
+
+    /**
+     * @param SiteHtmlsnippets $model
+     * @return \VueManager\Models\v1\SiteHtmlsnippets
+     * @throws \VueManager\Exceptions\NotFoundException
+     * @throws \VueManager\Exceptions\PermissionException
+     */
+    public function create($model): SiteHtmlsnippets
+    {
+        $this->hasPermissionsCreate();
+        $app = evolutionCMS();
+
+        $data = $model->except(['id'])
+            ->toData();
+
+        $model->id = $app->db->insert($data, $app->getFullTableName('site_htmlsnippets'));
+
+        if (!$model->id) {
+            throw new NotFoundException();
+        }
+
+        return $model;
     }
 
     /**
-     * @param array $params
-     * @return array
+     * @param SiteHtmlsnippets $model
+     * @return \VueManager\Models\v1\SiteHtmlsnippets
      * @throws \VueManager\Exceptions\NotFoundException
+     * @throws \VueManager\Exceptions\PermissionException
      */
-    public function read(array $params = []): array
+    public function read($model): SiteHtmlsnippets
     {
-        $modx = evolutionCMS();
-        $data = [];
+        $this->hasPermissionsRead();
+        $app = evolutionCMS();
 
-        if (!empty($params['id'])) {
-            $data = $modx->db->getRow($modx->db->select('*', $modx->getFullTableName('site_htmlsnippets'), 'id=' . (int) $params['id']));
+        if (!empty($model->id)) {
+            $data = $app->db->getRow(
+                $app->db->select('*', $app->getFullTableName('site_htmlsnippets'), 'id=' . $model->id)
+            );
+
+            if (!empty($data)) {
+                return $model->hydrate($data);
+            }
         }
 
-        if (!empty($data)) {
-            return $data;
+        throw new NotFoundException();
+    }
+
+    /**
+     * @param SiteHtmlsnippets $model
+     * @return \VueManager\Models\v1\SiteHtmlsnippets
+     * @throws \VueManager\Exceptions\NotFoundException
+     * @throws \VueManager\Exceptions\PermissionException
+     */
+    public function update($model): SiteHtmlsnippets
+    {
+        $this->hasPermissionsUpdate();
+        $app = evolutionCMS();
+
+        $data = $model->toArray();
+        $model = $this->read($model)
+            ->hydrate($data);
+        $model->editedon = time();
+
+        $app->db->update($model->toData(), $app->getFullTableName('site_htmlsnippets'), 'id=' . $model->id);
+
+        return $model;
+    }
+
+    /**
+     * @param SiteHtmlsnippets $model
+     * @return \VueManager\Models\v1\SiteHtmlsnippets
+     * @throws \VueManager\Exceptions\NotFoundException
+     * @throws \VueManager\Exceptions\PermissionException
+     */
+    public function delete($model): SiteHtmlsnippets
+    {
+        $this->hasPermissionsDelete();
+        $app = evolutionCMS();
+
+        if (!empty($model->id)) {
+            $model = $this->read($model);
+            $app->db->delete($app->getFullTableName('site_htmlsnippets'), 'id=' . $model->id);
+
+            return $model;
         }
 
         throw new NotFoundException();
@@ -45,33 +117,12 @@ class ChunkService implements ServiceInterface
     /**
      * @param array $params
      * @return array
-     * @throws \VueManager\Exceptions\NotFoundException
-     */
-    public function update(array $params = []): array
-    {
-        $data = $this->read($params);
-
-        return $data;
-    }
-
-    /**
-     * @param array $params
-     * @return array
-     * @throws \VueManager\Exceptions\NotFoundException
-     */
-    public function delete(array $params = []): array
-    {
-        $data = $this->read($params);
-
-        return $data;
-    }
-
-    /**
-     * @param array $params
-     * @return array
+     * @throws \VueManager\Exceptions\PermissionException
      */
     public function list(array $params = []): array
     {
+        $this->hasPermissionsList();
+
         $modx = evolutionCMS();
         $data = [];
 

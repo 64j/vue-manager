@@ -97,20 +97,6 @@ class SiteTemplates extends AbstractModel
     public int $selectable = 1;
 
     /**
-     * @var int
-     *
-     * @ORM\Column(name="createdon", type="integer", nullable=false)
-     */
-    public int $createdon = 0;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="editedon", type="integer", nullable=false)
-     */
-    public int $editedon = 0;
-
-    /**
      * @param string $templatename
      */
     public function setTemplatename(string $templatename): void

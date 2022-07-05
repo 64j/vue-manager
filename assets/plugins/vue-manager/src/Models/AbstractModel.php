@@ -87,6 +87,19 @@ abstract class AbstractModel implements JsonSerializable, ArrayableInterface
     }
 
     /**
+     * @param array $keys
+     * @return $this
+     */
+    public function except(array $keys): self
+    {
+        foreach ($keys as $key) {
+            unset($this->{$key});
+        }
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function jsonSerialize(): string

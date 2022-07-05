@@ -3,7 +3,9 @@
 namespace VueManager\Models\v1;
 
 use Doctrine\ORM\Mapping as ORM;
+use VueManager\Application;
 use VueManager\Models\AbstractModel;
+use VueManager\Traits\ModelTimestampTrait;
 
 /**
  * SiteModules
@@ -13,6 +15,8 @@ use VueManager\Models\AbstractModel;
  */
 class SiteModules extends AbstractModel
 {
+    use ModelTimestampTrait;
+
     /**
      * @var int
      *
@@ -93,20 +97,6 @@ class SiteModules extends AbstractModel
     public $resourcefile = '';
 
     /**
-     * @var int
-     *
-     * @ORM\Column(name="createdon", type="integer", nullable=false)
-     */
-    public $createdon = 0;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="editedon", type="integer", nullable=false)
-     */
-    public $editedon = 0;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="guid", type="string", length=32, nullable=false, options={"default"="''","comment"="globally unique identifier"})
@@ -133,4 +123,13 @@ class SiteModules extends AbstractModel
      * @ORM\Column(name="modulecode", type="text", length=16777215, nullable=true, options={"default"="NULL","comment"="module boot up code"})
      */
     public $modulecode = null;
+
+    /**
+     * @param string $name
+     */
+    public function setName(string $name): void
+    {
+        $this->name = $name != '' ? $name : Application::getInstance()
+            ->getLang('new_module');
+    }
 }

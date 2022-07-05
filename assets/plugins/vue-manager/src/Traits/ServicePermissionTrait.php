@@ -19,7 +19,7 @@ trait ServicePermissionTrait
      * @return void
      * @throws \VueManager\Exceptions\PermissionException
      */
-    protected function hasCreate()
+    protected function hasPermissionsCreate()
     {
         $app = evolutionCMS();
 
@@ -34,7 +34,7 @@ trait ServicePermissionTrait
      * @return void
      * @throws \VueManager\Exceptions\PermissionException
      */
-    protected function hasRead()
+    protected function hasPermissionsRead()
     {
         $app = evolutionCMS();
 
@@ -49,7 +49,7 @@ trait ServicePermissionTrait
      * @return void
      * @throws \VueManager\Exceptions\PermissionException
      */
-    protected function hasUpdate()
+    protected function hasPermissionsUpdate()
     {
         $app = evolutionCMS();
 
@@ -64,7 +64,7 @@ trait ServicePermissionTrait
      * @return void
      * @throws \VueManager\Exceptions\PermissionException
      */
-    protected function hasDelete()
+    protected function hasPermissionsDelete()
     {
         $app = evolutionCMS();
 
@@ -79,7 +79,7 @@ trait ServicePermissionTrait
      * @return void
      * @throws \VueManager\Exceptions\PermissionException
      */
-    protected function hasList()
+    protected function hasPermissionsList()
     {
         $app = evolutionCMS();
 

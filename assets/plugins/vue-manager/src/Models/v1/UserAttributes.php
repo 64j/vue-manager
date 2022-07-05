@@ -4,6 +4,7 @@ namespace VueManager\Models\v1;
 
 use Doctrine\ORM\Mapping as ORM;
 use VueManager\Models\AbstractModel;
+use VueManager\Traits\ModelTimestampTrait;
 
 /**
  * UserAttributes
@@ -13,6 +14,8 @@ use VueManager\Models\AbstractModel;
  */
 class UserAttributes extends AbstractModel
 {
+    use ModelTimestampTrait;
+
     /**
      * @var int
      *
@@ -189,20 +192,6 @@ class UserAttributes extends AbstractModel
      * @ORM\Column(name="comment", type="text", length=65535, nullable=true, options={"default"="NULL"})
      */
     public $comment = null;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="createdon", type="integer", nullable=false)
-     */
-    public $createdon = 0;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="editedon", type="integer", nullable=false)
-     */
-    public $editedon = 0;
 
     /**
      * @var int

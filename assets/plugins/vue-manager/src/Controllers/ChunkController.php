@@ -15,10 +15,10 @@ class ChunkController
      */
     public function __construct(array $params = [])
     {
-        $params['service'] .= 'ChunkService';
-        $params['model'] .= 'Chunk';
+        $service = sprintf($params['namespace'], 'Services') . 'ChunkService';
+        $model = sprintf($params['namespace'], 'Models') . 'SiteHtmlsnippets';
 
-        $this->service = new $params['service']();
-        $this->model = new $params['model']();
+        $this->service = new $service();
+        $this->model = new $model();
     }
 }

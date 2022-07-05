@@ -4,6 +4,7 @@ namespace VueManager\Models\v1;
 
 use Doctrine\ORM\Mapping as ORM;
 use VueManager\Models\AbstractModel;
+use VueManager\Traits\ModelTimestampTrait;
 
 /**
  * SiteContent
@@ -13,6 +14,8 @@ use VueManager\Models\AbstractModel;
  */
 class SiteContent extends AbstractModel
 {
+    use ModelTimestampTrait;
+
     /**
      * @var int
      *
@@ -165,23 +168,9 @@ class SiteContent extends AbstractModel
     /**
      * @var int
      *
-     * @ORM\Column(name="createdon", type="integer", nullable=false)
-     */
-    public $createdon = 0;
-
-    /**
-     * @var int
-     *
      * @ORM\Column(name="editedby", type="integer", nullable=false)
      */
     public $editedby = 0;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="editedon", type="integer", nullable=false)
-     */
-    public $editedon = 0;
 
     /**
      * @var int

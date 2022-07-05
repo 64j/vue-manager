@@ -15,10 +15,10 @@ class TemplateController
      */
     public function __construct(array $params = [])
     {
-        $params['service'] .= 'TemplateService';
-        $params['model'] .= 'SiteTemplates';
+        $service = sprintf($params['namespace'], 'Services') . 'TemplateService';
+        $model = sprintf($params['namespace'], 'Models') . 'SiteTemplates';
 
-        $this->service = new $params['service']();
-        $this->model = new $params['model']();
+        $this->service = new $service();
+        $this->model = new $model();
     }
 }

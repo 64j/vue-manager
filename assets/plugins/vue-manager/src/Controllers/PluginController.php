@@ -15,10 +15,10 @@ class PluginController
      */
     public function __construct(array $params = [])
     {
-        $params['service'] .= 'PluginService';
-        $params['model'] .= 'Plugin';
+        $service = sprintf($params['namespace'], 'Services') . 'PluginService';
+        $model = sprintf($params['namespace'], 'Models') . 'SitePlugins';
 
-        $this->service = new $params['service']();
-        $this->model = new $params['model']();
+        $this->service = new $service();
+        $this->model = new $model();
     }
 }

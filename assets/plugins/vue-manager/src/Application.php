@@ -160,6 +160,7 @@ class Application
         $version = max(1, substr($evo->getConfig('settings_version'), 0, 1));
 
         $params = [
+            'namespace' => 'VueManager\%s\v' . $version . '\\',
             'service' => 'VueManager\Services\v' . $version . '\\',
             'model' => 'VueManager\Models\v' . $version . '\\',
         ];

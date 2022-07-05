@@ -15,10 +15,10 @@ class ModuleController
      */
     public function __construct(array $params = [])
     {
-        $params['service'] .= 'ModuleService';
-        $params['model'] .= 'Module';
+        $service = sprintf($params['namespace'], 'Services') . 'ModuleService';
+        $model = sprintf($params['namespace'], 'Models') . 'SiteModules';
 
-        $this->service = new $params['service']();
-        $this->model = new $params['model']();
+        $this->service = new $service();
+        $this->model = new $model();
     }
 }

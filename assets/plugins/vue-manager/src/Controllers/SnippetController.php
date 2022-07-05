@@ -15,10 +15,10 @@ class SnippetController
      */
     public function __construct(array $params = [])
     {
-        $params['service'] .= 'SnippetService';
-        $params['model'] .= 'Snippet';
+        $service = sprintf($params['namespace'], 'Services') . 'SnippetService';
+        $model = sprintf($params['namespace'], 'Models') . 'SiteSnippets';
 
-        $this->service = new $params['service']();
-        $this->model = new $params['model']();
+        $this->service = new $service();
+        $this->model = new $model();
     }
 }

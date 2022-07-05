@@ -33,17 +33,19 @@ class TemplateService implements ServiceInterface
      */
     public function create($model): SiteTemplates
     {
-        $this->hasCreate();
-
+        $this->hasPermissionsCreate();
         $app = evolutionCMS();
 
-        $model->id = $app->db->insert($model->toData(), $app->getFullTableName('site_templates'));
+        $data = $model->except(['id'])
+            ->toData();
+
+        $model->id = $app->db->insert($data, $app->getFullTableName('site_templates'));
 
         if (!$model->id) {
             throw new NotFoundException();
         }
 
-        return $this->read($model);
+        return $model;
     }
 
     /**
@@ -54,8 +56,7 @@ class TemplateService implements ServiceInterface
      */
     public function read($model): SiteTemplates
     {
-        $this->hasRead();
-
+        $this->hasPermissionsRead();
         $app = evolutionCMS();
 
         if (!empty($model->id)) {
@@ -79,8 +80,7 @@ class TemplateService implements ServiceInterface
      */
     public function update($model): SiteTemplates
     {
-        $this->hasUpdate();
-
+        $this->hasPermissionsUpdate();
         $app = evolutionCMS();
 
         $data = $model->toArray();
@@ -101,14 +101,17 @@ class TemplateService implements ServiceInterface
      */
     public function delete($model): SiteTemplates
     {
-        $this->hasDelete();
-
+        $this->hasPermissionsDelete();
         $app = evolutionCMS();
 
-        $model = $this->read($model);
-        $app->db->delete($app->getFullTableName('site_templates'), 'id=' . $model->id);
+        if (!empty($model->id)) {
+            $model = $this->read($model);
+            $app->db->delete($app->getFullTableName('site_templates'), 'id=' . $model->id);
 
-        return $model;
+            return $model;
+        }
+
+        throw new NotFoundException();
     }
 
     /**
@@ -118,10 +121,8 @@ class TemplateService implements ServiceInterface
      */
     public function list(array $params = []): array
     {
-        $this->hasList();
-
+        $this->hasPermissionsList();
         $app = evolutionCMS();
-
         $data = [];
 
         if (!empty($params['categories'])) {
