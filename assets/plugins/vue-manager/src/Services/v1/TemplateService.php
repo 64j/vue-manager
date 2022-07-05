@@ -65,6 +65,36 @@ class TemplateService implements ServiceInterface
             );
 
             if (!empty($data)) {
+                $selectedTvs = $app->db->makeArray(
+                    $app->db->select(
+                        'tv.id, tv.name, tr.templateid, tv.description, tv.caption, tv.locked',
+                        sprintf(
+                            "%s tv LEFT JOIN %s tr ON tv.id=tr.tmplvarid",
+                            $app->getFullTableName('site_tmplvars'),
+                            $app->getFullTableName('site_tmplvar_templates')
+                        ),
+                        'templateid=' . $data['id'] . ' GROUP BY tv.id',
+                        'tr.rank ASC, tv.rank ASC, caption ASC, id ASC'
+                    )
+                );
+
+                $unselectedTvs = $app->db->makeArray(
+                    $app->db->select(
+                        'tv.id, tv.name, tr.templateid, tv.description, tv.caption, tv.locked',
+                        sprintf(
+                            "%s tv LEFT JOIN %s tr ON tv.id=tr.tmplvarid",
+                            $app->getFullTableName('site_tmplvars'),
+                            $app->getFullTableName('site_tmplvar_templates')
+                        ),
+                        'tr.templateid!=' . $data['id'] . ' OR tr.templateid IS NULL GROUP BY tv.id'
+                    )
+                );
+
+                $data['tvs'] = [
+                    'selected' => $selectedTvs,
+                    'unselected' => $unselectedTvs,
+                ];
+
                 return $model->hydrate($data);
             }
         }
@@ -87,8 +117,9 @@ class TemplateService implements ServiceInterface
         $model = $this->read($model)
             ->hydrate($data);
         $model->editedon = time();
+        $data = $model->toData();
 
-        $app->db->update($model->toData(), $app->getFullTableName('site_templates'), 'id=' . $model->id);
+        $app->db->update($data, $app->getFullTableName('site_templates'), 'id=' . $model->id);
 
         return $model;
     }
