@@ -67,11 +67,12 @@ class TemplateService implements ServiceInterface
             if (!empty($data)) {
                 $model = $model->hydrate($data);
 
-                $selectedTvs = [];
-
-                $model->__meta['tvs'] = [
-                    'selected' => [],
-                    'unselected' => []
+                $model->__meta = [
+                    'tvSelected' => [],
+                    'tvs' => [
+                        'selected' => [],
+                        'unselected' => []
+                    ]
                 ];
 
                 $noCategory = Application::getInstance()
@@ -105,13 +106,13 @@ class TemplateService implements ServiceInterface
                     }
 
                     $model->__meta['tvs']['selected'][$r['catid']]['items'][$r['id']] = $r;
-                    $selectedTvs[] = $r['id'];
+                    $model->__meta['tvSelected'][] = $r['id'];
                 }
 
                 $sql = $app->db->select(
                     $field,
                     $table,
-                    $selectedTvs ? 'tv.id NOT IN(' . implode(',', $selectedTvs) . ')' : ''
+                    $model->__meta['tvSelected'] ? 'tv.id NOT IN(' . implode(',', $model->__meta['tvSelected']) . ')' : ''
                 );
 
                 while ($r = $app->db->getRow($sql)) {
@@ -151,6 +152,38 @@ class TemplateService implements ServiceInterface
         $data = $model->toData();
 
         $app->db->update($data, $app->getFullTableName('site_templates'), 'id=' . $model->id);
+
+        if (isset($model->__meta['tvSelected'])) {
+            $rs = $app->db->select(
+                'tmplvarid, `rank`',
+                $app->getFullTableName('site_tmplvar_templates'),
+                'templateid=' . $model->id
+            );
+
+            $ranksArr = [];
+            $highest = 0;
+
+            while ($r = $app->db->getRow($rs)) {
+                $ranksArr[$r['tmplvarid']] = $r['rank'];
+                $highest = max($highest, $r['rank']);
+            }
+
+            $app->db->delete(
+                $app->getFullTableName('site_tmplvar_templates'),
+                'templateid=' . $model->id
+            );
+
+            if (!empty($model->__meta['tvSelected'])) {
+
+                foreach ($model->__meta['tvSelected'] as $id) {
+                    $app->db->insert(array(
+                        'templateid' => $model->id,
+                        'tmplvarid' => $id,
+                        'rank' => $ranksArr[$id] ?? $highest += 1
+                    ), $app->getFullTableName('site_tmplvar_templates'));
+                }
+            }
+        }
 
         return $this->read($model);
     }

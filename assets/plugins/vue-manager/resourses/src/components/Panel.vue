@@ -27,7 +27,7 @@
                   :key="'item-' + item.id"
                   class="row m-0 px-3 align-items-center border-bottom">
 
-                <div v-if="item.prepend" class="col-auto p-0" v-html="item.prepend"/>
+                <input v-if="checkbox" type="checkbox" :id="`checkbox-item-`+item.id" :value="item.id" class="form-check-input me-2 p-0" @change="$emit('action', 'checkbox', item, category)">
 
                 <router-link
                   :to="{ name: linkName, params: { id: item.id } }"
@@ -82,6 +82,9 @@ export default {
       type: String
     },
     txtHelp: {
+      type: String
+    },
+    checkbox: {
       type: String
     },
     actions: {

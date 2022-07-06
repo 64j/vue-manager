@@ -99,6 +99,8 @@
                     class-name="px-0"
                     link-name="TvIndex"
                     link-icon="fa fa-list-alt"
+                    checkbox="tvs"
+                    @action="tvActions"
                   />
                 </template>
               </div>
@@ -191,8 +193,20 @@ export default {
           break
       }
     },
-    create() {
-      http.post(this.controller + '@create', { ...this.data, tvs: this.tvs }).then(result => {
+    tvActions (name, item) {
+      switch (name) {
+        case 'checkbox':
+          if (this.tvs.some(v => v === item.id)) {
+            const index = this.tvs.indexOf(item.id)
+            index > -1 && this.tvs.splice(index, 1)
+            break
+          }
+          this.tvs.push(item.id)
+          break
+      }
+    },
+    create () {
+      http.post(this.controller + '@create', { ...this.data, tvSelected: this.tvs }).then(result => {
         if (result.data.id) {
           this.$emit('replaceTab', { params: { id: result.data.id } })
         } else {
@@ -210,7 +224,7 @@ export default {
       })
     },
     update() {
-      http.post(this.controller + '@update', { ...this.data, tvs: this.tvs }).then(result => {
+      http.post(this.controller + '@update', { ...this.data, tvSelected: this.tvs }).then(result => {
         this.setData(result)
         this.$emit('titleTab', this.title)
         this.loading = true
