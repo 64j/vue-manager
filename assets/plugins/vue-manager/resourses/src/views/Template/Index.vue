@@ -74,13 +74,28 @@
         <template #Tvs>
           <div class="container-fluid container-body pt-3">
             <div class="form-group">
-              <p v-if="meta?.tvs?.selected || meta?.tvs?.unselected">{{ $t('template_tv_msg') }}</p>
+              <p v-if="Object.values(meta?.tvs?.selected || {}).length || Object.values(meta?.tvs?.unselected || {}).length">{{ $t('template_tv_msg') }}</p>
               <p v-else>{{ $t('template_no_tv') }}</p>
 
-              <ul v-if="meta?.tvs?.selected" class="list-unstyled">
+<!--              <div class="row">-->
+<!--                <template v-if="Object.values(meta?.tvs?.selected || {}).length">-->
+<!--                  <Panel-->
+<!--                    :data="meta.tvs.selected"-->
+<!--                    class-name="px-0"-->
+<!--                    link-name="TvIndex"-->
+<!--                    link-icon="fa fa-list-alt"-->
+<!--                    checkbox="tvs"-->
+<!--                    @action="tvActions"-->
+<!--                  />-->
+<!--                </template>-->
+
+<!--                <p v-else>{{ $t('template_no_tv') }}</p>-->
+<!--              </div>-->
+
+              <ul v-if="Object.values(meta?.tvs?.selected || {}).length" class="list-unstyled">
                 <template v-for="category in meta.tvs.selected">
                   <li v-for="tv in category.items" :key="`tv`+tv.id" class="form-check">
-                    <input v-model="tvs" type="checkbox" :id="`tv`+tv.id" :value="tv.id" class="form-check-input" checked="checked">
+                    <input type="checkbox" v-model="tvs" :id="`tv`+tv.id" :value="tv.id" class="form-check-input" checked="checked">
                     <label :for="`tv`+tv.id" class="form-check-label">
                       {{ tv.name }} <small>({{ tv.id }})</small> - {{ tv.caption }}
                       <a href="#">{{ $t('edit') }}</a>
@@ -90,8 +105,8 @@
               </ul>
 
               <div class="row">
-                <template v-if="meta?.tvs?.unselected">
-                  <hr class="bg-secondary">
+                <template v-if="Object.values(meta?.tvs?.unselected || {}).length">
+<!--                  <hr class="bg-secondary">-->
                   <p class="m-0">{{ $t('template_notassigned_tv') }}</p>
 
                   <Panel
@@ -196,10 +211,11 @@ export default {
     tvActions (name, item) {
       switch (name) {
         case 'checkbox':
-          if (this.tvs.some(v => v === item.id)) {
-            const index = this.tvs.indexOf(item.id)
-            index > -1 && this.tvs.splice(index, 1)
-            break
+          for (const i in this.tvs) {
+            if (item.id === this.tvs[i]) {
+              delete this.tvs[i]
+              return;
+            }
           }
           this.tvs.push(item.id)
           break

@@ -145,13 +145,15 @@ class TemplateService implements ServiceInterface
         $this->hasPermissionsUpdate();
         $app = evolutionCMS();
 
-        $data = $model->toArray();
-        $model = $this->read($model)
-            ->hydrate($data);
-        $model->editedon = time();
-        $data = $model->toData();
+        $rs = $app->db->select('*', $app->getFullTableName('site_templates'), 'id=' . $model->id);
 
-        $app->db->update($data, $app->getFullTableName('site_templates'), 'id=' . $model->id);
+        if (!$app->db->getRecordCount($rs)) {
+            throw new NotFoundException();
+        }
+
+        $model->editedon = time();
+
+        $app->db->update($model->toData(), $app->getFullTableName('site_templates'), 'id=' . $model->id);
 
         if (isset($model->__meta['tvSelected'])) {
             $rs = $app->db->select(
@@ -174,13 +176,14 @@ class TemplateService implements ServiceInterface
             );
 
             if (!empty($model->__meta['tvSelected'])) {
-
                 foreach ($model->__meta['tvSelected'] as $id) {
-                    $app->db->insert(array(
-                        'templateid' => $model->id,
-                        'tmplvarid' => $id,
-                        'rank' => $ranksArr[$id] ?? $highest += 1
-                    ), $app->getFullTableName('site_tmplvar_templates'));
+                    if ($id) {
+                        $app->db->insert(array(
+                            'templateid' => $model->id,
+                            'tmplvarid' => $id,
+                            'rank' => $ranksArr[$id] ?? $highest += 1
+                        ), $app->getFullTableName('site_tmplvar_templates'));
+                    }
                 }
             }
         }
