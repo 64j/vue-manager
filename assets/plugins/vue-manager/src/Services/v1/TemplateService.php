@@ -65,37 +65,68 @@ class TemplateService implements ServiceInterface
             );
 
             if (!empty($data)) {
-                $selectedTvs = $app->db->makeArray(
-                    $app->db->select(
-                        'tv.id, tv.name, tr.templateid, tv.description, tv.caption, tv.locked',
-                        sprintf(
-                            "%s tv LEFT JOIN %s tr ON tv.id=tr.tmplvarid",
-                            $app->getFullTableName('site_tmplvars'),
-                            $app->getFullTableName('site_tmplvar_templates')
-                        ),
-                        'templateid=' . $data['id'] . ' GROUP BY tv.id',
-                        'tr.rank ASC, tv.rank ASC, caption ASC, id ASC'
-                    )
-                );
+                $model = $model->hydrate($data);
 
-                $unselectedTvs = $app->db->makeArray(
-                    $app->db->select(
-                        'tv.id, tv.name, tr.templateid, tv.description, tv.caption, tv.locked',
-                        sprintf(
-                            "%s tv LEFT JOIN %s tr ON tv.id=tr.tmplvarid",
-                            $app->getFullTableName('site_tmplvars'),
-                            $app->getFullTableName('site_tmplvar_templates')
-                        ),
-                        'tr.templateid!=' . $data['id'] . ' OR tr.templateid IS NULL GROUP BY tv.id'
-                    )
-                );
+                $selectedTvs = [];
 
-                $data['tvs'] = [
-                    'selected' => $selectedTvs,
-                    'unselected' => $unselectedTvs,
+                $model->__meta['tvs'] = [
+                    'selected' => [],
+                    'unselected' => []
                 ];
 
-                return $model->hydrate($data);
+                $noCategory = Application::getInstance()
+                    ->getLang('no_category');
+
+                $field = 'tv.id, tv.name, tr.templateid, tv.description, tv.caption, tv.locked, ifnull(cat.category,"' . $noCategory . '") AS category, ifnull(cat.id,0) as catid';
+
+                $table = sprintf(
+                    '%s tv
+                    LEFT JOIN %s tr ON tv.id=tr.tmplvarid
+                    LEFT JOIN %s cat ON tv.category=cat.id',
+                    $app->getFullTableName('site_tmplvars'),
+                    $app->getFullTableName('site_tmplvar_templates'),
+                    $app->getFullTableName('categories')
+                );
+
+                $sql = $app->db->select(
+                    $field,
+                    $table,
+                    'templateid=' . $model->id . ' GROUP BY tv.id',
+                    'tr.rank ASC, tv.rank ASC, caption ASC, id ASC'
+                );
+
+                while ($r = $app->db->getRow($sql)) {
+                    if (!isset($model->__meta['tvs']['selected'][$r['catid']])) {
+                        $model->__meta['tvs']['selected'][$r['catid']] = [
+                            'id' => $r['catid'],
+                            'name' => $r['category'],
+                            'items' => []
+                        ];
+                    }
+
+                    $model->__meta['tvs']['selected'][$r['catid']]['items'][$r['id']] = $r;
+                    $selectedTvs[] = $r['id'];
+                }
+
+                $sql = $app->db->select(
+                    $field,
+                    $table,
+                    $selectedTvs ? 'tv.id NOT IN(' . implode(',', $selectedTvs) . ')' : ''
+                );
+
+                while ($r = $app->db->getRow($sql)) {
+                    if (!isset($model->__meta['tvs']['unselected'][$r['catid']])) {
+                        $model->__meta['tvs']['unselected'][$r['catid']] = [
+                            'id' => $r['catid'],
+                            'name' => $r['category'],
+                            'items' => []
+                        ];
+                    }
+
+                    $model->__meta['tvs']['unselected'][$r['catid']]['items'][$r['id']] = $r;
+                }
+
+                return $model;
             }
         }
 
@@ -121,7 +152,7 @@ class TemplateService implements ServiceInterface
 
         $app->db->update($data, $app->getFullTableName('site_templates'), 'id=' . $model->id);
 
-        return $model;
+        return $this->read($model);
     }
 
     /**

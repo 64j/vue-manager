@@ -10,7 +10,8 @@
       <Tabs
         id="template"
         :tabs="[
-          { id: 'Template', title: $t('settings_general') }
+          { id: 'Template', title: $t('settings_general') },
+          { id: 'Tvs', title: $t('template_assignedtv_tab') },
         ]">
         <template #Template>
           <div class="container-fluid container-body pt-3">
@@ -70,6 +71,42 @@
           </div>
         </template>
 
+        <template #Tvs>
+          <div class="container-fluid container-body pt-3">
+            <div class="form-group">
+              <p v-if="meta?.tvs?.selected || meta?.tvs?.unselected">{{ $t('template_tv_msg') }}</p>
+              <p v-else>{{ $t('template_no_tv') }}</p>
+
+              <ul v-if="meta?.tvs?.selected" class="list-unstyled">
+                <template v-for="category in meta.tvs.selected">
+                  <li v-for="tv in category.items" :key="`tv`+tv.id" class="form-check">
+                    <input v-model="tvs" type="checkbox" :id="`tv`+tv.id" :value="tv.id" class="form-check-input" checked="checked">
+                    <label :for="`tv`+tv.id" class="form-check-label">
+                      {{ tv.name }} <small>({{ tv.id }})</small> - {{ tv.caption }}
+                      <a href="#">{{ $t('edit') }}</a>
+                    </label>
+                  </li>
+                </template>
+              </ul>
+
+              <div class="row">
+                <template v-if="meta?.tvs?.unselected">
+                  <hr class="bg-secondary">
+                  <p class="m-0">{{ $t('template_notassigned_tv') }}</p>
+
+                  <Panel
+                    :data="meta.tvs.unselected"
+                    class-name="px-0"
+                    link-name="TvIndex"
+                    link-icon="fa fa-list-alt"
+                  />
+                </template>
+              </div>
+
+            </div>
+          </div>
+        </template>
+
       </Tabs>
 
     </form>
@@ -81,12 +118,13 @@
 import ActionsButtons from '@/components/ActionsButtons'
 import TitleView from '@/components/Title'
 import Tabs from '@/components/Tabs'
+import Panel from '@/components/Panel'
 import http from '@/utils/http'
 import i18n from '@/i18n'
 
 export default {
   name: 'TemplateIndex',
-  components: { ActionsButtons, TitleView, Tabs },
+  components: { ActionsButtons, TitleView, Tabs, Panel },
   data () {
     this.controller = 'Template'
     this.icon = 'fa fa-code'
@@ -107,7 +145,9 @@ export default {
         newcategory: null,
         selectable: 0,
         content: ''
-      }
+      },
+      meta: {},
+      tvs: [],
     }
   },
   computed: {
@@ -122,7 +162,7 @@ export default {
     })
     this.data.id = this.$route.params && this.$route.params.id || null
     if (this.data.id) {
-      this.get()
+      this.read()
     } else {
       this.$emit('titleTab', this.title)
       this.loading = true
@@ -134,31 +174,15 @@ export default {
         case 'save':
           this.loading = false
           if (this.data.id) {
-            http.post(this.controller + '@update', this.data).then(result => {
-              this.data = result.data
-              this.$emit('titleTab', this.title)
-              this.loading = true
-            })
+            this.update()
           } else {
-            http.post(this.controller + '@create', this.data).then(result => {
-              if (result.data.id) {
-                this.$emit('replaceTab', { params: { id: result.data.id } })
-              } else {
-                this.data = result.data
-                this.$emit('titleTab', this.title)
-              }
-              this.loading = true
-            })
+            this.create()
           }
           break
 
         case 'delete':
           if (this.data.id) {
-            http.post(this.controller + '@delete', this.data).then(result => {
-              if (result) {
-                this.action('cancel')
-              }
-            })
+            this.delete()
           }
           break
 
@@ -167,15 +191,63 @@ export default {
           break
       }
     },
-    get () {
-      http.post(this.controller + '@read', this.data).then(result => {
-        this.data = result.data
-        for (let i in result.meta.events || {}) {
-          this.events[i] = Array.isArray(result.meta.events[i]) ? result.meta.events[i].join('') : result.meta.events[i]
+    create() {
+      http.post(this.controller + '@create', { ...this.data, tvs: this.tvs }).then(result => {
+        if (result.data.id) {
+          this.$emit('replaceTab', { params: { id: result.data.id } })
+        } else {
+          this.setData(result)
+          this.$emit('titleTab', this.title)
         }
+        this.loading = true
+      })
+    },
+    read () {
+      http.post(this.controller + '@read', this.data).then(result => {
+        this.setData(result)
         this.$emit('titleTab', this.title)
         this.loading = true
       })
+    },
+    update() {
+      http.post(this.controller + '@update', { ...this.data, tvs: this.tvs }).then(result => {
+        this.setData(result)
+        this.$emit('titleTab', this.title)
+        this.loading = true
+      })
+    },
+    delete() {
+      http.post(this.controller + '@delete', this.data).then(result => {
+        if (result) {
+          this.action('cancel')
+        }
+      })
+    },
+    setData (result) {
+      this.data = result.data
+      this.meta = result.meta
+
+      if (this.meta?.tvs?.selected) {
+        for (const i in this.meta.tvs.selected) {
+          for (const j in this.meta.tvs.selected[i].items) {
+            const tv = this.meta.tvs.selected[i].items[j]
+            this.tvs.push(tv.id)
+          }
+        }
+      }
+
+      if (this.meta?.tvs?.unselected) {
+        for (const i in this.meta.tvs.unselected) {
+          for (const j in this.meta.tvs.unselected[i].items) {
+            let tv = this.meta.tvs.unselected[i].items[j]
+            tv.prepend = '<input type="checkbox" name="assignedTv[]" value="' + tv.id + '" class="form-check-input me-2">'
+          }
+        }
+      }
+
+      for (let i in this.meta.events || {}) {
+        this.events[i] = Array.isArray(this.meta.events[i]) ? this.meta.events[i].join('') : this.meta.events[i]
+      }
     }
   }
 }

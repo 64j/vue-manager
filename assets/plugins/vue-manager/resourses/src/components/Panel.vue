@@ -1,8 +1,8 @@
 <template>
-  <div class="panel">
+  <div class="panel" :class="className">
     <div class="p-3">
       <div class="input-group input-group-sm">
-        <router-link :to="{ name: linkName, params: { id : '' } }" class="btn btn-success">
+        <router-link v-if="txtNew" :to="{ name: linkName, params: { id : '' } }" class="btn btn-success">
           <i class="fa fa-plus"/>
           {{ txtNew }}
         </router-link>
@@ -26,6 +26,9 @@
               <li v-if="!item.hidden"
                   :key="'item-' + item.id"
                   class="row m-0 px-3 align-items-center border-bottom">
+
+                <div v-if="item.prepend" class="col-auto p-0" v-html="item.prepend"/>
+
                 <router-link
                   :to="{ name: linkName, params: { id: item.id } }"
                   class="col py-1 ps-0 text-decoration-none user-select-none"
@@ -68,6 +71,9 @@ export default {
     linkName: {
       type: String,
       required: true
+    },
+    className: {
+      type: String
     },
     linkIcon: {
       type: String

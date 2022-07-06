@@ -12,6 +12,21 @@ use VueManager\Interfaces\ArrayableInterface;
 abstract class AbstractModel implements JsonSerializable, ArrayableInterface
 {
     /**
+     * @var array
+     */
+    protected array $__exceptedKeys = [];
+
+    /**
+     * @var array
+     */
+    protected array $__onlyKeys = [];
+
+    /**
+     * @var array
+     */
+    public array $__meta = [];
+
+    /**
      * @param array $params
      * @return self
      */
@@ -31,6 +46,12 @@ abstract class AbstractModel implements JsonSerializable, ArrayableInterface
 
             if (is_callable([$this, $setter])) {
                 $this->$setter($reflectionProperty->getValue($this));
+            }
+        }
+
+        foreach ($params as $key => $value) {
+            if (!isset($this->{$key})) {
+                $this->__meta[$key] = $value;
             }
         }
 
@@ -92,9 +113,18 @@ abstract class AbstractModel implements JsonSerializable, ArrayableInterface
      */
     public function except(array $keys): self
     {
-        foreach ($keys as $key) {
-            unset($this->{$key});
-        }
+        $this->__exceptedKeys = $keys;
+
+        return $this;
+    }
+
+    /**
+     * @param array $keys
+     * @return $this
+     */
+    public function only(array $keys): self
+    {
+        $this->__onlyKeys = $keys;
 
         return $this;
     }
@@ -120,7 +150,7 @@ abstract class AbstractModel implements JsonSerializable, ArrayableInterface
      */
     public function toData(): array
     {
-        return evolutionCMS()->db->escape($this->__toArray());
+        return (array) evolutionCMS()->db->escape($this->__toArray());
     }
 
     /**
@@ -128,6 +158,29 @@ abstract class AbstractModel implements JsonSerializable, ArrayableInterface
      */
     public function __toArray(): array
     {
-        return $this->fromCamel(get_object_vars($this));
+        $data = get_object_vars($this);
+
+        foreach ($this->__exceptedKeys as $key) {
+            if (array_key_exists($key, $data)) {
+                unset($data[$key]);
+            }
+        }
+
+        if ($this->__onlyKeys) {
+            foreach ($data as $key => $value) {
+                if (!in_array($key, $this->__onlyKeys)) {
+                    unset($data[$key]);
+                }
+            }
+        }
+
+        $this->__exceptedKeys = [];
+        $this->__onlyKeys = [];
+
+        unset($data['__exceptedKeys']);
+        unset($data['__onlyKeys']);
+        unset($data['__meta']);
+
+        return $this->fromCamel($data);
     }
 }

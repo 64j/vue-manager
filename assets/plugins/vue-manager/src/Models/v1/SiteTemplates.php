@@ -97,11 +97,6 @@ class SiteTemplates extends AbstractModel
     public int $selectable = 1;
 
     /**
-     * @var array
-     */
-    public array $tvs = [];
-
-    /**
      * @param string $templatename
      */
     public function setTemplatename(string $templatename): void
