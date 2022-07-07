@@ -90,11 +90,12 @@ export default {
   components: { ActionsButtons, TitleView, Tabs },
   data () {
     this.controller = 'Chunk'
+    this.icon = 'fa fa-th-large'
 
     return {
       loading: false,
       data: {
-        id: null
+        id: this.$route.params && this.$route.params.id || null
       }
     }
   },
@@ -105,59 +106,75 @@ export default {
   },
   mounted () {
     this.$emit('titleTab', {
-      icon: 'fa fa-th-large',
+      icon: this.icon,
       title: ''
     })
-    this.data.id = this.$route.params && this.$route.params.id || null
-    if (this.data.id) {
-      this.get()
-    } else {
-      this.$emit('titleTab', this.title)
-      this.loading = true
-    }
+    this.read()
   },
   methods: {
-    get () {
-      http.post(this.controller + '@read', this.data).then(result => {
-        this.data = result.data
-        for (let i in result.meta.events || {}) {
-          this.events[i] = Array.isArray(result.meta.events[i]) ? result.meta.events[i].join('') : result.meta.events[i]
-        }
-        this.$emit('titleTab', this.title)
-        this.loading = true
-      })
-    },
-    action(action) {
+    action (action) {
       switch (action) {
         case 'save':
           this.loading = false
           if (this.data.id) {
-            http.post(this.controller + '@update', this.data).then(result => {
-              this.data = result.data
-              this.$emit('titleTab', this.title)
-              this.loading = true
-            })
+            this.update()
           } else {
-            http.post(this.controller + '@create', this.data).then(result => {
-              this.data = result.data
-              this.$emit('titleTab', this.title)
-              this.loading = true
-            })
+            this.create()
           }
-          break;
+          break
+
+        case 'delete':
+          this.delete()
+          break
 
         case 'cancel':
           this.$emit('toTab', { name: 'ElementsIndex', query: { resourcesTab: 2 } })
-          break;
+          break
 
-        case 'delete':
-          http.post(this.controller + '@create', this.data).then(result => {
-            if (result) {
-              this.action('cancel')
-            }
-          });
-          break;
+        case 'refresh':
+          this.$emit('refreshTab', { name: 'ElementsIndex', query: { resourcesTab: 2 } })
+          break
       }
+    },
+    create () {
+      http.post(this.controller + '@create', this.data).then(result => {
+        if (result.data.id) {
+          this.$emit('replaceTab', { params: { id: result.data.id } })
+        } else {
+          this.setData(result)
+          this.$emit('titleTab', this.title)
+        }
+        this.action('refresh')
+        this.loading = true
+      })
+    },
+    read () {
+      http.post(this.controller + '@read', this.data).then(result => {
+        this.setData(result)
+      })
+    },
+    update () {
+      http.post(this.controller + '@update', this.data).then(result => {
+        this.setData(result)
+        this.$emit('titleTab', this.title)
+        this.action('refresh')
+        this.loading = true
+      })
+    },
+    delete () {
+      http.post(this.controller + '@delete', this.data).then(result => {
+        if (result) {
+          this.action('cancel')
+        }
+      })
+    },
+    setData (result) {
+      this.data = result.data
+      for (let i in result.meta.events || {}) {
+        this.events[i] = Array.isArray(result.meta.events[i]) ? result.meta.events[i].join('') : result.meta.events[i]
+      }
+      this.$emit('titleTab', this.title)
+      this.loading = true
     }
   }
 }

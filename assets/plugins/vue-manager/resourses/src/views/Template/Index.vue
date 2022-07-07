@@ -181,13 +181,7 @@ export default {
       icon: this.icon,
       title: ''
     })
-    //this.data.id = this.$route.params && this.$route.params.id || null
     this.read()
-    // if (this.data.id) {
-    // } else {
-    //   this.$emit('titleTab', this.title)
-    //   this.loading = true
-    // }
   },
   methods: {
     action (name, item) {
@@ -213,7 +207,7 @@ export default {
 
         case 'refresh':
           this.$emit('refreshTab', { name: 'ElementsIndex', query: { resourcesTab: 0 } })
-          break;
+          break
 
         case 'checkbox': {
           const index = this.tvSelected.indexOf(item.id)
