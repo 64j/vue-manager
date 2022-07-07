@@ -12,15 +12,17 @@
       <div class="m-0 mt-2 alert alert-info" v-html="txtHelp" v-if="msg"/>
     </div>
     <div v-if="!data" class="text-center p-4">
-      <i class="fa fa-spinner fa-spin"></i>
+      <i class="fa fa-spinner fa-spin"/>
     </div>
     <ul v-else>
-      <li v-for="category in data" :key="'category-' + category.id">
-        <template v-if="Object.values(category.items).filter(v => !v.hidden).length">
+      <template v-for="category in data">
+        <li :key="'category-' + category.id" v-if="Object.values(category.items).filter(v => !v.hidden).length">
+
           <a v-if="!hiddenCategories" class="px-3 py-2 bg-secondary bg-opacity-10 border-top border-bottom text-decoration-none text-muted">
             <span class="h5 m-0 me-2">{{ category.name }} </span>
             <small>({{ category.id }})</small>
           </a>
+
           <ul>
             <template v-for="item in category.items">
               <li v-if="!item.hidden"
@@ -53,6 +55,7 @@
                      :key="`item-` + item.id + `action-` + k"
                      :class="[action.values ? action.values[item[k]].icon : action.icon]"
                      class="ms-2"
+                     role="button"
                      :title="[action.values ? action.values[item[k]].title : action.title]"
                      @click="$emit('action', k, item, category)"
                   />
@@ -61,8 +64,9 @@
               </li>
             </template>
           </ul>
-        </template>
-      </li>
+
+        </li>
+      </template>
     </ul>
   </div>
 </template>

@@ -74,8 +74,7 @@
         <template #Tvs>
           <div class="container-fluid container-body pt-3">
             <div class="form-group">
-              <p v-if="Object.values(meta?.tvs?.selected || {}).length || Object.values(meta?.tvs?.unselected || {}).length">{{ $t('template_tv_msg') }}</p>
-              <p v-else>{{ $t('template_no_tv') }}</p>
+              <p>{{ $t('template_tv_msg') }}</p>
 
               <div class="row">
                 <template v-if="Object.values(meta?.tvs?.selected || {}).length">
@@ -159,7 +158,7 @@ export default {
     return {
       loading: false,
       data: {
-        id: null,
+        id: this.$route.params && this.$route.params.id || null,
         locked: 0,
         templatename: '',
         description: '',
@@ -182,13 +181,13 @@ export default {
       icon: this.icon,
       title: ''
     })
-    this.data.id = this.$route.params && this.$route.params.id || null
-    if (this.data.id) {
-      this.read()
-    } else {
-      this.$emit('titleTab', this.title)
-      this.loading = true
-    }
+    //this.data.id = this.$route.params && this.$route.params.id || null
+    this.read()
+    // if (this.data.id) {
+    // } else {
+    //   this.$emit('titleTab', this.title)
+    //   this.loading = true
+    // }
   },
   methods: {
     action (name, item) {
@@ -237,14 +236,14 @@ export default {
         this.loading = true
       })
     },
-    update() {
+    update () {
       http.post(this.controller + '@update', { ...this.data, tvSelected: this.tvSelected }).then(result => {
         this.setData(result)
         this.$emit('titleTab', this.title)
         this.loading = true
       })
     },
-    delete() {
+    delete () {
       http.post(this.controller + '@delete', this.data).then(result => {
         if (result) {
           this.action('cancel')

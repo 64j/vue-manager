@@ -45,93 +45,91 @@ class TemplateService implements ServiceInterface
             throw new NotFoundException();
         }
 
-        return $model;
+        return $this->update($model);
     }
 
     /**
      * @param SiteTemplates $model
      * @return SiteTemplates
-     * @throws \VueManager\Exceptions\NotFoundException
      * @throws \VueManager\Exceptions\PermissionException
      */
     public function read($model): SiteTemplates
     {
         $this->hasPermissionsRead();
         $app = evolutionCMS();
+        $data = [];
 
         if (!empty($model->id)) {
             $data = $app->db->getRow(
                 $app->db->select('*', $app->getFullTableName('site_templates'), 'id=' . $model->id)
             );
+        }
 
-            if (!empty($data)) {
-                $model = $model->hydrate($data);
+        $model = $model->hydrate($data);
 
-                $model->__meta = [
-                    'tvSelected' => [],
-                    'tvs' => [
-                        'selected' => [],
-                        'unselected' => []
-                    ]
-                ];
+        $model->__meta = [
+            'tvSelected' => [],
+            'tvs' => [
+                'selected' => [],
+                'unselected' => []
+            ]
+        ];
 
-                $noCategory = Application::getInstance()
-                    ->getLang('no_category');
+        $noCategory = Application::getInstance()
+            ->getLang('no_category');
 
-                $field = 'tv.id, tv.name, tr.templateid, tv.description, tv.caption, tv.locked, ifnull(cat.category,"' . $noCategory . '") AS category, ifnull(cat.id,0) as categoryId';
+        $field = 'tv.id, tv.name, tr.templateid, tv.description, tv.caption, tv.locked, ifnull(cat.category,"' . $noCategory . '") AS category, ifnull(cat.id,0) as categoryId';
 
-                $table = sprintf(
-                    '%s tv
+        $table = sprintf(
+            '%s tv
                     LEFT JOIN %s tr ON tv.id=tr.tmplvarid
                     LEFT JOIN %s cat ON tv.category=cat.id',
-                    $app->getFullTableName('site_tmplvars'),
-                    $app->getFullTableName('site_tmplvar_templates'),
-                    $app->getFullTableName('categories')
-                );
+            $app->getFullTableName('site_tmplvars'),
+            $app->getFullTableName('site_tmplvar_templates'),
+            $app->getFullTableName('categories')
+        );
 
-                $sql = $app->db->select(
-                    $field,
-                    $table,
-                    'templateid=' . $model->id . ' GROUP BY tv.id',
-                    'tr.rank ASC, tv.rank ASC, caption ASC, id ASC'
-                );
+        if (!empty($model->id)) {
+            $sql = $app->db->select(
+                $field,
+                $table,
+                'templateid=' . $model->id . ' GROUP BY tv.id',
+                'tr.rank ASC, tv.rank ASC, caption ASC, id ASC'
+            );
 
-                while ($r = $app->db->getRow($sql)) {
-                    if (!isset($model->__meta['tvs']['selected'][$r['categoryId']])) {
-                        $model->__meta['tvs']['selected'][$r['categoryId']] = [
-                            'id' => $r['categoryId'],
-                            'name' => $r['category'],
-                            'items' => []
-                        ];
-                    }
-
-                    $model->__meta['tvs']['selected'][$r['categoryId']]['items'][$r['id']] = $r;
-                    $model->__meta['tvSelected'][] = $r['id'];
+            while ($r = $app->db->getRow($sql)) {
+                if (!isset($model->__meta['tvs']['selected'][$r['categoryId']])) {
+                    $model->__meta['tvs']['selected'][$r['categoryId']] = [
+                        'id' => $r['categoryId'],
+                        'name' => $r['category'],
+                        'items' => []
+                    ];
                 }
 
-                $sql = $app->db->select(
-                    $field,
-                    $table,
-                    $model->__meta['tvSelected'] ? 'tv.id NOT IN(' . implode(',', $model->__meta['tvSelected']) . ')' : ''
-                );
-
-                while ($r = $app->db->getRow($sql)) {
-                    if (!isset($model->__meta['tvs']['unselected'][$r['categoryId']])) {
-                        $model->__meta['tvs']['unselected'][$r['categoryId']] = [
-                            'id' => $r['categoryId'],
-                            'name' => $r['category'],
-                            'items' => []
-                        ];
-                    }
-
-                    $model->__meta['tvs']['unselected'][$r['categoryId']]['items'][$r['id']] = $r;
-                }
-
-                return $model;
+                $model->__meta['tvs']['selected'][$r['categoryId']]['items'][$r['id']] = $r;
+                $model->__meta['tvSelected'][] = $r['id'];
             }
         }
 
-        throw new NotFoundException();
+        $sql = $app->db->select(
+            $field,
+            $table,
+            $model->__meta['tvSelected'] ? 'tv.id NOT IN(' . implode(',', $model->__meta['tvSelected']) . ')' : ''
+        );
+
+        while ($r = $app->db->getRow($sql)) {
+            if (!isset($model->__meta['tvs']['unselected'][$r['categoryId']])) {
+                $model->__meta['tvs']['unselected'][$r['categoryId']] = [
+                    'id' => $r['categoryId'],
+                    'name' => $r['category'],
+                    'items' => []
+                ];
+            }
+
+            $model->__meta['tvs']['unselected'][$r['categoryId']]['items'][$r['id']] = $r;
+        }
+
+        return $model;
     }
 
     /**
@@ -219,6 +217,17 @@ class TemplateService implements ServiceInterface
         }
 
         throw new NotFoundException();
+    }
+
+    /**
+     * @param SiteTemplates $model
+     * @return \VueManager\Models\v1\SiteTemplates
+     * @throws \VueManager\Exceptions\NotFoundException
+     * @throws \VueManager\Exceptions\PermissionException
+     */
+    public function copy($model): SiteTemplates
+    {
+        return $this->create($this->read($model));
     }
 
     /**

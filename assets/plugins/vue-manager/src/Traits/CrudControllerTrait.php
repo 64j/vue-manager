@@ -70,4 +70,16 @@ trait CrudControllerTrait
     {
         return $this->ok(...$this->service->list($params));
     }
+
+    /**
+     * @param array $params
+     * @return array
+     * @throws \VueManager\Exceptions\NotFoundException
+     */
+    public function actionCopy(array $params = []): array
+    {
+        $model = $this->service->copy($this->model->hydrate($params));
+
+        return $this->ok($model, $model->__meta);
+    }
 }

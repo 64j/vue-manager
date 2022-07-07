@@ -19,7 +19,7 @@ export default {
   name: 'TemplateList',
   components: { Panel },
   data () {
-    this.controller = 'Template@list'
+    this.controller = 'Template'
 
     return {
       data: null,
@@ -34,19 +34,30 @@ export default {
     }
   },
   mounted () {
-    http.post(this.controller, { categories: true }).then(result => this.data = result.data)
+    this.list()
   },
   methods: {
     action (action, item, category) {
       switch (action) {
         case 'copy':
-          alert(action + ' ' + item.id)
+          http.post(this.controller + '@copy', item).then(result => {
+            if (result) {
+              this.list()
+            }
+          })
           break
 
         case 'delete':
-          delete category.items[item.id]
+          http.post(this.controller + '@delete', item).then(result => {
+            if (result) {
+              delete category.items[item.id]
+            }
+          })
           break
       }
+    },
+    list() {
+      http.post(this.controller + '@list', { categories: true }).then(result => this.data = result.data)
     }
   }
 }
