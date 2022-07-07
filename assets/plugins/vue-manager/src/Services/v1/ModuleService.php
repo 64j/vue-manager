@@ -7,6 +7,7 @@ namespace VueManager\Services\v1;
 use VueManager\Application;
 use VueManager\Exceptions\NotFoundException;
 use VueManager\Interfaces\ServiceInterface;
+use VueManager\Models\AbstractModel;
 use VueManager\Models\v1\SiteModules;
 use VueManager\Traits\ServicePermissionTrait;
 
@@ -112,6 +113,15 @@ class ModuleService implements ServiceInterface
         }
 
         throw new NotFoundException();
+    }
+
+    /**
+     * @param \VueManager\Models\AbstractModel $model
+     * @return \VueManager\Models\AbstractModel
+     */
+    public function copy(AbstractModel $model): AbstractModel
+    {
+        // TODO: Implement copy() method.
     }
 
     /**

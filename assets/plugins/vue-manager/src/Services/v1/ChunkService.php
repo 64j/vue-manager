@@ -7,6 +7,7 @@ namespace VueManager\Services\v1;
 use VueManager\Application;
 use VueManager\Exceptions\NotFoundException;
 use VueManager\Interfaces\ServiceInterface;
+use VueManager\Models\AbstractModel;
 use VueManager\Models\v1\SiteHtmlsnippets;
 use VueManager\Traits\ServicePermissionTrait;
 
@@ -112,6 +113,11 @@ class ChunkService implements ServiceInterface
         }
 
         throw new NotFoundException();
+    }
+
+    public function copy(AbstractModel $model): AbstractModel
+    {
+        // TODO: Implement copy() method.
     }
 
     /**

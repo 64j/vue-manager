@@ -7,8 +7,9 @@ namespace VueManager\Services\v1;
 use VueManager\Interfaces\ServiceInterface;
 use VueManager\Models\AbstractModel;
 
-class UserService implements ServiceInterface
+class WebUserService implements ServiceInterface
 {
+
     /**
      * @param \VueManager\Models\AbstractModel $model
      * @return \VueManager\Models\AbstractModel
