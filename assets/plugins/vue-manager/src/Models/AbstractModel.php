@@ -42,10 +42,12 @@ abstract class AbstractModel implements JsonSerializable, ArrayableInterface
 
             if (isset($params[$name])) {
                 $reflectionProperty->setValue($this, $params[$name]);
-            }
 
-            if (is_callable([$this, $setter])) {
-                $this->$setter($reflectionProperty->getValue($this));
+                if (is_callable([$this, $setter])) {
+                    $this->$setter($reflectionProperty->getValue($this));
+                }
+            } else {
+                unset($this->{$name});
             }
         }
 

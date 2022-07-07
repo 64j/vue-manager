@@ -123,7 +123,7 @@ class Application
     {
         $body = $_POST + (json_decode(file_get_contents('php://input'), true) ?? []);
 
-        $this->method = explode('@', 'VueManager\\Controllers\\' . ($body['method'] ?? ''));
+        $this->method = explode('@', 'VueManager\\Controllers\\' . ($body['method'] ?? ''), 2);
         $this->method[0] = !empty($this->method[0]) ? $this->method[0] . 'Controller' : '';
         $this->method[1] = !empty($this->method[1]) ? 'action' . ucfirst($this->method[1]) : '';
 

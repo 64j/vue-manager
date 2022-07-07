@@ -67,7 +67,7 @@
           </div>
 
           <div class="section-editor">
-            <textarea v-model="data.content" class="form-control" rows="20" wrap="soft" onchange="documentDirty=true;"/>
+            <textarea v-model="data.snippet" class="form-control" rows="20" wrap="soft" onchange="documentDirty=true;"/>
           </div>
         </template>
 

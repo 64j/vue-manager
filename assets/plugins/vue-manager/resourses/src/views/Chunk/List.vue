@@ -21,7 +21,7 @@ export default {
   components: { Panel },
   data () {
     this.element = 'ChunkIndex'
-    this.controller = 'Chunk@list'
+    this.controller = 'Chunk'
 
     return {
       data: null,
@@ -50,7 +50,7 @@ export default {
     }
   },
   mounted () {
-    http.post(this.controller, { categories: true }).then(result => this.data = result.data)
+    this.list()
   },
   methods: {
     action (action, item, category) {
@@ -74,8 +74,12 @@ export default {
 
         case 'disabled':
           item.disabled = item.disabled ? 0 : 1
+          http.post(this.controller + '@update', { id: item.id, disabled: item.disabled })
           break
       }
+    },
+    list() {
+      http.post(this.controller + '@list', { categories: true }).then(result => this.data = result.data)
     }
   }
 }
