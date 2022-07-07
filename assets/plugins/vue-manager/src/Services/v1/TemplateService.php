@@ -80,14 +80,9 @@ class TemplateService implements ServiceInterface
 
         $field = 'tv.id, tv.name, tr.templateid, tv.description, tv.caption, tv.locked, ifnull(cat.category,"' . $noCategory . '") AS category, ifnull(cat.id,0) as categoryId';
 
-        $table = sprintf(
-            '%s tv
-                    LEFT JOIN %s tr ON tv.id=tr.tmplvarid
-                    LEFT JOIN %s cat ON tv.category=cat.id',
-            $app->getFullTableName('site_tmplvars'),
-            $app->getFullTableName('site_tmplvar_templates'),
-            $app->getFullTableName('categories')
-        );
+        $table = $app->getFullTableName('site_tmplvars') . ' tv
+        LEFT JOIN ' . $app->getFullTableName('site_tmplvar_templates') . ' tr ON tv.id=tr.tmplvarid
+        LEFT JOIN ' . $app->getFullTableName('categories') . ' cat ON tv.category=cat.id';
 
         if (!empty($model->id)) {
             $sql = $app->db->select(
