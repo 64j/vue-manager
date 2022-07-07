@@ -77,36 +77,39 @@
               <p v-if="Object.values(meta?.tvs?.selected || {}).length || Object.values(meta?.tvs?.unselected || {}).length">{{ $t('template_tv_msg') }}</p>
               <p v-else>{{ $t('template_no_tv') }}</p>
 
-<!--              <div class="row">-->
-<!--                <template v-if="Object.values(meta?.tvs?.selected || {}).length">-->
-<!--                  <Panel-->
-<!--                    :data="meta.tvs.selected"-->
-<!--                    class-name="px-0"-->
-<!--                    link-name="TvIndex"-->
-<!--                    link-icon="fa fa-list-alt"-->
-<!--                    checkbox="tvs"-->
-<!--                    @action="tvActions"-->
-<!--                  />-->
-<!--                </template>-->
-
-<!--                <p v-else>{{ $t('template_no_tv') }}</p>-->
-<!--              </div>-->
-
-              <ul v-if="Object.values(meta?.tvs?.selected || {}).length" class="list-unstyled">
-                <template v-for="category in meta.tvs.selected">
-                  <li v-for="tv in category.items" :key="`tv`+tv.id" class="form-check">
-                    <input type="checkbox" v-model="tvs" :id="`tv`+tv.id" :value="tv.id" class="form-check-input" checked="checked">
-                    <label :for="`tv`+tv.id" class="form-check-label">
-                      {{ tv.name }} <small>({{ tv.id }})</small> - {{ tv.caption }}
-                      <a href="#">{{ $t('edit') }}</a>
-                    </label>
-                  </li>
+              <div class="row">
+                <template v-if="Object.values(meta?.tvs?.selected || {}).length">
+                  <hr class="bg-secondary m-0">
+                  <Panel
+                    :data="meta.tvs.selected"
+                    class-name="px-0 mb-4"
+                    link-name="TvIndex"
+                    link-icon="fa fa-list-alt"
+                    checkbox="checkbox"
+                    :checkbox-checked="tvSelected"
+                    :hidden-categories="true"
+                    @action="action"
+                  />
                 </template>
-              </ul>
+
+                <p v-else class="text-danger">{{ $t('template_no_tv') }}</p>
+              </div>
+
+              <!--              <ul v-if="Object.values(meta?.tvs?.selected || {}).length" class="list-unstyled">-->
+              <!--                <template v-for="category in meta.tvs.selected">-->
+              <!--                  <li v-for="tv in category.items" :key="`tv`+tv.id" class="form-check">-->
+              <!--                    <input type="checkbox" v-model="tvs" :id="`tv`+tv.id" :value="tv.id" class="form-check-input">-->
+              <!--                    <label :for="`tv`+tv.id" class="form-check-label">-->
+              <!--                      {{ tv.name }} <small>({{ tv.id }})</small> - {{ tv.caption }}-->
+              <!--                      <a href="#">{{ $t('edit') }}</a>-->
+              <!--                    </label>-->
+              <!--                  </li>-->
+              <!--                </template>-->
+              <!--              </ul>-->
 
               <div class="row">
                 <template v-if="Object.values(meta?.tvs?.unselected || {}).length">
-<!--                  <hr class="bg-secondary">-->
+                  <!--                  <hr class="bg-secondary">-->
                   <p class="m-0">{{ $t('template_notassigned_tv') }}</p>
 
                   <Panel
@@ -114,8 +117,10 @@
                     class-name="px-0"
                     link-name="TvIndex"
                     link-icon="fa fa-list-alt"
-                    checkbox="tvs"
-                    @action="tvActions"
+                    :search-input="true"
+                    checkbox="checkbox"
+                    :checkbox-checked="tvSelected"
+                    @action="action"
                   />
                 </template>
               </div>
@@ -164,7 +169,7 @@ export default {
         content: ''
       },
       meta: {},
-      tvs: [],
+      tvSelected: []
     }
   },
   computed: {
@@ -186,7 +191,7 @@ export default {
     }
   },
   methods: {
-    action (name) {
+    action (name, item) {
       switch (name) {
         case 'save':
           this.loading = false
@@ -206,23 +211,16 @@ export default {
         case 'cancel':
           this.$emit('toTab', { name: 'ElementsIndex', query: { resourcesTab: 0 } })
           break
-      }
-    },
-    tvActions (name, item) {
-      switch (name) {
-        case 'checkbox':
-          for (const i in this.tvs) {
-            if (item.id === this.tvs[i]) {
-              delete this.tvs[i]
-              return;
-            }
-          }
-          this.tvs.push(item.id)
+
+        case 'checkbox': {
+          const index = this.tvSelected.indexOf(item.id)
+          index > -1 && this.tvSelected.splice(index, 1) || this.tvSelected.push(item.id)
           break
+        }
       }
     },
     create () {
-      http.post(this.controller + '@create', { ...this.data, tvSelected: this.tvs }).then(result => {
+      http.post(this.controller + '@create', { ...this.data, tvSelected: this.tvSelected }).then(result => {
         if (result.data.id) {
           this.$emit('replaceTab', { params: { id: result.data.id } })
         } else {
@@ -240,7 +238,7 @@ export default {
       })
     },
     update() {
-      http.post(this.controller + '@update', { ...this.data, tvSelected: this.tvs }).then(result => {
+      http.post(this.controller + '@update', { ...this.data, tvSelected: this.tvSelected }).then(result => {
         this.setData(result)
         this.$emit('titleTab', this.title)
         this.loading = true
@@ -258,10 +256,11 @@ export default {
       this.meta = result.meta
 
       if (this.meta?.tvs?.selected) {
+        this.tvSelected = []
         for (const i in this.meta.tvs.selected) {
           for (const j in this.meta.tvs.selected[i].items) {
             const tv = this.meta.tvs.selected[i].items[j]
-            this.tvs.push(tv.id)
+            this.tvSelected.push(tv.id)
           }
         }
       }

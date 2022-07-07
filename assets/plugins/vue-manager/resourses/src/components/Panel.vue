@@ -1,6 +1,6 @@
 <template>
   <div class="panel" :class="className">
-    <div class="p-3">
+    <div v-if="searchInput" class="p-3">
       <div class="input-group input-group-sm">
         <router-link v-if="txtNew" :to="{ name: linkName, params: { id : '' } }" class="btn btn-success">
           <i class="fa fa-plus"/>
@@ -17,17 +17,24 @@
     <ul v-else>
       <li v-for="category in data" :key="'category-' + category.id">
         <template v-if="Object.values(category.items).filter(v => !v.hidden).length">
-          <a class="px-3 py-2 bg-secondary bg-opacity-10 border-top border-bottom text-decoration-none text-muted">
+          <a v-if="!hiddenCategories" class="px-3 py-2 bg-secondary bg-opacity-10 border-top border-bottom text-decoration-none text-muted">
             <span class="h5 m-0 me-2">{{ category.name }} </span>
             <small>({{ category.id }})</small>
           </a>
-          <ul class="pb-2">
+          <ul>
             <template v-for="item in category.items">
               <li v-if="!item.hidden"
                   :key="'item-' + item.id"
                   class="row m-0 px-3 align-items-center border-bottom">
 
-                <input v-if="checkbox" type="checkbox" :id="`checkbox-item-`+item.id" :value="item.id" class="form-check-input me-2 p-0" @change="$emit('action', 'checkbox', item, category)">
+                <input v-if="checkbox"
+                       type="checkbox"
+                       :id="`checkbox-item-`+item.id"
+                       :value="item.id"
+                       :checked="~checkboxChecked.indexOf(item.id)"
+                       class="form-check-input me-2 p-0"
+                       @change="$emit('action', checkbox, item, category)"
+                >
 
                 <router-link
                   :to="{ name: linkName, params: { id: item.id } }"
@@ -72,11 +79,14 @@ export default {
       type: String,
       required: true
     },
+    linkIcon: {
+      type: String
+    },
     className: {
       type: String
     },
-    linkIcon: {
-      type: String
+    searchInput: {
+      type: Boolean
     },
     txtNew: {
       type: String
@@ -86,6 +96,12 @@ export default {
     },
     checkbox: {
       type: String
+    },
+    checkboxChecked: {
+      type: Array
+    },
+    hiddenCategories: {
+      type: Boolean
     },
     actions: {
       type: Object
@@ -127,4 +143,5 @@ export default {
 
 <style scoped>
 .panel ul, .panel > ul > li, .panel > ul > li > a { margin: 0; padding: 0; display: block; }
+.panel > ul > li:not(:first-child) > a { margin-top: .5rem; }
 </style>

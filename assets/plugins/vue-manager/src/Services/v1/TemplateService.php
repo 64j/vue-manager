@@ -177,7 +177,7 @@ class TemplateService implements ServiceInterface
 
             if (!empty($model->__meta['tvSelected'])) {
                 foreach ($model->__meta['tvSelected'] as $id) {
-                    if ($id) {
+                    if (is_integer($id)) {
                         $app->db->insert(array(
                             'templateid' => $model->id,
                             'tmplvarid' => $id,
