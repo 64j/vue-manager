@@ -77,6 +77,8 @@ export default {
         this.isErrors = true
       }
 
+      http.baseUrl = this.data.host
+
       http.post('Auth@login', this.data).then(result => {
         if (result['token']) {
           localStorage['EVO.TOKEN'] = result['token']
