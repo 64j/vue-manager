@@ -208,8 +208,12 @@ export default {
           break
 
         case 'cancel':
-          this.$emit('toTab', { name: 'ElementsIndex', query: { resourcesTab: 0 } })
+          this.$emit('toTab', { name: 'ElementsIndex', query: { resourcesTab: 0 } }, true)
           break
+
+        case 'refresh':
+          this.$emit('refreshTab', { name: 'ElementsIndex', query: { resourcesTab: 0 } })
+          break;
 
         case 'checkbox': {
           const index = this.tvSelected.indexOf(item.id)
@@ -226,6 +230,7 @@ export default {
           this.setData(result)
           this.$emit('titleTab', this.title)
         }
+        this.action('refresh')
         this.loading = true
       })
     },
@@ -240,6 +245,7 @@ export default {
       http.post(this.controller + '@update', { ...this.data, tvSelected: this.tvSelected }).then(result => {
         this.setData(result)
         this.$emit('titleTab', this.title)
+        this.action('refresh')
         this.loading = true
       })
     },

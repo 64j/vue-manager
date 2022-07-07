@@ -20,6 +20,7 @@ export default {
   name: 'ChunkList',
   components: { Panel },
   data () {
+    this.element = 'ChunkIndex'
     this.controller = 'Chunk@list'
 
     return {
@@ -52,21 +53,30 @@ export default {
     http.post(this.controller, { categories: true }).then(result => this.data = result.data)
   },
   methods: {
-    action(action, item, category) {
+    action (action, item, category) {
       switch (action) {
         case 'copy':
-          alert(action + ' ' + item.id)
-          break;
+          http.post(this.controller + '@copy', item).then(result => {
+            if (result) {
+              this.list()
+            }
+          })
+          break
 
         case 'delete':
-          delete category.items[item.id]
-          break;
+          http.post(this.controller + '@delete', item).then(result => {
+            if (result) {
+              delete category.items[item.id]
+              this.$root.$refs.Layout.$refs.MultiTabs.closeTab(this.$router.resolve({ name: this.element, params: { id: item.id } }))
+            }
+          })
+          break
 
         case 'disabled':
-          item.disabled = item.disabled ? 0 : 1;
-          break;
+          item.disabled = item.disabled ? 0 : 1
+          break
       }
-    },
+    }
   }
 }
 </script>

@@ -29,6 +29,7 @@
               @closeTab="closeTab"
               @titleTab="setTitleTab"
               @replaceTab="replaceTab"
+              @refreshTab="refreshTab"
             />
           </KeepAlive>
         </router-view>
@@ -70,7 +71,7 @@ export default {
       return route && route.path || this.$route.path
     },
     isActive (tab) {
-      const active = tab.name === this.$route.name && (tab.meta.groupTab || !tab.meta.groupTab && diff(tab.params, this.$route.params))
+      const active = tab.name === this.$route.name && (tab?.meta?.groupTab || !tab?.meta?.groupTab && diff(tab.params, this.$route.params))
       if (active) {
         const title = tab.title && tab.title.replace(/<\/?[^>]+>/ig, '').trim() || ''
         document.title = (title && title + ' - ' || '') + this.$store.state.Settings.config['site_name'] + ' (EVO CMS Manager)'
@@ -154,6 +155,10 @@ export default {
         })
       })
     },
+    refreshTab(params) {
+      const route = this.$router.resolve(params)
+      this.$store.dispatch('MultiTabs/delTabKey', route)
+    },
     toPrevTab(tab, callback) {
       const index = this.tabs.map(i => i.path).indexOf(tab.path) - 1
       const prevTab = this.tabs[index]
@@ -173,10 +178,16 @@ export default {
         }
       }
     },
-    toTab (to) {
+    toTab (to, refresh) {
       const route = this.$route
       this.$router.push(to).then(() => {
         this.closeTab(route)
+        if (refresh) {
+          const tab = this.$router.resolve(to)
+          this.$router.replace('/redirect' + tab.fullPath).then(() => {
+            this.$store.dispatch('MultiTabs/delTabKey', tab)
+          })
+        }
       })
     },
     filterFixTabs (routes, basePath = '/') {

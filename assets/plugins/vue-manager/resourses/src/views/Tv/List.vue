@@ -19,6 +19,7 @@ export default {
   name: 'TvList',
   components: { Panel },
   data () {
+    this.element = 'TvIndex'
     this.controller = 'Tv@list'
 
     return {
@@ -40,11 +41,20 @@ export default {
     action (action, item, category) {
       switch (action) {
         case 'copy':
-          alert(action + ' ' + item.id)
+          http.post(this.controller + '@copy', item).then(result => {
+            if (result) {
+              this.list()
+            }
+          })
           break
 
         case 'delete':
-          delete category.items[item.id]
+          http.post(this.controller + '@delete', item).then(result => {
+            if (result) {
+              delete category.items[item.id]
+              this.$root.$refs.Layout.$refs.MultiTabs.closeTab(this.$router.resolve({ name: this.element, params: { id: item.id } }))
+            }
+          })
           break
       }
     }

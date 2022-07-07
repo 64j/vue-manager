@@ -19,6 +19,7 @@ export default {
   name: 'TemplateList',
   components: { Panel },
   data () {
+    this.element = 'TemplateIndex'
     this.controller = 'Template'
 
     return {
@@ -51,6 +52,7 @@ export default {
           http.post(this.controller + '@delete', item).then(result => {
             if (result) {
               delete category.items[item.id]
+              this.$root.$refs.Layout.$refs.MultiTabs.closeTab(this.$router.resolve({ name: this.element, params: { id: item.id } }))
             }
           })
           break
