@@ -78,7 +78,7 @@ class TemplateService implements ServiceInterface
                 $noCategory = Application::getInstance()
                     ->getLang('no_category');
 
-                $field = 'tv.id, tv.name, tr.templateid, tv.description, tv.caption, tv.locked, ifnull(cat.category,"' . $noCategory . '") AS category, ifnull(cat.id,0) as catid';
+                $field = 'tv.id, tv.name, tr.templateid, tv.description, tv.caption, tv.locked, ifnull(cat.category,"' . $noCategory . '") AS category, ifnull(cat.id,0) as categoryId';
 
                 $table = sprintf(
                     '%s tv
@@ -97,15 +97,15 @@ class TemplateService implements ServiceInterface
                 );
 
                 while ($r = $app->db->getRow($sql)) {
-                    if (!isset($model->__meta['tvs']['selected'][$r['catid']])) {
-                        $model->__meta['tvs']['selected'][$r['catid']] = [
-                            'id' => $r['catid'],
+                    if (!isset($model->__meta['tvs']['selected'][$r['categoryId']])) {
+                        $model->__meta['tvs']['selected'][$r['categoryId']] = [
+                            'id' => $r['categoryId'],
                             'name' => $r['category'],
                             'items' => []
                         ];
                     }
 
-                    $model->__meta['tvs']['selected'][$r['catid']]['items'][$r['id']] = $r;
+                    $model->__meta['tvs']['selected'][$r['categoryId']]['items'][$r['id']] = $r;
                     $model->__meta['tvSelected'][] = $r['id'];
                 }
 
@@ -116,15 +116,15 @@ class TemplateService implements ServiceInterface
                 );
 
                 while ($r = $app->db->getRow($sql)) {
-                    if (!isset($model->__meta['tvs']['unselected'][$r['catid']])) {
-                        $model->__meta['tvs']['unselected'][$r['catid']] = [
-                            'id' => $r['catid'],
+                    if (!isset($model->__meta['tvs']['unselected'][$r['categoryId']])) {
+                        $model->__meta['tvs']['unselected'][$r['categoryId']] = [
+                            'id' => $r['categoryId'],
                             'name' => $r['category'],
                             'items' => []
                         ];
                     }
 
-                    $model->__meta['tvs']['unselected'][$r['catid']]['items'][$r['id']] = $r;
+                    $model->__meta['tvs']['unselected'][$r['categoryId']]['items'][$r['id']] = $r;
                 }
 
                 return $model;
