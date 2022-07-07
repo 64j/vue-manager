@@ -2,6 +2,7 @@
   <Panel
     :data="data"
     :actions="actions"
+    :search-input="true"
     link-name="TemplateIndex"
     link-icon="fa fa-newspaper"
     :txt-new="$t('new_template')"

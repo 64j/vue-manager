@@ -2,6 +2,7 @@
   <Panel
     :data="data"
     :actions="actions"
+    :search-input="true"
     link-name="SnippetIndex"
     link-icon="fa fa-code"
     :txt-new="$t('new_snippet')"

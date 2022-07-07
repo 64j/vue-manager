@@ -2,6 +2,7 @@
   <Panel
     :data="data"
     :actions="actions"
+    :search-input="true"
     link-name="ModuleIndex"
     link-icon="fa fa-cube"
     :txt-new="$t('new_module')"

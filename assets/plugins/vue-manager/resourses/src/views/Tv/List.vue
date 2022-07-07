@@ -2,6 +2,7 @@
   <Panel
     :data="data"
     :actions="actions"
+    :search-input="true"
     link-name="TvIndex"
     link-icon="fa fa-list-alt"
     :txt-new="$t('new_tmplvars')"

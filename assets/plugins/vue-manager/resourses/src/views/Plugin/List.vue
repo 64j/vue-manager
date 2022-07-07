@@ -2,6 +2,7 @@
   <Panel
     :data="data"
     :actions="actions"
+    :search-input="true"
     link-name="PluginIndex"
     link-icon="fa fa-plug"
     :txt-new="$t('new_plugin')"

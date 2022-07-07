@@ -2,6 +2,7 @@
   <Panel
     :data="data"
     :actions="actions"
+    :search-input="true"
     link-name="ChunkIndex"
     link-icon="fa fa-th-large"
     :txt-new="$t('new_htmlsnippet')"

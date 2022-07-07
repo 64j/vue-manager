@@ -204,7 +204,16 @@ class TemplateService implements ServiceInterface
 
         if (!empty($model->id)) {
             $model = $this->read($model);
-            $app->db->delete($app->getFullTableName('site_templates'), 'id=' . $model->id);
+
+            $app->db->delete(
+                $app->getFullTableName('site_templates'),
+                'id=' . $model->id
+            );
+
+            $app->db->delete(
+                $app->getFullTableName('site_tmplvar_templates'),
+                'templateid=' . $model->id
+            );
 
             return $model;
         }
