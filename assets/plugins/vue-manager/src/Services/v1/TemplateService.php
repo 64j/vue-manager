@@ -35,15 +35,12 @@ class TemplateService implements ServiceInterface
     {
         $this->hasPermissionsCreate();
         $app = evolutionCMS();
-
+        $model = (new SiteTemplates())->hydrate($model->__getParams(), true);
         $data = $model->except(['id'])
             ->toData();
 
-        if (empty($data)) {
-            $data = (new SiteTemplates())->toData();
-        }
-
         $model->id = $app->db->insert($data, $app->getFullTableName('site_templates'));
+        $model->createdon = time();
 
         if (!$model->id) {
             throw new NotFoundException();
@@ -61,20 +58,15 @@ class TemplateService implements ServiceInterface
     {
         $this->hasPermissionsRead();
         $app = evolutionCMS();
+        $params = $model->__getParams();
 
         if (!empty($model->id)) {
-            $data = $app->db->getRow(
+            $params = $app->db->getRow(
                 $app->db->select('*', $app->getFullTableName('site_templates'), 'id=' . $model->id)
-            );
-
-            if ($data) {
-                $model = $model->hydrate($data);
-            }
-        } else {
-            $model = new SiteTemplates();
+            ) ?: $params;
         }
 
-        print_r($model->toData()); exit();
+        $model = (new SiteTemplates())->hydrate($params, true);
 
         $meta = [
             'tvSelected' => [],

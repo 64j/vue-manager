@@ -33,9 +33,10 @@ abstract class AbstractModel implements JsonSerializable, ArrayableInterface
 
     /**
      * @param array $params
+     * @param bool $nullableProperties
      * @return self
      */
-    public function hydrate(array $params = []): self
+    public function hydrate(array $params = [], bool $nullableProperties = false): self
     {
         if (empty($params)) {
             return $this;
@@ -59,22 +60,30 @@ abstract class AbstractModel implements JsonSerializable, ArrayableInterface
                     ->allowsNull();
 
                 if ($isNull && is_null($value)) {
-                    $value = null;
-                } elseif ($type) {
-                    switch ($type) {
-                        case 'int':
-                            $value = (int) $value;
-                            break;
-                        case 'float':
-                            $value = (float) $value;
-                            break;
-                        case 'double':
-                            $value = (double) $value;
-                            break;
-                        case 'string':
-                            $value = (string) $value;
-                            break;
-                    }
+                    $type = 'nullable';
+                }
+
+                if ($type != 'nullable' && is_null($value) && !$nullableProperties) {
+                    unset($this->$name);
+                    continue;
+                }
+
+                switch ($type) {
+                    case 'int':
+                        $value = (int) $value;
+                        break;
+                    case 'float':
+                        $value = (float) $value;
+                        break;
+                    case 'double':
+                        $value = (double) $value;
+                        break;
+                    case 'string':
+                        $value = (string) $value;
+                        break;
+                    case 'nullable':
+                        $value = null;
+                        break;
                 }
 
                 $reflectionProperty->setValue($this, $value);
@@ -82,7 +91,7 @@ abstract class AbstractModel implements JsonSerializable, ArrayableInterface
                 if (is_callable([$this, $setter])) {
                     $this->$setter($reflectionProperty->getValue($this));
                 }
-            } else {
+            } elseif (!$nullableProperties) {
                 unset($this->$name);
             }
         }
