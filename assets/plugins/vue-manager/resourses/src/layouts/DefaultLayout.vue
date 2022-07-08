@@ -1,7 +1,6 @@
 <template>
   <div class="app position-relative d-flex flex-nowrap flex-column h-100 w-100" v-if="loading">
     <notifications style="top: .5rem"/>
-    <notifications group="alert" ignoreDuplicates="true" style="top: 50%; left: 50%; transform: translate3d(-50%, -50%, 0)"/>
     <div class="app-header flex-grow-0 position-relative border-bottom">
       <MenuView ref="Menu"/>
     </div>

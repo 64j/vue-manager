@@ -45,7 +45,7 @@ class SiteTemplates extends AbstractModel
      *
      * @ORM\Column(name="description", type="string", length=255, nullable=false, options={"default"="'Template'"})
      */
-    public string $description = 'Template';
+    public string $description = '';
 
     /**
      * @var int

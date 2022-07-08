@@ -14,6 +14,7 @@
 <script>
 import http from '@/utils/http'
 import Panel from '@/components/Panel'
+import i18n from '@/i18n'
 
 export default {
   name: 'TemplateList',
@@ -49,21 +50,14 @@ export default {
           break
 
         case 'delete':
-          // notify({
-          //   group: 'alert',
-          //   type: 'error',
-          //   duration: 10000,
-          //   text: '<div class="d-flex justify-content-center"><button class="btn btn-danger rounded-0">Delete ' + item.name + ' #' + item.id + '?</button></div>',
-          // })
-          if (category) {
-            //
+          if (confirm(i18n.global.t('confirm_delete_template'))) {
+            http.post(this.controller + '@delete', item).then(result => {
+              if (result) {
+                delete category.items[item.id]
+                this.$root.$refs.Layout.$refs.MultiTabs.closeTab(this.$router.resolve({ name: this.element, params: { id: item.id } }))
+              }
+            })
           }
-          // http.post(this.controller + '@delete', item).then(result => {
-          //   if (result) {
-          //     delete category.items[item.id]
-          //     this.$root.$refs.Layout.$refs.MultiTabs.closeTab(this.$router.resolve({ name: this.element, params: { id: item.id } }))
-          //   }
-          // })
           break
       }
     },

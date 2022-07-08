@@ -162,11 +162,13 @@ export default {
       })
     },
     delete () {
-      http.post(this.controller + '@delete', this.data).then(result => {
-        if (result) {
-          this.action('cancel')
-        }
-      })
+      if (confirm(i18n.global.t('confirm_delete_htmlsnippet'))) {
+        http.post(this.controller + '@delete', this.data).then(result => {
+          if (result) {
+            this.action('cancel')
+          }
+        })
+      }
     },
     setData (result) {
       this.data = result.data

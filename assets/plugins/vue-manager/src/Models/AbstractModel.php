@@ -37,6 +37,10 @@ abstract class AbstractModel implements JsonSerializable, ArrayableInterface
      */
     public function hydrate(array $params = []): self
     {
+        if (empty($params)) {
+            return $this;
+        }
+
         $this->__params = $params;
 
         $class = new ReflectionClass($this);
@@ -184,7 +188,9 @@ abstract class AbstractModel implements JsonSerializable, ArrayableInterface
      */
     public function toData(): array
     {
-        return (array) evolutionCMS()->db->escape($this->__toArray());
+        $data = $this->__toArray();
+
+        return $data ? evolutionCMS()->db->escape($data) : [];
     }
 
     /**

@@ -23,7 +23,7 @@ trait CrudControllerTrait
     {
         $model = $this->service->create($this->model->hydrate($params));
 
-        return $this->ok($model, $model->__meta ?? []);
+        return $this->ok($model, $model->__getMeta());
     }
 
     /**
@@ -35,7 +35,7 @@ trait CrudControllerTrait
     {
         $model = $this->service->read($this->model->hydrate($params));
 
-        return $this->ok($model, $model->__meta ?? []);
+        return $this->ok($model, $model->__getMeta());
     }
 
     /**
@@ -47,7 +47,7 @@ trait CrudControllerTrait
     {
         $model = $this->service->update($this->model->hydrate($params));
 
-        return $this->ok($model, $model->__meta ?? []);
+        return $this->ok($model, $model->__getMeta());
     }
 
     /**
@@ -59,7 +59,7 @@ trait CrudControllerTrait
     {
         $model = $this->service->delete($this->model->hydrate($params));
 
-        return $this->ok($model, $model->__meta ?? []);
+        return $this->ok($model, $model->__getMeta());
     }
 
     /**
@@ -71,7 +71,7 @@ trait CrudControllerTrait
     {
         $model = $this->service->copy($this->model->hydrate($params));
 
-        return $this->ok($model, $model->__meta ?? []);
+        return $this->ok($model, $model->__getMeta());
     }
 
     /**

@@ -39,6 +39,10 @@ class TemplateService implements ServiceInterface
         $data = $model->except(['id'])
             ->toData();
 
+        if (empty($data)) {
+            $data = (new SiteTemplates())->toData();
+        }
+
         $model->id = $app->db->insert($data, $app->getFullTableName('site_templates'));
 
         if (!$model->id) {
@@ -57,15 +61,20 @@ class TemplateService implements ServiceInterface
     {
         $this->hasPermissionsRead();
         $app = evolutionCMS();
-        $data = [];
 
         if (!empty($model->id)) {
             $data = $app->db->getRow(
                 $app->db->select('*', $app->getFullTableName('site_templates'), 'id=' . $model->id)
             );
+
+            if ($data) {
+                $model = $model->hydrate($data);
+            }
+        } else {
+            $model = new SiteTemplates();
         }
 
-        $model = $model->hydrate($data);
+        print_r($model->toData()); exit();
 
         $meta = [
             'tvSelected' => [],

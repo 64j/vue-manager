@@ -64,12 +64,14 @@ export default {
           break
 
         case 'delete':
-          http.post(this.controller + '@delete', item).then(result => {
-            if (result) {
-              delete category.items[item.id]
-              this.$root.$refs.Layout.$refs.MultiTabs.closeTab(this.$router.resolve({ name: this.element, params: { id: item.id } }))
-            }
-          })
+          if (confirm(i18n.global.t('confirm_delete_htmlsnippet'))) {
+            http.post(this.controller + '@delete', item).then(result => {
+              if (result) {
+                delete category.items[item.id]
+                this.$root.$refs.Layout.$refs.MultiTabs.closeTab(this.$router.resolve({ name: this.element, params: { id: item.id } }))
+              }
+            })
+          }
           break
 
         case 'disabled':

@@ -142,12 +142,13 @@ export default {
   name: 'SnippetIndex',
   components: { ActionsButtons, TitleView, Tabs },
   data () {
-    this.controller = '/snippet/'
+    this.controller = 'Snippet'
+    this.icon = 'fa fa-code'
 
     return {
       loading: false,
       data: {
-        id: null,
+        id: this.$route.params && this.$route.params.id || null,
         name: '',
         locked: 0,
         description: '',
@@ -166,44 +167,20 @@ export default {
   },
   mounted () {
     this.$emit('titleTab', {
-      icon: 'fa fa-code',
+      icon: this.icon,
       title: ''
     })
-    this.data.id = this.$route.params && this.$route.params.id || null
-    if (this.data.id) {
-      this.get()
-    } else {
-      this.$emit('titleTab', this.title)
-      this.loading = true
-    }
+    this.read()
   },
   methods: {
-    get () {
-      http.post(this.controller + '@read', this.data).then(result => {
-        this.data = result.data
-        for (let i in result.meta.events || {}) {
-          this.events[i] = Array.isArray(result.meta.events[i]) ? result.meta.events[i].join('') : result.meta.events[i]
-        }
-        this.$emit('titleTab', this.title)
-        this.loading = true
-      })
-    },
     action (action) {
       switch (action) {
         case 'save':
           this.loading = false
           if (this.data.id) {
-            http.post(this.controller + '@update', this.data).then(result => {
-              this.data = result.data
-              this.$emit('titleTab', this.title)
-              this.loading = true
-            })
+            this.update()
           } else {
-            http.post(this.controller + '@create', this.data).then(result => {
-              this.data = result.data
-              this.$emit('titleTab', this.title)
-              this.loading = true
-            })
+            this.create()
           }
           break
 
@@ -212,13 +189,41 @@ export default {
           break
 
         case 'delete':
-          http.post(this.controller + '@delete', { id: this.data.id }).then(result => {
-            if (result) {
-              this.action('cancel')
-            }
-          })
+          this.delete()
           break
       }
+    },
+    create() {
+      http.post(this.controller + '@create', this.data).then(this.setData)
+    },
+    read() {
+      http.post(this.controller + '@read', this.data).then(result => {
+        this.setData(result)
+      })
+    },
+    update() {
+      http.post(this.controller + '@update', this.data).then(result => {
+        this.setData(result)
+      })
+    },
+    delete() {
+      if (confirm(i18n.global.t('confirm_delete_snippet'))) {
+        http.post(this.controller + '@delete', { id: this.data.id }).then(result => {
+          if (result) {
+            this.action('cancel')
+          }
+        })
+      }
+    },
+    setData(result) {
+      this.data = result.data
+      this.meta = result.meta
+
+      for (let i in result.meta.events || {}) {
+        this.events[i] = Array.isArray(result.meta.events[i]) ? result.meta.events[i].join('') : result.meta.events[i]
+      }
+      this.$emit('titleTab', this.title)
+      this.loading = true
     }
   }
 }

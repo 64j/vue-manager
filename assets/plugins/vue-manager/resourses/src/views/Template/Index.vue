@@ -55,7 +55,7 @@
                 </div>
               </div>
               <div class="form-check mb-1" v-if="$store.state.Settings.permissions['save_role']">
-                <input v-model="data.selectable" type="checkbox" class="form-check-input" id="selectable" :false-value="0" true-value="1">
+                <input v-model="data.selectable" type="checkbox" class="form-check-input" id="selectable" :false-value="0" :true-value="1">
                 <label class="form-check-label" for="selectable">{{ $t('template_selectable') }}</label>
               </div>
             </div>
@@ -157,17 +157,13 @@ export default {
 
     return {
       loading: false,
+      meta: {},
       data: {
         id: this.$route.params && this.$route.params.id || null,
-        locked: 0,
-        templatename: '',
-        description: '',
         category: 0,
         newcategory: null,
-        selectable: 0,
-        content: ''
+        selectable: 1
       },
-      meta: {},
       tvSelected: []
     }
   },
@@ -218,37 +214,29 @@ export default {
     },
     create () {
       http.post(this.controller + '@create', { ...this.data, tvSelected: this.tvSelected }).then(result => {
-        if (result.data.id) {
-          this.$emit('replaceTab', { params: { id: result.data.id } })
-        } else {
-          this.setData(result)
-          this.$emit('titleTab', this.title)
-        }
+        this.setData(result)
         this.action('refresh')
-        this.loading = true
       })
     },
     read () {
       http.post(this.controller + '@read', this.data).then(result => {
         this.setData(result)
-        this.$emit('titleTab', this.title)
-        this.loading = true
       })
     },
     update () {
       http.post(this.controller + '@update', { ...this.data, tvSelected: this.tvSelected }).then(result => {
         this.setData(result)
-        this.$emit('titleTab', this.title)
         this.action('refresh')
-        this.loading = true
       })
     },
     delete () {
-      http.post(this.controller + '@delete', this.data).then(result => {
-        if (result) {
-          this.action('cancel')
-        }
-      })
+      if (confirm(i18n.global.t('confirm_delete_template'))) {
+        http.post(this.controller + '@delete', this.data).then(result => {
+          if (result) {
+            this.action('cancel')
+          }
+        })
+      }
     },
     setData (result) {
       this.data = result.data
@@ -273,9 +261,12 @@ export default {
         }
       }
 
-      for (let i in this.meta.events || {}) {
+      for (let i in this.meta?.events || {}) {
         this.events[i] = Array.isArray(this.meta.events[i]) ? this.meta.events[i].join('') : this.meta.events[i]
       }
+
+      this.$emit('titleTab', this.title)
+      this.loading = true
     }
   }
 }

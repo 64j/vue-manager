@@ -14,6 +14,7 @@
 <script>
 import http from '@/utils/http'
 import Panel from '@/components/Panel'
+import i18n from '@/i18n'
 
 export default {
   name: 'TvList',
@@ -49,12 +50,14 @@ export default {
           break
 
         case 'delete':
-          http.post(this.controller + '@delete', item).then(result => {
-            if (result) {
-              delete category.items[item.id]
-              this.$root.$refs.Layout.$refs.MultiTabs.closeTab(this.$router.resolve({ name: this.element, params: { id: item.id } }))
-            }
-          })
+          if (confirm(i18n.global.t('confirm_delete_tmplvars'))) {
+            http.post(this.controller + '@delete', item).then(result => {
+              if (result) {
+                delete category.items[item.id]
+                this.$root.$refs.Layout.$refs.MultiTabs.closeTab(this.$router.resolve({ name: this.element, params: { id: item.id } }))
+              }
+            })
+          }
           break
       }
     }
