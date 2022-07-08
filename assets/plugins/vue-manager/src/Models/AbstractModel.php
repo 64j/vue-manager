@@ -24,7 +24,12 @@ abstract class AbstractModel implements JsonSerializable, ArrayableInterface
     /**
      * @var array
      */
-    public array $__meta = [];
+    protected array $__params = [];
+
+    /**
+     * @var array
+     */
+    protected array $__meta = [];
 
     /**
      * @param array $params
@@ -32,6 +37,8 @@ abstract class AbstractModel implements JsonSerializable, ArrayableInterface
      */
     public function hydrate(array $params = []): self
     {
+        $this->__params = $params;
+
         $class = new ReflectionClass($this);
 
         $params = $this->convert($params);
@@ -40,14 +47,39 @@ abstract class AbstractModel implements JsonSerializable, ArrayableInterface
             $name = $reflectionProperty->getName();
             $setter = 'set' . ucfirst($name);
 
-            if (isset($params[$name])) {
-                $reflectionProperty->setValue($this, $params[$name]);
+            if (array_key_exists($name, $params)) {
+                $value = $params[$name];
+                $type = $reflectionProperty->getType()
+                    ->getName();
+                $isNull = $reflectionProperty->getType()
+                    ->allowsNull();
+
+                if ($isNull && is_null($value)) {
+                    $value = null;
+                } elseif ($type) {
+                    switch ($type) {
+                        case 'int':
+                            $value = (int) $value;
+                            break;
+                        case 'float':
+                            $value = (float) $value;
+                            break;
+                        case 'double':
+                            $value = (double) $value;
+                            break;
+                        case 'string':
+                            $value = (string) $value;
+                            break;
+                    }
+                }
+
+                $reflectionProperty->setValue($this, $value);
 
                 if (is_callable([$this, $setter])) {
                     $this->$setter($reflectionProperty->getValue($this));
                 }
             } else {
-                unset($this->{$name});
+                unset($this->$name);
             }
         }
 
@@ -181,8 +213,47 @@ abstract class AbstractModel implements JsonSerializable, ArrayableInterface
 
         unset($data['__exceptedKeys']);
         unset($data['__onlyKeys']);
+        unset($data['__params']);
         unset($data['__meta']);
 
         return $this->fromCamel($data);
+    }
+
+    /**
+     * @return array
+     */
+    public function __getMeta(): array
+    {
+        return $this->__meta;
+    }
+
+    /**
+     * @param array $meta
+     * @return $this
+     */
+    public function __setMeta(array $meta): self
+    {
+        $this->__meta = $meta;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function __getParams(): array
+    {
+        return $this->__params;
+    }
+
+    /**
+     * @param array $params
+     * @return $this
+     */
+    public function __setParams(array $params): self
+    {
+        $this->__params = $params;
+
+        return $this;
     }
 }

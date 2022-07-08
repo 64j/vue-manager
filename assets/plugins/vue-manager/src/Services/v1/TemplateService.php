@@ -67,7 +67,7 @@ class TemplateService implements ServiceInterface
 
         $model = $model->hydrate($data);
 
-        $model->__meta = [
+        $meta = [
             'tvSelected' => [],
             'tvs' => [
                 'selected' => [],
@@ -93,36 +93,38 @@ class TemplateService implements ServiceInterface
             );
 
             while ($r = $app->db->getRow($sql)) {
-                if (!isset($model->__meta['tvs']['selected'][$r['categoryId']])) {
-                    $model->__meta['tvs']['selected'][$r['categoryId']] = [
+                if (!isset($meta['tvs']['selected'][$r['categoryId']])) {
+                    $meta['tvs']['selected'][$r['categoryId']] = [
                         'id' => $r['categoryId'],
                         'name' => $r['category'],
                         'items' => []
                     ];
                 }
 
-                $model->__meta['tvs']['selected'][$r['categoryId']]['items'][$r['id']] = $r;
-                $model->__meta['tvSelected'][] = $r['id'];
+                $meta['tvs']['selected'][$r['categoryId']]['items'][$r['id']] = $r;
+                $meta['tvSelected'][] = $r['id'];
             }
         }
 
         $sql = $app->db->select(
             $field,
             $table,
-            $model->__meta['tvSelected'] ? 'tv.id NOT IN(' . implode(',', $model->__meta['tvSelected']) . ')' : ''
+            $meta['tvSelected'] ? 'tv.id NOT IN(' . implode(',', $meta['tvSelected']) . ')' : ''
         );
 
         while ($r = $app->db->getRow($sql)) {
-            if (!isset($model->__meta['tvs']['unselected'][$r['categoryId']])) {
-                $model->__meta['tvs']['unselected'][$r['categoryId']] = [
+            if (!isset($meta['tvs']['unselected'][$r['categoryId']])) {
+                $meta['tvs']['unselected'][$r['categoryId']] = [
                     'id' => $r['categoryId'],
                     'name' => $r['category'],
                     'items' => []
                 ];
             }
 
-            $model->__meta['tvs']['unselected'][$r['categoryId']]['items'][$r['id']] = $r;
+            $meta['tvs']['unselected'][$r['categoryId']]['items'][$r['id']] = $r;
         }
+
+        $model->__setMeta($meta);
 
         return $model;
     }
@@ -148,7 +150,9 @@ class TemplateService implements ServiceInterface
 
         $app->db->update($model->toData(), $app->getFullTableName('site_templates'), 'id=' . $model->id);
 
-        if (isset($model->__meta['tvSelected'])) {
+        $meta = $model->__getMeta();
+
+        if (isset($meta['tvSelected'])) {
             $rs = $app->db->select(
                 'tmplvarid, `rank`',
                 $app->getFullTableName('site_tmplvar_templates'),
@@ -168,8 +172,8 @@ class TemplateService implements ServiceInterface
                 'templateid=' . $model->id
             );
 
-            if (!empty($model->__meta['tvSelected'])) {
-                foreach ($model->__meta['tvSelected'] as $id) {
+            if (!empty($meta['tvSelected'])) {
+                foreach ($meta['tvSelected'] as $id) {
                     if (is_integer($id)) {
                         $app->db->insert(array(
                             'templateid' => $model->id,
