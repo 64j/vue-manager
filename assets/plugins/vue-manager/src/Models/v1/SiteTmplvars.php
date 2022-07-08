@@ -24,91 +24,91 @@ class SiteTmplvars extends AbstractModel
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    public $id;
+    public int $id;
 
     /**
      * @var string
      *
      * @ORM\Column(name="type", type="string", length=50, nullable=false, options={"default"="''"})
      */
-    public $type = '';
+    public string $type = '';
 
     /**
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=50, nullable=false, options={"default"="''"})
      */
-    public $name = '';
+    public string $name = '';
 
     /**
      * @var string
      *
      * @ORM\Column(name="caption", type="string", length=80, nullable=false, options={"default"="''"})
      */
-    public $caption = '';
+    public string $caption = '';
 
     /**
      * @var string
      *
      * @ORM\Column(name="description", type="string", length=255, nullable=false, options={"default"="''"})
      */
-    public $description = '';
+    public string $description = '';
 
     /**
      * @var int
      *
      * @ORM\Column(name="editor_type", type="integer", nullable=false, options={"comment"="0-plain text,1-rich text,2-code editor"})
      */
-    public $editorType = 0;
+    public int $editorType = 0;
 
     /**
      * @var int
      *
      * @ORM\Column(name="category", type="integer", nullable=false, options={"comment"="category id"})
      */
-    public $category = 0;
+    public int $category = 0;
 
     /**
-     * @var bool
+     * @var int
      *
      * @ORM\Column(name="locked", type="boolean", nullable=false)
      */
-    public $locked = 0;
+    public int $locked = 0;
 
     /**
      * @var string|null
      *
      * @ORM\Column(name="elements", type="text", length=65535, nullable=true, options={"default"="NULL"})
      */
-    public $elements = null;
+    public ?string $elements = null;
 
     /**
      * @var int
      *
      * @ORM\Column(name="rank", type="integer", nullable=false)
      */
-    public $rank = 0;
+    public int $rank = 0;
 
     /**
      * @var string
      *
      * @ORM\Column(name="display", type="string", length=20, nullable=false, options={"default"="''","comment"="Display Control"})
      */
-    public $display = '';
+    public string $display = '';
 
     /**
      * @var string|null
      *
      * @ORM\Column(name="display_params", type="text", length=65535, nullable=true, options={"default"="NULL","comment"="Display Control Properties"})
      */
-    public $displayParams = null;
+    public ?string $displayParams = null;
 
     /**
      * @var string|null
      *
      * @ORM\Column(name="default_text", type="text", length=65535, nullable=true, options={"default"="NULL"})
      */
-    public $defaultText = null;
+    public ?string $defaultText = null;
 
     /**
      * @param string $name

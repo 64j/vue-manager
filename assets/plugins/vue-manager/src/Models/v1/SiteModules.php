@@ -24,105 +24,105 @@ class SiteModules extends AbstractModel
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    public $id;
+    public int $id;
 
     /**
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=50, nullable=false, options={"default"="''"})
      */
-    public $name = '';
+    public string $name = '';
 
     /**
      * @var string
      *
      * @ORM\Column(name="description", type="string", length=255, nullable=false, options={"default"="'0'"})
      */
-    public $description = '';
+    public string $description = '';
 
     /**
      * @var int
      *
      * @ORM\Column(name="editor_type", type="integer", nullable=false, options={"comment"="0-plain text,1-rich text,2-code editor"})
      */
-    public $editorType = 0;
+    public int $editorType = 0;
 
     /**
-     * @var bool
+     * @var int
      *
      * @ORM\Column(name="disabled", type="boolean", nullable=false)
      */
-    public $disabled = 0;
+    public int $disabled = 0;
 
     /**
      * @var int
      *
      * @ORM\Column(name="category", type="integer", nullable=false, options={"comment"="category id"})
      */
-    public $category = 0;
+    public int $category = 0;
 
     /**
-     * @var bool
+     * @var int
      *
      * @ORM\Column(name="wrap", type="boolean", nullable=false)
      */
-    public $wrap = 0;
+    public int $wrap = 0;
 
     /**
-     * @var bool
+     * @var int
      *
      * @ORM\Column(name="locked", type="boolean", nullable=false)
      */
-    public $locked = 0;
+    public int $locked = 0;
 
     /**
      * @var string
      *
      * @ORM\Column(name="icon", type="string", length=255, nullable=false, options={"default"="''","comment"="url to module icon"})
      */
-    public $icon = '';
+    public string $icon = '';
 
     /**
-     * @var bool
+     * @var int
      *
      * @ORM\Column(name="enable_resource", type="boolean", nullable=false, options={"comment"="enables the resource file feature"})
      */
-    public $enableResource = 0;
+    public int $enableResource = 0;
 
     /**
      * @var string
      *
      * @ORM\Column(name="resourcefile", type="string", length=255, nullable=false, options={"default"="''","comment"="a physical link to a resource file"})
      */
-    public $resourcefile = '';
+    public string $resourcefile = '';
 
     /**
      * @var string
      *
      * @ORM\Column(name="guid", type="string", length=32, nullable=false, options={"default"="''","comment"="globally unique identifier"})
      */
-    public $guid = '';
+    public string $guid = '';
 
     /**
-     * @var bool
+     * @var int
      *
      * @ORM\Column(name="enable_sharedparams", type="boolean", nullable=false)
      */
-    public $enableSharedparams = 0;
+    public int $enableSharedparams = 0;
 
     /**
      * @var string|null
      *
      * @ORM\Column(name="properties", type="text", length=65535, nullable=true, options={"default"="NULL"})
      */
-    public $properties = null;
+    public ?string $properties = null;
 
     /**
      * @var string|null
      *
      * @ORM\Column(name="modulecode", type="text", length=16777215, nullable=true, options={"default"="NULL","comment"="module boot up code"})
      */
-    public $modulecode = null;
+    public ?string $modulecode = null;
 
     /**
      * @param string $name
