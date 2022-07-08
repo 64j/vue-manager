@@ -49,12 +49,21 @@ export default {
           break
 
         case 'delete':
-          http.post(this.controller + '@delete', item).then(result => {
-            if (result) {
-              delete category.items[item.id]
-              this.$root.$refs.Layout.$refs.MultiTabs.closeTab(this.$router.resolve({ name: this.element, params: { id: item.id } }))
-            }
-          })
+          // notify({
+          //   group: 'alert',
+          //   type: 'error',
+          //   duration: 10000,
+          //   text: '<div class="d-flex justify-content-center"><button class="btn btn-danger rounded-0">Delete ' + item.name + ' #' + item.id + '?</button></div>',
+          // })
+          if (category) {
+            //
+          }
+          // http.post(this.controller + '@delete', item).then(result => {
+          //   if (result) {
+          //     delete category.items[item.id]
+          //     this.$root.$refs.Layout.$refs.MultiTabs.closeTab(this.$router.resolve({ name: this.element, params: { id: item.id } }))
+          //   }
+          // })
           break
       }
     },
