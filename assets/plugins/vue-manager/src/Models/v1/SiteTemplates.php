@@ -4,6 +4,7 @@ namespace VueManager\Models\v1;
 
 use Doctrine\ORM\Mapping as ORM;
 use VueManager\Application;
+use VueManager\Interfaces\ModelInterface;
 use VueManager\Models\AbstractModel;
 use VueManager\Traits\ModelTimestampTrait;
 
@@ -13,7 +14,7 @@ use VueManager\Traits\ModelTimestampTrait;
  * @ORM\Table(name="site_templates")
  * @ORM\Entity
  */
-class SiteTemplates extends AbstractModel
+class SiteTemplates extends AbstractModel implements ModelInterface
 {
     use ModelTimestampTrait;
 

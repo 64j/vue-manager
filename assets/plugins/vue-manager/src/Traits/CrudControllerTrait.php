@@ -2,18 +2,16 @@
 
 namespace VueManager\Traits;
 
-use VueManager\Models\AbstractModel;
+use VueManager\Interfaces\ServiceInterface;
 
 trait CrudControllerTrait
 {
     use ResponseTrait;
 
-    protected $service;
-
     /**
-     * @var \VueManager\Models\AbstractModel
+     * @var \VueManager\Interfaces\ServiceInterface
      */
-    protected AbstractModel $model;
+    protected ServiceInterface $service;
 
     /**
      * @param array $params
@@ -21,57 +19,58 @@ trait CrudControllerTrait
      */
     public function actionCreate(array $params = []): array
     {
-        $model = $this->service->create($this->model->hydrate($params));
-
-        return $this->ok($model, $model->__getMeta());
+        return $this->ok(
+            $this->service->create($params),
+            $this->service->getMeta()
+        );
     }
 
     /**
      * @param array $params
      * @return array
-     * @throws \VueManager\Exceptions\NotFoundException
      */
     public function actionRead(array $params = []): array
     {
-        $model = $this->service->read($this->model->hydrate($params));
-
-        return $this->ok($model, $model->__getMeta());
+        return $this->ok(
+            $this->service->read($params),
+            $this->service->getMeta()
+        );
     }
 
     /**
      * @param array $params
      * @return array
-     * @throws \VueManager\Exceptions\NotFoundException
      */
     public function actionUpdate(array $params = []): array
     {
-        $model = $this->service->update($this->model->hydrate($params));
-
-        return $this->ok($model, $model->__getMeta());
+        return $this->ok(
+            $this->service->update($params),
+            $this->service->getMeta()
+        );
     }
 
     /**
      * @param array $params
      * @return array
-     * @throws \VueManager\Exceptions\NotFoundException
      */
     public function actionDelete(array $params = []): array
     {
-        $model = $this->service->delete($this->model->hydrate($params));
-
-        return $this->ok($model, $model->__getMeta());
+        return $this->ok(
+            $this->service->delete($params),
+            $this->service->getMeta()
+        );
     }
 
     /**
      * @param array $params
      * @return array
-     * @throws \VueManager\Exceptions\NotFoundException
      */
     public function actionCopy(array $params = []): array
     {
-        $model = $this->service->copy($this->model->hydrate($params));
-
-        return $this->ok($model, $model->__getMeta());
+        return $this->ok(
+            $this->service->copy($params),
+            $this->service->getMeta()
+        );
     }
 
     /**
@@ -80,6 +79,9 @@ trait CrudControllerTrait
      */
     public function actionList(array $params = []): array
     {
-        return $this->ok(...$this->service->list($params));
+        return $this->ok(
+            $this->service->list($params),
+            $this->service->getMeta()
+        );
     }
 }

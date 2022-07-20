@@ -16,9 +16,7 @@ class TvController
     public function __construct(array $params = [])
     {
         $service = sprintf($params['namespace'], 'Services') . 'TvService';
-        $model = sprintf($params['namespace'], 'Models') . 'SiteTmplvars';
 
         $this->service = new $service();
-        $this->model = new $model();
     }
 }

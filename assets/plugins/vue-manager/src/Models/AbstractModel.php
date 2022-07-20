@@ -27,11 +27,6 @@ abstract class AbstractModel implements JsonSerializable, ArrayableInterface
     protected array $__params = [];
 
     /**
-     * @var array
-     */
-    protected array $__meta = [];
-
-    /**
      * @param array $params
      * @param bool $nullableProperties
      * @return self
@@ -93,12 +88,6 @@ abstract class AbstractModel implements JsonSerializable, ArrayableInterface
                 }
             } elseif (!$nullableProperties) {
                 unset($this->$name);
-            }
-        }
-
-        foreach ($params as $key => $value) {
-            if (!isset($this->{$key})) {
-                $this->__meta[$key] = $value;
             }
         }
 
@@ -229,28 +218,8 @@ abstract class AbstractModel implements JsonSerializable, ArrayableInterface
         unset($data['__exceptedKeys']);
         unset($data['__onlyKeys']);
         unset($data['__params']);
-        unset($data['__meta']);
 
         return $this->fromCamel($data);
-    }
-
-    /**
-     * @return array
-     */
-    public function __getMeta(): array
-    {
-        return $this->__meta;
-    }
-
-    /**
-     * @param array $meta
-     * @return $this
-     */
-    public function __setMeta(array $meta): self
-    {
-        $this->__meta = $meta;
-
-        return $this;
     }
 
     /**

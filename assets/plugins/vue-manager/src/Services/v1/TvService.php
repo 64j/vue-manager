@@ -7,7 +7,6 @@ namespace VueManager\Services\v1;
 use VueManager\Application;
 use VueManager\Exceptions\NotFoundException;
 use VueManager\Interfaces\ServiceInterface;
-use VueManager\Models\AbstractModel;
 use VueManager\Models\v1\SiteTmplvars;
 use VueManager\Traits\ServicePermissionTrait;
 
@@ -25,6 +24,16 @@ class TvService implements ServiceInterface
         'delete' => ['delete_template'],
         'list' => ['edit_template']
     ];
+
+    /**
+     * @var \VueManager\Models\v1\SiteTmplvars|null
+     */
+    public ?SiteTmplvars $model;
+
+    public function __construct()
+    {
+        $this->model = new SiteTmplvars();
+    }
 
     /**
      * @param SiteTmplvars $model
@@ -115,9 +124,15 @@ class TvService implements ServiceInterface
         throw new NotFoundException();
     }
 
-    public function copy(AbstractModel $model): AbstractModel
+    /**
+     * @param $model
+     * @return \VueManager\Models\v1\SiteTmplvars
+     * @throws \VueManager\Exceptions\NotFoundException
+     * @throws \VueManager\Exceptions\PermissionException
+     */
+    public function copy($model): SiteTmplvars
     {
-        // TODO: Implement copy() method.
+        return $this->create($this->read($model));
     }
 
     /**
@@ -176,6 +191,10 @@ class TvService implements ServiceInterface
             );
         }
 
-        return [$data];
+        $this->model->__setMeta([
+            'pagination' => []
+        ]);
+
+        return $data;
     }
 }

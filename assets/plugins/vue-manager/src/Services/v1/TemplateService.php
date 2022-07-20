@@ -6,13 +6,16 @@ namespace VueManager\Services\v1;
 
 use VueManager\Application;
 use VueManager\Exceptions\NotFoundException;
+use VueManager\Interfaces\ModelInterface;
 use VueManager\Interfaces\ServiceInterface;
 use VueManager\Models\v1\SiteTemplates;
+use VueManager\Traits\ServiceMetaTrait;
 use VueManager\Traits\ServicePermissionTrait;
 
 class TemplateService implements ServiceInterface
 {
     use ServicePermissionTrait;
+    use ServiceMetaTrait;
 
     /**
      * @var array
@@ -26,47 +29,56 @@ class TemplateService implements ServiceInterface
     ];
 
     /**
-     * @param SiteTemplates $model
+     * @var \VueManager\Models\v1\SiteTemplates|null
+     */
+    protected ?ModelInterface $model = null;
+
+    public function __construct()
+    {
+        $this->model = new SiteTemplates();
+    }
+
+    /**
+     * @param array $params
      * @return \VueManager\Models\v1\SiteTemplates
      * @throws \VueManager\Exceptions\NotFoundException
      * @throws \VueManager\Exceptions\PermissionException
      */
-    public function create($model): SiteTemplates
+    public function create(array $params = []): SiteTemplates
     {
         $this->hasPermissionsCreate();
         $app = evolutionCMS();
-        $model = (new SiteTemplates())->hydrate($model->__getParams(), true);
-        $data = $model->except(['id'])
+        $this->model->hydrate($params, true);
+        $data = $this->model->except(['id'])
             ->toData();
 
-        $model->id = $app->db->insert($data, $app->getFullTableName('site_templates'));
-        $model->createdon = time();
+        $this->model->id = $app->db->insert($data, $app->getFullTableName('site_templates'));
+        $this->model->createdon = time();
 
-        if (!$model->id) {
+        if (!$this->model->id) {
             throw new NotFoundException();
         }
 
-        return $this->update($model);
+        return $this->update($this->model->toArray());
     }
 
     /**
-     * @param SiteTemplates $model
+     * @param array $params
      * @return SiteTemplates
      * @throws \VueManager\Exceptions\PermissionException
      */
-    public function read($model): SiteTemplates
+    public function read(array $params = []): SiteTemplates
     {
         $this->hasPermissionsRead();
         $app = evolutionCMS();
-        $params = $model->__getParams();
 
-        if (!empty($model->id)) {
+        if (!empty($params['id'])) {
             $params = $app->db->getRow(
-                $app->db->select('*', $app->getFullTableName('site_templates'), 'id=' . $model->id)
+                $app->db->select('*', $app->getFullTableName('site_templates'), 'id=' . (int) $params['id'])
             ) ?: $params;
         }
 
-        $model = (new SiteTemplates())->hydrate($params, true);
+        $this->model->hydrate($params, true);
 
         $meta = [
             'tvSelected' => [],
@@ -85,11 +97,11 @@ class TemplateService implements ServiceInterface
         LEFT JOIN ' . $app->getFullTableName('site_tmplvar_templates') . ' tr ON tv.id=tr.tmplvarid
         LEFT JOIN ' . $app->getFullTableName('categories') . ' cat ON tv.category=cat.id';
 
-        if (!empty($model->id)) {
+        if (!empty($this->model->id)) {
             $sql = $app->db->select(
                 $field,
                 $table,
-                'templateid=' . $model->id . ' GROUP BY tv.id',
+                'templateid=' . $this->model->id . ' GROUP BY tv.id',
                 'tr.rank ASC, tv.rank ASC, caption ASC, id ASC'
             );
 
@@ -125,25 +137,26 @@ class TemplateService implements ServiceInterface
             $meta['tvs']['unselected'][$r['categoryId']]['items'][$r['id']] = $r;
         }
 
-        $model->__setMeta($meta);
+        $this->setMeta($meta);
 
-        return $model;
+        return $this->model;
     }
 
     /**
-     * @param SiteTemplates $model
+     * @param array $params
      * @return SiteTemplates
      * @throws \VueManager\Exceptions\NotFoundException
      * @throws \VueManager\Exceptions\PermissionException
      */
-    public function update($model): SiteTemplates
+    public function update(array $params = []): SiteTemplates
     {
         $this->hasPermissionsUpdate();
         $app = evolutionCMS();
 
-        $rs = $app->db->select('*', $app->getFullTableName('site_templates'), 'id=' . $model->id);
+        $model = $this->read($params)
+            ->hydrate($params);
 
-        if (!$app->db->getRecordCount($rs)) {
+        if (!$model->id) {
             throw new NotFoundException();
         }
 
@@ -151,9 +164,7 @@ class TemplateService implements ServiceInterface
 
         $app->db->update($model->toData(), $app->getFullTableName('site_templates'), 'id=' . $model->id);
 
-        $meta = $model->__getMeta();
-
-        if (isset($meta['tvSelected'])) {
+        if (isset($params['tvSelected'])) {
             $rs = $app->db->select(
                 'tmplvarid, `rank`',
                 $app->getFullTableName('site_tmplvar_templates'),
@@ -173,8 +184,8 @@ class TemplateService implements ServiceInterface
                 'templateid=' . $model->id
             );
 
-            if (!empty($meta['tvSelected'])) {
-                foreach ($meta['tvSelected'] as $id) {
+            if (!empty($params['tvSelected'])) {
+                foreach ($params['tvSelected'] as $id) {
                     if (is_integer($id)) {
                         $app->db->insert(array(
                             'templateid' => $model->id,
@@ -186,23 +197,22 @@ class TemplateService implements ServiceInterface
             }
         }
 
-        return $this->read($model);
+        return $this->read($model->toArray());
     }
 
     /**
-     * @param SiteTemplates $model
+     * @param array $params
      * @return \VueManager\Models\v1\SiteTemplates
      * @throws \VueManager\Exceptions\NotFoundException
      * @throws \VueManager\Exceptions\PermissionException
      */
-    public function delete($model): SiteTemplates
+    public function delete(array $params = []): SiteTemplates
     {
         $this->hasPermissionsDelete();
         $app = evolutionCMS();
+        $model = $this->read($params);
 
         if (!empty($model->id)) {
-            $model = $this->read($model);
-
             $app->db->delete(
                 $app->getFullTableName('site_templates'),
                 'id=' . $model->id
@@ -220,14 +230,15 @@ class TemplateService implements ServiceInterface
     }
 
     /**
-     * @param SiteTemplates $model
+     * @param array $params
      * @return \VueManager\Models\v1\SiteTemplates
      * @throws \VueManager\Exceptions\NotFoundException
      * @throws \VueManager\Exceptions\PermissionException
      */
-    public function copy($model): SiteTemplates
+    public function copy(array $params = []): SiteTemplates
     {
-        return $this->create($this->read($model));
+        return $this->create($this->read($params)
+            ->toArray());
     }
 
     /**
@@ -288,6 +299,10 @@ class TemplateService implements ServiceInterface
             );
         }
 
-        return [$data];
+        $this->setMeta([
+            'pagination' => []
+        ]);
+
+        return $data;
     }
 }
