@@ -1,19 +1,19 @@
 <template>
   <div>
 
-    <TitleView :title="title" icon="fa fa-user" :message="$t('web_user_management_msg')"/>
+    <TitleView :title="title" :icon="icon" :message="$t('web_user_management_msg')"/>
 
     <TableView
       :data="data"
       :columns="columns"
-      :pagination="pagination"
+      :pagination="meta?.pagination || {}"
       :mode-search="true"
       :mode-list="true"
       :loading="loading"
-      :link-name="index"
+      :link-name="element"
       table-class="table-sm"
-      @getData="get">
-      <router-link :to="{ name: index, params: { id: '' } }" class="btn btn-success btn-sm">
+      @getData="list">
+      <router-link :to="{ name: element, params: { id: '' } }" class="btn btn-success btn-sm">
         <i class="fa fa-plus"></i>
         {{ $t('new_web_user') }}
       </router-link>
@@ -32,15 +32,16 @@ export default {
   name: 'WebUserList',
   components: { TitleView, TableView },
   data () {
-    this.icon = 'fa fa-user'
     return {
-      url: '/users',
-      index: 'WebUserIndex',
+      controller: 'WebUser',
+      element: 'WebUserIndex',
+      icon: 'fa fa-user',
       data: null,
+      meta: null,
       columns: {
         icon: {
           title: i18n.global.t('icon'),
-          value: '<i class="' + this.icon + '"/>',
+          value: '<i class="fa fa-user"/>',
           link: true
         },
         username: {
@@ -85,32 +86,36 @@ export default {
       icon: this.icon,
       title: this.title
     })
-    this.get()
-    this.$el.addEventListener('click', (e) => {
-      if (e.target.classList.contains('remove')) {
-        this.del(e.target.closest('tr').dataset.id)
-      }
-    })
+    this.list()
   },
   methods: {
-    get (id) {
-      this.loading = true
-      http.get(this.$router.resolve({ query: { p: id } }).fullPath).then(result => {
-        this.data = result.data || null
-        this.pagination = result.meta.pagination || null
-        this.loading = false
-      })
+    action (action, item, category) {
+      switch (action) {
+        case 'copy':
+          http.post(this.controller + '@copy', item).then(result => {
+            if (result) {
+              this.list()
+            }
+          })
+          break
+
+        case 'delete':
+          http.post(this.controller + '@delete', item).then(result => {
+            if (result) {
+              delete category.items[item.id]
+              this.$root.$refs.Layout.$refs.MultiTabs.closeTab(this.$router.resolve({ name: this.element, params: { id: item.id } }))
+            }
+          })
+          break
+      }
     },
-    del (id) {
-      this.loading = true
-      http.delete(this.$router.resolve({ name: this.index, params: { id: id } }).fullPath).then(result => {
-        this.$notify({ type: 'error', text: JSON.stringify(result) })
-        const route = this.$route
-        this.$router.replace('/redirect' + route.fullPath).then(() => {
-          this.$store.dispatch('MultiTabs/delTabKey', route)
-        })
-        this.loading = false
-      })
+    list() {
+      http.post(this.controller + '@list').then(this.setData)
+    },
+    setData(result) {
+      this.data = result.data
+      this.meta = result.meta
+      this.loading = false
     }
   }
 }

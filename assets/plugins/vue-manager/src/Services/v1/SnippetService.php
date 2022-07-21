@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace VueManager\Services\v1;
 
-use VueManager\Application;
 use VueManager\Exceptions\NotFoundException;
 use VueManager\Interfaces\ServiceInterface;
-use VueManager\Models\AbstractModel;
 use VueManager\Models\v1\SiteSnippets;
+use VueManager\Traits\ServiceMetaTrait;
 use VueManager\Traits\ServicePermissionTrait;
 
 class SnippetService implements ServiceInterface
 {
     use ServicePermissionTrait;
+    use ServiceMetaTrait;
 
     /**
      * @var array
@@ -27,15 +27,28 @@ class SnippetService implements ServiceInterface
     ];
 
     /**
-     * @param SiteSnippets $model
+     * @var \VueManager\Models\v1\SiteSnippets
+     */
+    protected SiteSnippets $model;
+
+    public function __construct()
+    {
+        $this->model = new SiteSnippets();
+    }
+
+    /**
+     * @param array $params
      * @return \VueManager\Models\v1\SiteSnippets
      * @throws \VueManager\Exceptions\NotFoundException
      * @throws \VueManager\Exceptions\PermissionException
      */
-    public function create($model): SiteSnippets
+    public function create(array $params = []): SiteSnippets
     {
         $this->hasPermissionsCreate();
         $app = evolutionCMS();
+
+        $model = $this->model->hydrate($params, true);
+        $model->createdon = time();
 
         $data = $model->except(['id'])
             ->toData();
@@ -50,15 +63,16 @@ class SnippetService implements ServiceInterface
     }
 
     /**
-     * @param SiteSnippets $model
+     * @param array $params
      * @return \VueManager\Models\v1\SiteSnippets
-     * @throws \VueManager\Exceptions\NotFoundException
      * @throws \VueManager\Exceptions\PermissionException
      */
-    public function read($model): SiteSnippets
+    public function read(array $params = []): SiteSnippets
     {
         $this->hasPermissionsRead();
         $app = evolutionCMS();
+
+        $model = $this->model->hydrate($params, true);
 
         if (!empty($model->id)) {
             $data = $app->db->getRow(
@@ -66,47 +80,52 @@ class SnippetService implements ServiceInterface
             );
 
             if (!empty($data)) {
-                return $model->hydrate($data);
+                $model->hydrate($data);
             }
         }
-
-        throw new NotFoundException();
-    }
-
-    /**
-     * @param SiteSnippets $model
-     * @return \VueManager\Models\v1\SiteSnippets
-     * @throws \VueManager\Exceptions\NotFoundException
-     * @throws \VueManager\Exceptions\PermissionException
-     */
-    public function update($model): SiteSnippets
-    {
-        $this->hasPermissionsUpdate();
-        $app = evolutionCMS();
-
-        $data = $model->toArray();
-        $model = $this->read($model)
-            ->hydrate($data);
-        $model->editedon = time();
-
-        $app->db->update($model->toData(), $app->getFullTableName('site_snippets'), 'id=' . $model->id);
 
         return $model;
     }
 
     /**
-     * @param SiteSnippets $model
+     * @param array $params
      * @return \VueManager\Models\v1\SiteSnippets
      * @throws \VueManager\Exceptions\NotFoundException
      * @throws \VueManager\Exceptions\PermissionException
      */
-    public function delete($model): SiteSnippets
+    public function update(array $params = []): SiteSnippets
+    {
+        $this->hasPermissionsUpdate();
+        $app = evolutionCMS();
+
+        $model = $this->read($params)
+            ->hydrate($params);
+
+        if (!$model->id) {
+            throw new NotFoundException();
+        }
+
+        $model->editedon = time();
+
+        $app->db->update($model->toData(), $app->getFullTableName('site_snippets'), 'id=' . $model->id);
+
+        return $this->read($model->toArray());
+    }
+
+    /**
+     * @param array $params
+     * @return \VueManager\Models\v1\SiteSnippets
+     * @throws \VueManager\Exceptions\NotFoundException
+     * @throws \VueManager\Exceptions\PermissionException
+     */
+    public function delete(array $params = []): SiteSnippets
     {
         $this->hasPermissionsDelete();
         $app = evolutionCMS();
 
+        $model = $this->read($params);
+
         if (!empty($model->id)) {
-            $model = $this->read($model);
             $app->db->delete($app->getFullTableName('site_snippets'), 'id=' . $model->id);
 
             return $model;
@@ -116,12 +135,15 @@ class SnippetService implements ServiceInterface
     }
 
     /**
-     * @param \VueManager\Models\AbstractModel $model
-     * @return \VueManager\Models\AbstractModel
+     * @param array $params
+     * @return \VueManager\Models\v1\SiteSnippets
+     * @throws \VueManager\Exceptions\NotFoundException
+     * @throws \VueManager\Exceptions\PermissionException
      */
-    public function copy(AbstractModel $model): AbstractModel
+    public function copy(array $params = []): SiteSnippets
     {
-        // TODO: Implement copy() method.
+        return $this->create($this->read($params)
+            ->toArray());
     }
 
     /**
@@ -145,8 +167,7 @@ class SnippetService implements ServiceInterface
                     t.locked,
                     t.disabled,
                     t.category,
-                    IF(t.category=0,"' . Application::getInstance()
-                        ->getLang('no_category') . '",c.category) AS category_name
+                    IF(t.category=0,"' . vum()->getLang('no_category') . '",c.category) AS category_name
                     FROM ' . $modx->getFullTableName('site_snippets') . ' t
                     LEFT JOIN ' . $modx->getFullTableName('categories') . ' c ON c.id=t.category
                     ORDER BY c.rank
@@ -183,6 +204,10 @@ class SnippetService implements ServiceInterface
             );
         }
 
-        return [$data];
+        $this->setMeta([
+            'pagination' => []
+        ]);
+
+        return $data;
     }
 }

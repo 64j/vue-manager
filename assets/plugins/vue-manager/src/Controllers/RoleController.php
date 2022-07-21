@@ -6,7 +6,7 @@ namespace VueManager\Controllers;
 
 use VueManager\Traits\CrudControllerTrait;
 
-class WebUserController
+class RoleController
 {
     use CrudControllerTrait;
 
@@ -15,7 +15,7 @@ class WebUserController
      */
     public function __construct(array $params = [])
     {
-        $service = sprintf($params['namespace'], 'Services') . 'WebUserService';
+        $service = sprintf($params['namespace'], 'Services') . 'RoleService';
 
         $this->service = new $service();
     }

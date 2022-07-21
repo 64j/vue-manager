@@ -15,10 +15,8 @@ class UserController
      */
     public function __construct(array $params = [])
     {
-        $params['service'] .= 'UserService';
-        $params['model'] .= 'UserAttributes';
+        $service = sprintf($params['namespace'], 'Services') . 'UserService';
 
-        $this->service = new $params['service']();
-        $this->model = new $params['model']();
+        $this->service = new $service();
     }
 }

@@ -16,9 +16,7 @@ class PluginController
     public function __construct(array $params = [])
     {
         $service = sprintf($params['namespace'], 'Services') . 'PluginService';
-        $model = sprintf($params['namespace'], 'Models') . 'SitePlugins';
 
         $this->service = new $service();
-        $this->model = new $model();
     }
 }

@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace VueManager\Services\v1;
 
-use VueManager\Application;
 use VueManager\Exceptions\NotFoundException;
-use VueManager\Interfaces\ModelInterface;
 use VueManager\Interfaces\ServiceInterface;
 use VueManager\Models\v1\SiteTemplates;
 use VueManager\Traits\ServiceMetaTrait;
@@ -29,9 +27,9 @@ class TemplateService implements ServiceInterface
     ];
 
     /**
-     * @var \VueManager\Models\v1\SiteTemplates|null
+     * @var \VueManager\Models\v1\SiteTemplates
      */
-    protected ?ModelInterface $model = null;
+    protected SiteTemplates $model;
 
     public function __construct()
     {
@@ -48,18 +46,20 @@ class TemplateService implements ServiceInterface
     {
         $this->hasPermissionsCreate();
         $app = evolutionCMS();
-        $this->model->hydrate($params, true);
-        $data = $this->model->except(['id'])
+
+        $model = $this->model->hydrate($params, true);
+        $model->createdon = time();
+
+        $data = $model->except(['id'])
             ->toData();
 
-        $this->model->id = $app->db->insert($data, $app->getFullTableName('site_templates'));
-        $this->model->createdon = time();
+        $model->id = $app->db->insert($data, $app->getFullTableName('site_templates'));
 
-        if (!$this->model->id) {
+        if (!$model->id) {
             throw new NotFoundException();
         }
 
-        return $this->update($this->model->toArray());
+        return $this->update($model->toArray());
     }
 
     /**
@@ -78,7 +78,7 @@ class TemplateService implements ServiceInterface
             ) ?: $params;
         }
 
-        $this->model->hydrate($params, true);
+        $model = $this->model->hydrate($params, true);
 
         $meta = [
             'tvSelected' => [],
@@ -88,8 +88,7 @@ class TemplateService implements ServiceInterface
             ]
         ];
 
-        $noCategory = Application::getInstance()
-            ->getLang('no_category');
+        $noCategory = vum()->getLang('no_category');
 
         $field = 'tv.id, tv.name, tr.templateid, tv.description, tv.caption, tv.locked, ifnull(cat.category,"' . $noCategory . '") AS category, ifnull(cat.id,0) as categoryId';
 
@@ -97,11 +96,11 @@ class TemplateService implements ServiceInterface
         LEFT JOIN ' . $app->getFullTableName('site_tmplvar_templates') . ' tr ON tv.id=tr.tmplvarid
         LEFT JOIN ' . $app->getFullTableName('categories') . ' cat ON tv.category=cat.id';
 
-        if (!empty($this->model->id)) {
+        if (!empty($model->id)) {
             $sql = $app->db->select(
                 $field,
                 $table,
-                'templateid=' . $this->model->id . ' GROUP BY tv.id',
+                'templateid=' . $model->id . ' GROUP BY tv.id',
                 'tr.rank ASC, tv.rank ASC, caption ASC, id ASC'
             );
 
@@ -139,7 +138,7 @@ class TemplateService implements ServiceInterface
 
         $this->setMeta($meta);
 
-        return $this->model;
+        return $model;
     }
 
     /**
@@ -210,6 +209,7 @@ class TemplateService implements ServiceInterface
     {
         $this->hasPermissionsDelete();
         $app = evolutionCMS();
+
         $model = $this->read($params);
 
         if (!empty($model->id)) {
@@ -262,8 +262,7 @@ class TemplateService implements ServiceInterface
                     t.description,
                     t.locked,
                     t.category,
-                    IF(t.category=0,"' . Application::getInstance()
-                        ->getLang('no_category') . '",c.category) AS category_name
+                    IF(t.category=0,"' . vum()->getLang('no_category') . '",c.category) AS category_name
                     FROM ' . $app->getFullTableName('site_templates') . ' t
                     LEFT JOIN ' . $app->getFullTableName('categories') . ' c ON c.id=t.category
                     ORDER BY c.rank

@@ -3,7 +3,7 @@
 namespace VueManager\Models\v1;
 
 use Doctrine\ORM\Mapping as ORM;
-use VueManager\Application;
+use VueManager\Interfaces\ModelInterface;
 use VueManager\Models\AbstractModel;
 use VueManager\Traits\ModelTimestampTrait;
 
@@ -13,7 +13,7 @@ use VueManager\Traits\ModelTimestampTrait;
  * @ORM\Table(name="site_tmplvars", indexes={@ORM\Index(name="indx_rank", columns={"rank"})})
  * @ORM\Entity
  */
-class SiteTmplvars extends AbstractModel
+class SiteTmplvars extends AbstractModel implements ModelInterface
 {
     use ModelTimestampTrait;
 
@@ -115,7 +115,6 @@ class SiteTmplvars extends AbstractModel
      */
     public function setName(string $name): void
     {
-        $this->name = $name != '' ? $name : Application::getInstance()
-            ->getLang('new_tmplvars');
+        $this->name = $name != '' ? $name : vum()->getLang('new_tmplvars');
     }
 }

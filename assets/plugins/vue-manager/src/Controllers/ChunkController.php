@@ -16,9 +16,7 @@ class ChunkController
     public function __construct(array $params = [])
     {
         $service = sprintf($params['namespace'], 'Services') . 'ChunkService';
-        $model = sprintf($params['namespace'], 'Models') . 'SiteHtmlsnippets';
 
         $this->service = new $service();
-        $this->model = new $model();
     }
 }

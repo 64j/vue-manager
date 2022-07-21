@@ -3,7 +3,7 @@
 namespace VueManager\Models\v1;
 
 use Doctrine\ORM\Mapping as ORM;
-use VueManager\Application;
+use VueManager\Interfaces\ModelInterface;
 use VueManager\Models\AbstractModel;
 use VueManager\Traits\ModelTimestampTrait;
 
@@ -13,7 +13,7 @@ use VueManager\Traits\ModelTimestampTrait;
  * @ORM\Table(name="site_htmlsnippets")
  * @ORM\Entity
  */
-class SiteHtmlsnippets extends AbstractModel
+class SiteHtmlsnippets extends AbstractModel implements ModelInterface
 {
     use ModelTimestampTrait;
 
@@ -94,7 +94,6 @@ class SiteHtmlsnippets extends AbstractModel
      */
     public function setName(string $name): void
     {
-        $this->name = $name != '' ? $name : Application::getInstance()
-            ->getLang('new_htmlsnippet');
+        $this->name = $name != '' ? $name : vum()->getLang('new_htmlsnippet');
     }
 }

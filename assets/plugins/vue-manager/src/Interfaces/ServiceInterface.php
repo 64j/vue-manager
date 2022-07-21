@@ -6,37 +6,32 @@ interface ServiceInterface
 {
     /**
      * @param array $params
-     * @return \VueManager\Interfaces\ModelInterface
      */
-    public function create(array $params = []): ModelInterface;
+    public function create(array $params = []);
 
     /**
      * @param array $params
-     * @return \VueManager\Interfaces\ModelInterface
      */
-    public function read(array $params = []): ModelInterface;
+    public function read(array $params = []);
 
     /**
      * @param array $params
-     * @return \VueManager\Interfaces\ModelInterface
      */
-    public function update(array $params = []): ModelInterface;
+    public function update(array $params = []);
 
     /**
      * @param array $params
-     * @return \VueManager\Interfaces\ModelInterface
      */
-    public function delete(array $params = []): ModelInterface;
+    public function delete(array $params = []);
 
     /**
      * @param array $params
-     * @return \VueManager\Interfaces\ModelInterface
      */
-    public function copy(array $params = []): ModelInterface;
+    public function copy(array $params = []);
 
     /**
      * @param array $params
-     * @return ModelInterface[]|array
+     * @return array
      */
     public function list(array $params = []): array;
 

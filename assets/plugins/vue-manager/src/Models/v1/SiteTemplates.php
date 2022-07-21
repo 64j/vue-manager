@@ -3,7 +3,6 @@
 namespace VueManager\Models\v1;
 
 use Doctrine\ORM\Mapping as ORM;
-use VueManager\Application;
 use VueManager\Interfaces\ModelInterface;
 use VueManager\Models\AbstractModel;
 use VueManager\Traits\ModelTimestampTrait;
@@ -102,7 +101,6 @@ class SiteTemplates extends AbstractModel implements ModelInterface
      */
     public function setTemplatename(string $templatename): void
     {
-        $this->templatename = $templatename != '' ? $templatename : Application::getInstance()
-            ->getLang('new_template');
+        $this->templatename = $templatename != '' ? $templatename : vum()->getLang('new_template');
     }
 }

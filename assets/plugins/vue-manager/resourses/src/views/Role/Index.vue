@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ActionsButtons @save="save" @cancel="cancel" @delete="this.delete"/>
+    <ActionsButtons @action="action"/>
 
     <form name="mutate" v-show="loading">
 
@@ -29,11 +29,11 @@
           <template v-for="(category, i) in meta.categories">
             <div v-if="category" :key="`c` + i" class="col-6 col-md-4 col-lg-3">
               <div v-for="(categoryItem, k) in category" :key="k" class="pb-3">
-                <h5 class="mb-3">{{ $t(categoryItem.lang) }}</h5>
+                <h5 class="mb-3">{{ categoryItem.lang ? $t(categoryItem.lang) : categoryItem.title }}</h5>
                 <div v-for="(item, j) in categoryItem.items" :key="j">
                   <div class="form-check">
                     <input v-model="data[j]" type="checkbox" class="form-check-input" :id="j" :false-value="0" :true-value="1" :disabled="item.disabled">
-                    <label class="form-check-label" :for="j">{{ $t(item.lang) }}</label>
+                    <label class="form-check-label" :for="j">{{ item.lang ? $t(item.lang) : item.title }}</label>
                   </div>
                 </div>
               </div>
@@ -60,11 +60,11 @@ export default {
   components: { ActionsButtons, TitleView },
   data () {
     return {
-      url: '/role/',
+      controller: 'Role',
       icon: 'fa fa-legal',
       loading: false,
       data: {
-        id: '',
+        id: this.$route.params && this.$route.params.id || null,
         name: ''
       },
       meta: {
@@ -82,45 +82,56 @@ export default {
       icon: this.icon,
       title: ''
     })
-    this.data.id = this.$route.params?.id || ''
-    this.get(this.data.id)
-    if (!this.data.id) {
-      this.$emit('titleTab', this.title)
-      this.loading = true
-    }
+    this.read()
   },
   methods: {
-    get (id) {
-      http.get(this.url + id).then(result => {
-        this.data = result.data
-        this.meta = result.meta
-        this.$emit('titleTab', this.title)
-        this.loading = true
+    action (action) {
+      switch (action) {
+        case 'save':
+          this.loading = false
+          if (this.data.id) {
+            this.update()
+          } else {
+            this.create()
+          }
+          break
+
+        case 'cancel':
+          this.$emit('toTab', { name: 'RoleList' })
+          break
+
+        case 'delete':
+          this.delete()
+          break
+      }
+    },
+    create() {
+      http.post(this.controller + '@create', this.data).then(this.setData)
+    },
+    read() {
+      http.post(this.controller + '@read', this.data).then(result => {
+        this.setData(result)
       })
     },
-    save () {
-      this.loading = false
-      if (this.data.id) {
-        http.put(this.url + this.data.id, this.data).then(result => {
-          this.data = result.data
-          this.$emit('titleTab', this.title)
-          this.loading = true
-        })
-      } else {
-        http.put(this.url, this.data).then(result => {
-          this.data = result.data
-          this.$emit('titleTab', this.title)
-          this.loading = true
+    update() {
+      http.post(this.controller + '@update', this.data).then(result => {
+        this.setData(result)
+      })
+    },
+    delete() {
+      if (confirm(i18n.global.t('confirm_delete_role'))) {
+        http.post(this.controller + '@delete', { id: this.data.id }).then(result => {
+          if (result) {
+            this.action('cancel')
+          }
         })
       }
     },
-    cancel () {
-      this.$emit('toTab', { name: 'RoleList' })
-    },
-    delete () {
-      http.delete(this.url + this.data.id).then(result => {
-        this.$notify({ type: 'error', text: JSON.stringify(result.data) })
-      })
+    setData(result) {
+      this.data = result.data
+      this.meta = result.meta
+      this.$emit('titleTab', this.title)
+      this.loading = true
     }
   }
 }

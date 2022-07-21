@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace VueManager\Services\v1;
 
-use VueManager\Application;
 use VueManager\Exceptions\NotFoundException;
 use VueManager\Interfaces\ServiceInterface;
 use VueManager\Models\v1\SiteTmplvars;
+use VueManager\Traits\ServiceMetaTrait;
 use VueManager\Traits\ServicePermissionTrait;
 
 class TvService implements ServiceInterface
 {
     use ServicePermissionTrait;
+    use ServiceMetaTrait;
 
     /**
      * @var array
@@ -26,9 +27,9 @@ class TvService implements ServiceInterface
     ];
 
     /**
-     * @var \VueManager\Models\v1\SiteTmplvars|null
+     * @var \VueManager\Models\v1\SiteTmplvars
      */
-    public ?SiteTmplvars $model;
+    public SiteTmplvars $model;
 
     public function __construct()
     {
@@ -36,15 +37,18 @@ class TvService implements ServiceInterface
     }
 
     /**
-     * @param SiteTmplvars $model
+     * @param array $params
      * @return \VueManager\Models\v1\SiteTmplvars
      * @throws \VueManager\Exceptions\NotFoundException
      * @throws \VueManager\Exceptions\PermissionException
      */
-    public function create($model): SiteTmplvars
+    public function create(array $params = []): SiteTmplvars
     {
         $this->hasPermissionsCreate();
         $app = evolutionCMS();
+
+        $model = $this->model->hydrate($params, true);
+        $model->createdon = time();
 
         $data = $model->except(['id'])
             ->toData();
@@ -59,15 +63,16 @@ class TvService implements ServiceInterface
     }
 
     /**
-     * @param SiteTmplvars $model
+     * @param array $params
      * @return \VueManager\Models\v1\SiteTmplvars
-     * @throws \VueManager\Exceptions\NotFoundException
      * @throws \VueManager\Exceptions\PermissionException
      */
-    public function read($model): SiteTmplvars
+    public function read(array $params = []): SiteTmplvars
     {
         $this->hasPermissionsRead();
         $app = evolutionCMS();
+
+        $model = $this->model->hydrate($params, true);
 
         if (!empty($model->id)) {
             $data = $app->db->getRow(
@@ -75,47 +80,52 @@ class TvService implements ServiceInterface
             );
 
             if (!empty($data)) {
-                return $model->hydrate($data);
+                $model->hydrate($data);
             }
         }
-
-        throw new NotFoundException();
-    }
-
-    /**
-     * @param SiteTmplvars $model
-     * @return \VueManager\Models\v1\SiteTmplvars
-     * @throws \VueManager\Exceptions\NotFoundException
-     * @throws \VueManager\Exceptions\PermissionException
-     */
-    public function update($model): SiteTmplvars
-    {
-        $this->hasPermissionsUpdate();
-        $app = evolutionCMS();
-
-        $data = $model->toArray();
-        $model = $this->read($model)
-            ->hydrate($data);
-        $model->editedon = time();
-
-        $app->db->update($model->toData(), $app->getFullTableName('site_tmplvars'), 'id=' . $model->id);
 
         return $model;
     }
 
     /**
-     * @param SiteTmplvars $model
+     * @param array $params
      * @return \VueManager\Models\v1\SiteTmplvars
      * @throws \VueManager\Exceptions\NotFoundException
      * @throws \VueManager\Exceptions\PermissionException
      */
-    public function delete($model): SiteTmplvars
+    public function update(array $params = []): SiteTmplvars
+    {
+        $this->hasPermissionsUpdate();
+        $app = evolutionCMS();
+
+        $model = $this->read($params)
+            ->hydrate($params);
+
+        if (!$model->id) {
+            throw new NotFoundException();
+        }
+
+        $model->editedon = time();
+
+        $app->db->update($model->toData(), $app->getFullTableName('site_tmplvars'), 'id=' . $model->id);
+
+        return $this->read($model->toArray());
+    }
+
+    /**
+     * @param array $params
+     * @return \VueManager\Models\v1\SiteTmplvars
+     * @throws \VueManager\Exceptions\NotFoundException
+     * @throws \VueManager\Exceptions\PermissionException
+     */
+    public function delete(array $params = []): SiteTmplvars
     {
         $this->hasPermissionsDelete();
         $app = evolutionCMS();
 
+        $model = $this->read($params);
+
         if (!empty($model->id)) {
-            $model = $this->read($model);
             $app->db->delete($app->getFullTableName('site_tmplvars'), 'id=' . $model->id);
 
             return $model;
@@ -125,14 +135,15 @@ class TvService implements ServiceInterface
     }
 
     /**
-     * @param $model
+     * @param array $params
      * @return \VueManager\Models\v1\SiteTmplvars
      * @throws \VueManager\Exceptions\NotFoundException
      * @throws \VueManager\Exceptions\PermissionException
      */
-    public function copy($model): SiteTmplvars
+    public function copy(array $params = []): SiteTmplvars
     {
-        return $this->create($this->read($model));
+        return $this->create($this->read($params)
+            ->toArray());
     }
 
     /**
@@ -155,8 +166,7 @@ class TvService implements ServiceInterface
                     t.description,
                     t.locked,
                     t.category,
-                    IF(t.category=0,"' . Application::getInstance()
-                        ->getLang('no_category') . '",c.category) AS category_name
+                    IF(t.category=0,"' . vum()->getLang('no_category') . '",c.category) AS category_name
                     FROM ' . $modx->getFullTableName('site_tmplvars') . ' t
                     LEFT JOIN ' . $modx->getFullTableName('categories') . ' c ON c.id=t.category
                     ORDER BY c.rank
@@ -191,7 +201,7 @@ class TvService implements ServiceInterface
             );
         }
 
-        $this->model->__setMeta([
+        $this->setMeta([
             'pagination' => []
         ]);
 

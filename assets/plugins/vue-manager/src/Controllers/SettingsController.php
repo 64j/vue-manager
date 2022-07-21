@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace VueManager\Controllers;
 
-use VueManager\Application;
 use VueManager\Traits\ResponseTrait;
 
 class SettingsController
@@ -34,8 +33,7 @@ class SettingsController
             }
         }
 
-        $data['user'] = Application::getInstance()
-            ->getUser();
+        $data['user'] = vum()->getUser();
 
         $data['permissions'] = $modx->db->getRow($modx->db->select('*', $modx->getFullTableName('user_roles'), "id='{$data['user']['role']}'"));
 
@@ -43,8 +41,7 @@ class SettingsController
         $categories = [
             0 => [
                 'id' => 0,
-                'category' => Application::getInstance()
-                    ->getLang('no_category'),
+                'category' => vum()->getLang('no_category'),
                 'rank' => 0
             ]
         ];

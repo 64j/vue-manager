@@ -3,6 +3,7 @@
 namespace VueManager\Models\v1;
 
 use Doctrine\ORM\Mapping as ORM;
+use VueManager\Interfaces\ModelInterface;
 use VueManager\Models\AbstractModel;
 
 /**
@@ -11,7 +12,7 @@ use VueManager\Models\AbstractModel;
  * @ORM\Table(name="web_users", uniqueConstraints={@ORM\UniqueConstraint(name="username", columns={"username"})})
  * @ORM\Entity
  */
-class WebUsers extends AbstractModel
+class WebUsers extends AbstractModel implements ModelInterface
 {
     /**
      * @var int
@@ -20,26 +21,26 @@ class WebUsers extends AbstractModel
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    public $id;
+    public int $id;
 
     /**
      * @var string
      *
      * @ORM\Column(name="username", type="string", length=100, nullable=false, options={"default"="''"})
      */
-    public $username = '';
+    public string $username = '';
 
     /**
      * @var string
      *
      * @ORM\Column(name="password", type="string", length=100, nullable=false, options={"default"="''"})
      */
-    public $password = '';
+    public string $password = '';
 
     /**
      * @var string
      *
      * @ORM\Column(name="cachepwd", type="string", length=100, nullable=false, options={"default"="''","comment"="Store new unconfirmed password"})
      */
-    public $cachepwd = '';
+    public string $cachepwd = '';
 }

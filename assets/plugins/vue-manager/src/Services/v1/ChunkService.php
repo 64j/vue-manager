@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace VueManager\Services\v1;
 
-use VueManager\Application;
 use VueManager\Exceptions\NotFoundException;
 use VueManager\Interfaces\ServiceInterface;
-use VueManager\Models\AbstractModel;
 use VueManager\Models\v1\SiteHtmlsnippets;
+use VueManager\Traits\ServiceMetaTrait;
 use VueManager\Traits\ServicePermissionTrait;
 
 class ChunkService implements ServiceInterface
 {
     use ServicePermissionTrait;
+    use ServiceMetaTrait;
 
     /**
      * @var array
@@ -27,15 +27,28 @@ class ChunkService implements ServiceInterface
     ];
 
     /**
-     * @param SiteHtmlsnippets $model
+     * @var \VueManager\Models\v1\SiteHtmlsnippets
+     */
+    protected SiteHtmlsnippets $model;
+
+    public function __construct()
+    {
+        $this->model = new SiteHtmlsnippets();
+    }
+
+    /**
+     * @param array $params
      * @return \VueManager\Models\v1\SiteHtmlsnippets
      * @throws \VueManager\Exceptions\NotFoundException
      * @throws \VueManager\Exceptions\PermissionException
      */
-    public function create($model): SiteHtmlsnippets
+    public function create(array $params = []): SiteHtmlsnippets
     {
         $this->hasPermissionsCreate();
         $app = evolutionCMS();
+
+        $model = $this->model->hydrate($params, true);
+        $model->createdon = time();
 
         $data = $model->except(['id'])
             ->toData();
@@ -46,43 +59,49 @@ class ChunkService implements ServiceInterface
             throw new NotFoundException();
         }
 
-        return $this->update($model);
+        return $model;
     }
 
     /**
-     * @param SiteHtmlsnippets $model
+     * @param array $params
      * @return \VueManager\Models\v1\SiteHtmlsnippets
      * @throws \VueManager\Exceptions\PermissionException
      */
-    public function read($model): SiteHtmlsnippets
+    public function read(array $params = []): SiteHtmlsnippets
     {
         $this->hasPermissionsRead();
         $app = evolutionCMS();
-        $data = [];
+
+        $model = $this->model->hydrate($params, true);
 
         if (!empty($model->id)) {
             $data = $app->db->getRow(
                 $app->db->select('*', $app->getFullTableName('site_htmlsnippets'), 'id=' . $model->id)
             );
+
+            if (!empty($data)) {
+                $model->hydrate($data);
+            }
         }
 
-        return $model->hydrate($data);
+        return $model;
     }
 
     /**
-     * @param SiteHtmlsnippets $model
+     * @param array $params
      * @return \VueManager\Models\v1\SiteHtmlsnippets
      * @throws \VueManager\Exceptions\NotFoundException
      * @throws \VueManager\Exceptions\PermissionException
      */
-    public function update($model): SiteHtmlsnippets
+    public function update(array $params = []): SiteHtmlsnippets
     {
         $this->hasPermissionsUpdate();
         $app = evolutionCMS();
 
-        $rs = $app->db->select('*', $app->getFullTableName('site_htmlsnippets'), 'id=' . $model->id);
+        $model = $this->read($params)
+            ->hydrate($params);
 
-        if (!$app->db->getRecordCount($rs)) {
+        if (!$model->id) {
             throw new NotFoundException();
         }
 
@@ -90,27 +109,24 @@ class ChunkService implements ServiceInterface
 
         $app->db->update($model->toData(), $app->getFullTableName('site_htmlsnippets'), 'id=' . $model->id);
 
-        return $this->read($model);
+        return $this->read($model->toArray());
     }
 
     /**
-     * @param SiteHtmlsnippets $model
+     * @param array $params
      * @return \VueManager\Models\v1\SiteHtmlsnippets
      * @throws \VueManager\Exceptions\NotFoundException
      * @throws \VueManager\Exceptions\PermissionException
      */
-    public function delete($model): SiteHtmlsnippets
+    public function delete(array $params = []): SiteHtmlsnippets
     {
         $this->hasPermissionsDelete();
         $app = evolutionCMS();
 
-        if (!empty($model->id)) {
-            $model = $this->read($model);
+        $model = $this->read($params);
 
-            $app->db->delete(
-                $app->getFullTableName('site_htmlsnippets'),
-                'id=' . $model->id
-            );
+        if (!empty($model->id)) {
+            $app->db->delete($app->getFullTableName('site_htmlsnippets'), 'id=' . $model->id);
 
             return $model;
         }
@@ -119,14 +135,15 @@ class ChunkService implements ServiceInterface
     }
 
     /**
-     * @param SiteHtmlsnippets $model
+     * @param array $params
      * @return \VueManager\Models\v1\SiteHtmlsnippets
      * @throws \VueManager\Exceptions\NotFoundException
      * @throws \VueManager\Exceptions\PermissionException
      */
-    public function copy(AbstractModel $model): SiteHtmlsnippets
+    public function copy(array $params = []): SiteHtmlsnippets
     {
-        return $this->create($this->read($model));
+        return $this->create($this->read($params)
+            ->toArray());
     }
 
     /**
@@ -150,8 +167,7 @@ class ChunkService implements ServiceInterface
                     t.locked,
                     t.disabled,
                     t.category,
-                    IF(t.category=0,"' . Application::getInstance()
-                        ->getLang('no_category') . '",c.category) AS category_name
+                    IF(t.category=0,"' . vum()->getLang('no_category') . '",c.category) AS category_name
                     FROM ' . $modx->getFullTableName('site_htmlsnippets') . ' t
                     LEFT JOIN ' . $modx->getFullTableName('categories') . ' c ON c.id=t.category
                     ORDER BY c.rank
@@ -187,6 +203,10 @@ class ChunkService implements ServiceInterface
             );
         }
 
-        return [$data];
+        $this->setMeta([
+            'pagination' => []
+        ]);
+
+        return $data;
     }
 }

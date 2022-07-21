@@ -16,6 +16,6 @@ class TreeController
      */
     public function actionGet(array $params = []): array
     {
-        return $this->ok();
+        return $this->ok([]);
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+use VueManager\Application;
+
 define('MODX_API_MODE', true);
 define('IN_MANAGER_MODE', true);
 
@@ -16,5 +18,12 @@ spl_autoload_register(function ($class) {
     }
 });
 
-echo VueManager\Application::getInstance()
-    ->run();
+/**
+ * @return \VueManager\Application
+ */
+function vum(): Application
+{
+    return VueManager\Application::getInstance();
+}
+
+echo vum()->run();

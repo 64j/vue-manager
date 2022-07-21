@@ -63,11 +63,8 @@ class Application
         }
 
         $_lang = [];
-        $manager_language = $evo->getConfig('manager_language');
-        if (file_exists($file = MODX_MANAGER_PATH . 'includes/lang/' . $manager_language . '.inc.php')) {
+        if (file_exists($file = MODX_MANAGER_PATH . 'includes/lang/' . ($evo->getConfig('manager_language') ?: 'english') . '.inc.php')) {
             include_once $file;
-        } else {
-            include_once MODX_MANAGER_PATH . 'includes/lang/english.inc.php';
         }
 
         $this->lang = $_lang;
@@ -123,11 +120,11 @@ class Application
     {
         $body = $_POST + (json_decode(file_get_contents('php://input'), true) ?? []);
 
-        $this->method = explode('@', 'VueManager\\Controllers\\' . ($body['method'] ?? ''), 2);
-        $this->method[0] = !empty($this->method[0]) ? $this->method[0] . 'Controller' : '';
+        $this->method = explode('@', __NAMESPACE__ . '\\Controllers\\' . ($body['method'] ?? ''), 2);
+        $this->method[0] = (!empty($this->method[0]) ? $this->method[0] . 'Controller' : '');
         $this->method[1] = !empty($this->method[1]) ? 'action' . ucfirst($this->method[1]) : '';
 
-        $this->params = $body['params'] ?? [];
+        $this->params = (array) $body['params'] ?? [];
     }
 
     /**
@@ -160,9 +157,7 @@ class Application
         $version = max(1, substr($evo->getConfig('settings_version'), 0, 1));
 
         $params = [
-            'namespace' => 'VueManager\%s\v' . $version . '\\',
-            'service' => 'VueManager\Services\v' . $version . '\\',
-            'model' => 'VueManager\Models\v' . $version . '\\',
+            'namespace' => __NAMESPACE__ . '\%s\v' . $version . '\\',
         ];
 
         return $this->response(
@@ -191,7 +186,7 @@ class Application
      */
     public function getUser(string $key = null)
     {
-        return $this->user[$key] ?? $this->user;
+        return $this->user[$key] ?? ($this->user ?: null);
     }
 
     /**
@@ -200,6 +195,6 @@ class Application
      */
     public function getLang(string $key = null)
     {
-        return $this->lang[$key] ?? $this->lang;
+        return $this->lang[$key] ?? ($this->lang ?: null);
     }
 }

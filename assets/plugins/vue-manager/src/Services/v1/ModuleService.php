@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace VueManager\Services\v1;
 
-use VueManager\Application;
 use VueManager\Exceptions\NotFoundException;
 use VueManager\Interfaces\ServiceInterface;
-use VueManager\Models\AbstractModel;
 use VueManager\Models\v1\SiteModules;
+use VueManager\Traits\ServiceMetaTrait;
 use VueManager\Traits\ServicePermissionTrait;
 
 class ModuleService implements ServiceInterface
 {
     use ServicePermissionTrait;
+    use ServiceMetaTrait;
 
     /**
      * @var array
@@ -27,15 +27,28 @@ class ModuleService implements ServiceInterface
     ];
 
     /**
-     * @param SiteModules $model
+     * @var \VueManager\Models\v1\SiteModules
+     */
+    protected SiteModules $model;
+
+    public function __construct()
+    {
+        $this->model = new SiteModules();
+    }
+
+    /**
+     * @param array $params
      * @return \VueManager\Models\v1\SiteModules
      * @throws \VueManager\Exceptions\NotFoundException
      * @throws \VueManager\Exceptions\PermissionException
      */
-    public function create($model): SiteModules
+    public function create(array $params = []): SiteModules
     {
         $this->hasPermissionsCreate();
         $app = evolutionCMS();
+
+        $model = $this->model->hydrate($params, true);
+        $model->createdon = time();
 
         $data = $model->except(['id'])
             ->toData();
@@ -50,15 +63,16 @@ class ModuleService implements ServiceInterface
     }
 
     /**
-     * @param SiteModules $model
+     * @param array $params
      * @return \VueManager\Models\v1\SiteModules
-     * @throws \VueManager\Exceptions\NotFoundException
      * @throws \VueManager\Exceptions\PermissionException
      */
-    public function read($model): SiteModules
+    public function read(array $params = []): SiteModules
     {
         $this->hasPermissionsRead();
         $app = evolutionCMS();
+
+        $model = $this->model->hydrate($params, true);
 
         if (!empty($model->id)) {
             $data = $app->db->getRow(
@@ -66,47 +80,52 @@ class ModuleService implements ServiceInterface
             );
 
             if (!empty($data)) {
-                return $model->hydrate($data);
+                $model->hydrate($data);
             }
         }
-
-        throw new NotFoundException();
-    }
-
-    /**
-     * @param SiteModules $model
-     * @return \VueManager\Models\v1\SiteModules
-     * @throws \VueManager\Exceptions\NotFoundException
-     * @throws \VueManager\Exceptions\PermissionException
-     */
-    public function update($model): SiteModules
-    {
-        $this->hasPermissionsUpdate();
-        $app = evolutionCMS();
-
-        $data = $model->toArray();
-        $model = $this->read($model)
-            ->hydrate($data);
-        $model->editedon = time();
-
-        $app->db->update($model->toData(), $app->getFullTableName('site_modules'), 'id=' . $model->id);
 
         return $model;
     }
 
     /**
-     * @param SiteModules $model
+     * @param array $params
      * @return \VueManager\Models\v1\SiteModules
      * @throws \VueManager\Exceptions\NotFoundException
      * @throws \VueManager\Exceptions\PermissionException
      */
-    public function delete($model): SiteModules
+    public function update(array $params = []): SiteModules
+    {
+        $this->hasPermissionsUpdate();
+        $app = evolutionCMS();
+
+        $model = $this->read($params)
+            ->hydrate($params);
+
+        if (!$model->id) {
+            throw new NotFoundException();
+        }
+
+        $model->editedon = time();
+
+        $app->db->update($model->toData(), $app->getFullTableName('site_modules'), 'id=' . $model->id);
+
+        return $this->read($model->toArray());
+    }
+
+    /**
+     * @param array $params
+     * @return \VueManager\Models\v1\SiteModules
+     * @throws \VueManager\Exceptions\NotFoundException
+     * @throws \VueManager\Exceptions\PermissionException
+     */
+    public function delete(array $params = []): SiteModules
     {
         $this->hasPermissionsDelete();
         $app = evolutionCMS();
 
+        $model = $this->read($params);
+
         if (!empty($model->id)) {
-            $model = $this->read($model);
             $app->db->delete($app->getFullTableName('site_modules'), 'id=' . $model->id);
 
             return $model;
@@ -116,12 +135,15 @@ class ModuleService implements ServiceInterface
     }
 
     /**
-     * @param \VueManager\Models\AbstractModel $model
-     * @return \VueManager\Models\AbstractModel
+     * @param array $params
+     * @return \VueManager\Models\v1\SiteModules
+     * @throws \VueManager\Exceptions\NotFoundException
+     * @throws \VueManager\Exceptions\PermissionException
      */
-    public function copy(AbstractModel $model): AbstractModel
+    public function copy(array $params = []): SiteModules
     {
-        // TODO: Implement copy() method.
+        return $this->create($this->read($params)
+            ->toArray());
     }
 
     /**
@@ -146,8 +168,7 @@ class ModuleService implements ServiceInterface
                     t.locked,
                     t.disabled,
                     t.category,
-                    IF(t.category=0,"' . Application::getInstance()
-                        ->getLang('no_category') . '",c.category) AS category_name
+                    IF(t.category=0,"' . vum()->getLang('no_category') . '",c.category) AS category_name
                     FROM ' . $modx->getFullTableName('site_modules') . ' t
                     LEFT JOIN ' . $modx->getFullTableName('categories') . ' c ON c.id=t.category
                     ORDER BY c.rank
@@ -183,6 +204,10 @@ class ModuleService implements ServiceInterface
             );
         }
 
-        return [$data];
+        $this->setMeta([
+            'pagination' => []
+        ]);
+
+        return $data;
     }
 }

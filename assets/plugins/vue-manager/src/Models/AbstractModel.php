@@ -49,10 +49,9 @@ abstract class AbstractModel implements JsonSerializable, ArrayableInterface
 
             if (array_key_exists($name, $params)) {
                 $value = $params[$name];
-                $type = $reflectionProperty->getType()
-                    ->getName();
-                $isNull = $reflectionProperty->getType()
-                    ->allowsNull();
+                $propertyType = $reflectionProperty->getType();
+                $type = $propertyType ? $propertyType->getName() : null;
+                $isNull = $propertyType ? $propertyType->allowsNull() : null;
 
                 if ($isNull && is_null($value)) {
                     $type = 'nullable';

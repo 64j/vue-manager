@@ -147,15 +147,14 @@ export default {
   name: 'TemplateIndex',
   components: { ActionsButtons, TitleView, Tabs, Panel },
   data () {
-    this.controller = 'Template'
-    this.icon = 'fa fa-code'
-
     this.events = {
       OnTempFormPrerender: '',
       OnTempFormRender: ''
     }
 
     return {
+      controller: 'Template',
+      icon: 'fa fa-code',
       loading: false,
       meta: {},
       data: {
