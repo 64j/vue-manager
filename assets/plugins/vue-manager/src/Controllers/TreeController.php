@@ -11,11 +11,26 @@ class TreeController
     use ResponseTrait;
 
     /**
+     * @var mixed
+     */
+    protected $service;
+
+    /**
+     * @param array $params
+     */
+    public function __construct(array $params = [])
+    {
+        $service = sprintf($params['namespace'], 'Services') . 'TreeService';
+
+        $this->service = new $service();
+    }
+
+    /**
      * @param array $params
      * @return array
      */
     public function actionGet(array $params = []): array
     {
-        return $this->ok([]);
+        return $this->ok($this->service->get($params), $this->service->getMeta());
     }
 }
