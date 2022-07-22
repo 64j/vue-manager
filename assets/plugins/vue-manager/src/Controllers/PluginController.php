@@ -11,11 +11,11 @@ class PluginController
     use CrudControllerTrait;
 
     /**
-     * @param array $params
+     * @param array $config
      */
-    public function __construct(array $params = [])
+    public function __construct(array $config = [])
     {
-        $service = sprintf($params['namespace'], 'Services') . 'PluginService';
+        $service = sprintf($config['namespace'], 'Services') . 'PluginService';
 
         $this->service = new $service();
     }

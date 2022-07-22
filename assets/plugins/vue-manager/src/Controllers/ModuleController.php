@@ -11,11 +11,11 @@ class ModuleController
     use CrudControllerTrait;
 
     /**
-     * @param array $params
+     * @param array $config
      */
-    public function __construct(array $params = [])
+    public function __construct(array $config = [])
     {
-        $service = sprintf($params['namespace'], 'Services') . 'ModuleService';
+        $service = sprintf($config['namespace'], 'Services') . 'ModuleService';
 
         $this->service = new $service();
     }

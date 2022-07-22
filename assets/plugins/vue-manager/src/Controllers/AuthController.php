@@ -16,11 +16,11 @@ class AuthController
     protected $service;
 
     /**
-     * @param array $params
+     * @param array $config
      */
-    public function __construct(array $params = [])
+    public function __construct(array $config = [])
     {
-        $service = sprintf($params['namespace'], 'Services') . 'AuthService';
+        $service = sprintf($config['namespace'], 'Services') . 'AuthService';
 
         $this->service = new $service();
     }
@@ -31,7 +31,9 @@ class AuthController
      */
     public function actionLogin(array $params): array
     {
-        return $this->ok($this->service->login($params));
+        return $this->ok(
+            $this->service->login($params)
+        );
     }
 
     /**
@@ -39,6 +41,8 @@ class AuthController
      */
     public function getUserByToken(): array
     {
-        return $this->ok($this->service->getUserByToken());
+        return $this->ok(
+            $this->service->getUserByToken()
+        );
     }
 }

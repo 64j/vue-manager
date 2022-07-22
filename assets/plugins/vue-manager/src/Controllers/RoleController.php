@@ -11,11 +11,11 @@ class RoleController
     use CrudControllerTrait;
 
     /**
-     * @param array $params
+     * @param array $config
      */
-    public function __construct(array $params = [])
+    public function __construct(array $config = [])
     {
-        $service = sprintf($params['namespace'], 'Services') . 'RoleService';
+        $service = sprintf($config['namespace'], 'Services') . 'RoleService';
 
         $this->service = new $service();
     }

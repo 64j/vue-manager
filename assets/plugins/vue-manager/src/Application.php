@@ -163,13 +163,13 @@ class Application
      */
     protected function responseFromMethod(): string
     {
-        $params = [
+        $config = [
             'namespace' => __NAMESPACE__ . '\%s\v' . $this->getVersion() . '\\',
         ];
 
         return $this->response(
             call_user_func([
-                new $this->method[0]($params),
+                new $this->method[0]($config),
                 $this->method[1]
             ], $this->params)
         );
