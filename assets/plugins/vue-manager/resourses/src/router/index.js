@@ -18,6 +18,16 @@ const routes = [
     }
   },
   {
+    path: '/document/:id?',
+    name: 'DocumentIndex',
+    component: () => import('@/views/Document/Index')
+  },
+  {
+    path: '/document/:id/list',
+    name: 'DocumentList',
+    component: () => import('@/views/Document/List')
+  },
+  {
     path: '/elements',
     name: 'ElementsIndex',
     component: () => import('@/views/Elements/Index'),

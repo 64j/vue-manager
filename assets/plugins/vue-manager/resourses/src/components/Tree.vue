@@ -8,13 +8,18 @@
       <div class="app-tree-header flex-grow-0">
 
       </div>
-      <div class="app-tree-root flex-grow-1 overflow-auto bg-dark text-white">
-        <ul>
-          <li v-for="(item, i) in data" :key="i">
-            {{ item['pagetitle'] }}
-          </li>
+      <div class="app-tree-root flex-grow-1 overflow-hidden bg-dark text-white position-relative">
+        <div v-if="loading" class="tree-loader text-center px-1 position-absolute">
+          <i class="fa fa-spinner fa-spin"></i>
+        </div>
+        <ul class="list-unstyled">
+          <tree-node
+            v-for="node in data"
+            :key="node.id"
+            :node="node"
+            @action="action"
+          />
         </ul>
-
       </div>
     </div>
   </div>
@@ -22,12 +27,15 @@
 
 <script>
 import http from '@/utils/http'
+import TreeNode from '@/components/TreeNode'
 
 export default {
   name: 'TreeView',
+  components: { TreeNode },
   data () {
     return {
-      url: 'Tree@get',
+      controller: 'Tree',
+      loading: false,
       x: 0,
       elTree: null,
       elMain: null,
@@ -67,10 +75,48 @@ export default {
       this.elTree.style.width = this.x + 'px'
       this.elMain.style.width = window.innerWidth - this.x + 'px'
     },
-    get() {
-      http.post(this.url).then(result => {
+    get () {
+      http.post(this.controller + '@get').then(result => {
         this.data = result.data
         this.meta = result.meta
+      })
+    },
+    action(action, node) {
+      switch (action) {
+        case 'toggle':
+          this.toggle(node)
+          break;
+
+        case 'click':
+          this.click(node)
+          break;
+      }
+    },
+    toggle (node) {
+      this.loading = true
+      if (node.children) {
+        http.post(this.controller + '@get', {
+          parent: node.id,
+          close: node.id
+        }).then(() => {
+          delete node.children
+          this.loading = false
+        })
+      } else {
+        http.post(this.controller + '@get', {
+          parent: node.id
+        }).then(result => {
+          node.children = result.data
+          this.loading = false
+        })
+      }
+    },
+    click (node) {
+      this.$router.push({
+        name: 'DocumentIndex',
+        params: {
+          id: node.id
+        }
       })
     }
   }
@@ -84,5 +130,6 @@ export default {
 .resize-mask { display: none; position: absolute; z-index: 9; left: 0; top: 0; right: 0; bottom: 0; cursor: col-resize; }
 .tree-resize .resize-mask { display: block; }
 .app-tree-header { height: 2rem; background: rgba(var(--bs-dark-rgb), var(--bs-bg-opacity)); --bs-bg-opacity: .95; }
-.app-tree-root { height: calc(100% - 2rem); }
+.app-tree-root { overflow-y: auto !important; height: calc(100% - 2rem); }
+.tree-loader { z-index: 2; top: 0; right: 0; }
 </style>

@@ -5,7 +5,7 @@
       <MenuView ref="Menu"/>
     </div>
     <div class="app-body flex-grow-1 d-flex flex-nowrap position-relative">
-      <div class="app-tree col-auto">
+      <div class="app-tree col-auto overflow-hidden">
         <Tree ref="Tree"/>
       </div>
       <div class="app-main col d-flex flex-nowrap flex-column bg-light">

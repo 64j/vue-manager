@@ -27,10 +27,11 @@ class TreeService
             $_SESSION['openedArray'] = $params['opened'];
         }
 
-        $expandAll = (int) ($params['expandAll'] ?? 0);
+        $expandAll = (int) ($params['expandAll'] ?? 2);
         $indent = (int) ($params['indent'] ?? 0);
         $parent = (int) ($params['parent'] ?? 0);
         $hereid = (int) ($params['id'] ?? 0);
+        $close = (int) ($params['close'] ?? 0);
 
         if (isset($params['showonlyfolders'])) {
             $_SESSION['tree_show_only_folders'] = $params['showonlyfolders'];
@@ -54,8 +55,25 @@ class TreeService
             $_SESSION['tree_nodename'] = 'default';
         }
 
-        if (isset($_SESSION['openedArray'])) {
-            $this->opened = array_filter(array_map('intval', explode('|', $_SESSION['openedArray'])));
+        if (!isset($_SESSION['openedArray']) || !is_array($_SESSION['openedArray'])) {
+            $_SESSION['openedArray'] = [];
+        }
+
+        if ($parent) {
+            if ($close == $parent) {
+                if (isset($_SESSION['openedArray'][$parent])) {
+                    unset($_SESSION['openedArray'][$parent]);
+                }
+
+                return [];
+            } else {
+                $_SESSION['openedArray'][$parent] = $parent;
+            }
+        }
+
+        if (!empty($_SESSION['openedArray'])) {
+            //$this->opened = array_filter(array_map('intval', explode('|', $_SESSION['openedArray'])));
+            $this->opened = $_SESSION['openedArray'];
         }
 
         return $this->makeHTML($indent, $parent, $expandAll, $hereid);
