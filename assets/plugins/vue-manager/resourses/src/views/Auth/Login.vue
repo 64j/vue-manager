@@ -80,8 +80,8 @@ export default {
       http.baseUrl = this.data.host
 
       http.post('Auth@login', this.data).then(result => {
-        if (result['token']) {
-          localStorage['EVO.TOKEN'] = result['token']
+        if (result?.data['token']) {
+          localStorage['EVO.TOKEN'] = result?.data['token']
           http.post('Settings@get').then(result => {
             if (result.data) {
               if (this.data.rememberme) {

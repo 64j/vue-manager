@@ -59,7 +59,9 @@ class Application
         $this->parseBody();
 
         if (!(isset($this->exceptMethods[$this->method[0]]) && in_array($this->method[1], $this->exceptMethods[$this->method[0]]))) {
-            $this->user = (new AuthController())->getUserByToken();
+            $this->user = (new AuthController([
+                'namespace' => __NAMESPACE__ . '\%s\v' . $this->getVersion() . '\\',
+            ]))->getUserByToken()['data'] ?? [];
         }
 
         $_lang = [];
@@ -149,15 +151,20 @@ class Application
     }
 
     /**
+     * @return int
+     */
+    protected function getVersion(): int
+    {
+        return max(1, substr(evolutionCMS()->getConfig('settings_version'), 0, 1));
+    }
+
+    /**
      * @return string
      */
     protected function responseFromMethod(): string
     {
-        $evo = evolutionCMS();
-        $version = max(1, substr($evo->getConfig('settings_version'), 0, 1));
-
         $params = [
-            'namespace' => __NAMESPACE__ . '\%s\v' . $version . '\\',
+            'namespace' => __NAMESPACE__ . '\%s\v' . $this->getVersion() . '\\',
         ];
 
         return $this->response(
