@@ -66,7 +66,7 @@ export default {
       method: method,
       body: this.setBody(body || ''),
       headers: this.setHeaders(),
-      credentials: 'include'
+      credentials: 'same-origin'
     }).then(this.handlerResponse).catch(this.handlerCatch)
   },
 
@@ -105,7 +105,7 @@ export default {
     return fetch(this.baseUrl + 'manager/processors/login.processor.php', {
       method: 'post',
       body: body,
-      //credentials: 'include'
+      credentials: 'same-origin'
     }).then((res) => {
       if (res.status === 404) {
         return {
