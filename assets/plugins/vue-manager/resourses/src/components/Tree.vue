@@ -12,7 +12,8 @@
         <div v-if="loading" class="tree-loader text-center px-1 position-absolute">
           <i class="fa fa-spinner fa-spin"></i>
         </div>
-        <ul class="list-unstyled">
+        <div class="ps-4 py-2 pe-2 fw-bolder">{{ $store.state.Settings.config['site_name'] }}</div>
+        <ul class="list-unstyled m-0">
           <tree-node
             v-for="node in data"
             :key="node.id"
