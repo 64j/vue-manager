@@ -59,14 +59,15 @@ class AuthController
             throw new UnauthorizedException('Incorrect username or password entered!');
         }
 
-        $sessionId = session_id();
+        session_destroy();
+        session_id($user['sessionid']);
+        session_start();
 
         $app->db->update([
             'failedlogincount' => 0,
             'logincount' => $user['logincount'] + 1,
             'lastlogin' => $user['thislogin'],
             'thislogin' => time(),
-            'sessionid' => $sessionId
         ],
             $app->getFullTableName('user_attributes'),
             'internalKey=' . $internalKey
@@ -84,7 +85,7 @@ class AuthController
         $app->getUserSettings();
 
         return [
-            'token' => base64_encode(md5($sessionId))
+            'token' => base64_encode(md5($user['sessionid']))
         ];
     }
 
