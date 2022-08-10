@@ -218,7 +218,7 @@ export default {
 .multi-tabs a > span { width: 6rem; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; line-height: .9; }
 .multi-tabs .close { position: absolute; top: 0; right: 0; padding: 0 .6rem; height: 100%; font-size: .75rem; }
 .multi-tabs .close:hover { color: var(--bs-danger) }
-.multi-tabs-panel, .multi-tabs-panel-frames { height: calc(100% - 2.2rem); }
+.multi-tabs-panel, .multi-tabs-panel-frames { height: 100%; }
 .multi-tabs a.tab-home { padding: 1rem !important; }
 .multi-tabs a.tab-home > i { margin: 0 !important; }
 .multi-tabs a.tab-home > span { width: 0; }

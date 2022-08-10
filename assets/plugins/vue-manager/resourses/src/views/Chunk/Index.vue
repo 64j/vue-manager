@@ -15,6 +15,7 @@
         <template #General>
           <div class="container-fluid container-body pt-3">
             <div class="form-group">
+
               <div class="row form-row mb-1">
                 <label class="col-md-3 col-lg-2">
                   {{ $t('htmlsnippet_name') }}
@@ -30,12 +31,14 @@
                   <small class="form-text text-danger hide" id='savingMessage'></small>
                 </div>
               </div>
+
               <div class="row form-row mb-1">
                 <label class="col-md-3 col-lg-2">{{ $t('htmlsnippet_desc') }}</label>
                 <div class="col-md-9 col-lg-10">
                   <input v-model="data.description" type="text" maxlength="255" class="form-control" onchange="documentDirty=true;">
                 </div>
               </div>
+
               <div class="row form-row mb-1">
                 <label class="col-md-3 col-lg-2">{{ $t('existing_category') }}</label>
                 <div class="col-md-9 col-lg-10">
@@ -46,29 +49,34 @@
                   </select>
                 </div>
               </div>
+
               <div class="row form-row mb-1">
                 <label class="col-md-3 col-lg-2">{{ $t('new_category') }}</label>
                 <div class="col-md-9 col-lg-10">
                   <input v-model="data.newcategory" type="text" maxlength="45" class="form-control" onchange="documentDirty=true;">
                 </div>
               </div>
+
               <div v-if="$store.state.Settings.user.role === 1" class="form-row mb-1">
                 <div class="form-check">
                   <input v-model="data.disabled" type="checkbox" class="form-check-input" id="disabled" :false-value="0" true-value="1">
                   <label class="form-check-label" for="disabled">{{ $t('disabled') }}</label>
                 </div>
               </div>
+
             </div>
 
             <!-- HTML text editor start -->
             <div class="navbar-editor mt-3 mb-1">
               <span>{{ $t('chunk_code') }}</span>
             </div>
+
           </div>
 
           <div class="section-editor">
             <textarea v-model="data.snippet" class="form-control" rows="20" wrap="soft" onchange="documentDirty=true;"/>
           </div>
+
         </template>
 
       </Tabs>

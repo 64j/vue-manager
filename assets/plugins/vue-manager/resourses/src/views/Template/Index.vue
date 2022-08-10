@@ -16,6 +16,7 @@
         <template #Template>
           <div class="container-fluid container-body pt-3">
             <div class="form-group">
+
               <div class="row form-row mb-1">
                 <label class="col-md-3 col-lg-2">
                   {{ $t('template_name') }}
@@ -32,12 +33,14 @@
                   <small class="form-text text-danger hide" id='savingMessage'></small>
                 </div>
               </div>
+
               <div class="row form-row mb-1">
                 <label class="col-md-3 col-lg-2">{{ $t('template_desc') }}</label>
                 <div class="col-md-9 col-lg-10">
                   <input v-model="data.description" type="text" maxlength="255" class="form-control" onchange="documentDirty=true;">
                 </div>
               </div>
+
               <div class="row form-row mb-1">
                 <label class="col-md-3 col-lg-2">{{ $t('existing_category') }}</label>
                 <div class="col-md-9 col-lg-10">
@@ -48,16 +51,19 @@
                   </select>
                 </div>
               </div>
+
               <div class="row form-row mb-1">
                 <label class="col-md-3 col-lg-2">{{ $t('new_category') }}</label>
                 <div class="col-md-9 col-lg-10">
                   <input v-model="data.newcategory" type="text" maxlength="45" class="form-control" onchange="documentDirty=true;">
                 </div>
               </div>
+
               <div class="form-check mb-1" v-if="$store.state.Settings.permissions['save_role']">
                 <input v-model="data.selectable" type="checkbox" class="form-check-input" id="selectable" :false-value="0" :true-value="1">
                 <label class="form-check-label" for="selectable">{{ $t('template_selectable') }}</label>
               </div>
+
             </div>
 
             <!-- HTML text editor start -->

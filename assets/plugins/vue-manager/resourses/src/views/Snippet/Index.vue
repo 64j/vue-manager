@@ -19,6 +19,7 @@
         <template #Snippet>
           <div class="container-fluid container-body pt-3">
             <div class="form-group">
+
               <div class="row form-row mb-1">
                 <label class="col-md-3 col-lg-2">{{ $t('snippet_name') }}</label>
                 <div class="col-md-9 col-lg-10">
@@ -32,12 +33,14 @@
                   <small class="form-text text-danger hide" id="savingMessage"></small>
                 </div>
               </div>
+
               <div class="row form-row mb-1">
                 <label class="col-md-3 col-lg-2">{{ $t('snippet_desc') }}</label>
                 <div class="col-md-9 col-lg-10">
                   <input v-model="data.description" type="text" maxlength="255" class="form-control" onchange="documentDirty=true;"/>
                 </div>
               </div>
+
               <div class="row form-row mb-1">
                 <label class="col-md-3 col-lg-2">{{ $t('existing_category') }}</label>
                 <div class="col-md-9 col-lg-10">
@@ -48,20 +51,25 @@
                   </select>
                 </div>
               </div>
+
               <div class="row form-row mb-1">
                 <label class="col-md-3 col-lg-2">{{ $t('new_category') }}</label>
                 <div class="col-md-9 col-lg-10">
                   <input v-model="data.newcategory" type="text" maxlength="45" class="form-control" onchange="documentDirty=true;"/>
                 </div>
               </div>
+
             </div>
+
             <div v-if="$store.state.Settings.permissions['save_role']">
+
               <div v-if="$store.state.Settings.user.role === 1" class="form-row mb-1">
                 <div class="form-check">
                   <input v-model="data.disabled" type="checkbox" class="form-check-input" id="disabled" :false-value="0" :true-value="1">
                   <label class="form-check-label" for="disabled">{{ $t('disabled') }}</label>
                 </div>
               </div>
+
               <div class="form-row mb-1">
                 <div class="form-check">
                   <input v-model="data.parse_docblock" type="checkbox" class="form-check-input" id="parse_docblock" :false-value="0" :true-value="1">
@@ -69,16 +77,20 @@
                 </div>
                 <small v-if="data.parse_docblock" class="text-danger d-block" v-html="$t('parse_docblock_msg')"/>
               </div>
+
             </div>
 
             <!-- PHP text editor start -->
             <div class="navbar-editor mt-3 mb-1">
               <span>{{ $t('snippet_code') }}</span>
             </div>
+
           </div>
+
           <div class="section-editor">
             <textarea v-model="data.snippet" class="form-control" rows="20" wrap="soft" onchange="documentDirty=true;"/>
           </div>
+
         </template>
 
         <!-- Config -->
