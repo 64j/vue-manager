@@ -37,7 +37,7 @@ class SiteContent extends AbstractModel
      *
      * @ORM\Column(name="contentType", type="string", length=50, nullable=false, options={"default"="'text/html'"})
      */
-    public string $contenttype = 'text/html';
+    public string $contentType = 'text/html';
 
     /**
      * @var string

@@ -119,6 +119,19 @@ export default {
           id: node.id
         }
       })
+    },
+    updateNode (node, data) {
+      data = data || this.data
+
+      if (node.id) {
+        for (const i in data) {
+          if (data[i].id === node.id) {
+            data[i] = Object.assign({}, data[i], node)
+          } else if (data[i].children) {
+            this.updateNode(node, data[i].children)
+          }
+        }
+      }
     }
   }
 }

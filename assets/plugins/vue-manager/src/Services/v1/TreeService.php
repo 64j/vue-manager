@@ -206,47 +206,9 @@ class TreeService
 
             $url = $app->makeUrl($row['id']);
 
-            $title = '';
-            if ($this->isDateNode($nodeNameSource)) {
-                $title = $_lang['pagetitle'] . ': ' . $row['pagetitle'] . '[+lf+]';
-            }
-            $title .= $_lang['id'] . ': ' . $row['id'];
-            $title .= '[+lf+]' . $_lang['resource_opt_menu_title'] . ': ' . $row['menutitle'];
-            $title .= '[+lf+]' . $_lang['resource_opt_menu_index'] . ': ' . $row['menuindex'];
-            $title .= '[+lf+]' . $_lang['alias'] . ': ' . (!empty($row['alias']) ? $row['alias'] : '-');
-            $title .= '[+lf+]' . $_lang['template'] . ': ' . $row['templatename'];
-            $title .= '[+lf+]' . $_lang['publish_date'] . ': ' . $app->toDateFormat($row['pub_date']);
-            $title .= '[+lf+]' . $_lang['unpublish_date'] . ': ' . $app->toDateFormat($row['unpub_date']);
-            $title .= '[+lf+]' . $_lang['page_data_web_access'] . ': ' . ($row['privateweb'] ? $_lang['private'] : $_lang['public']);
-            $title .= '[+lf+]' . $_lang['page_data_mgr_access'] . ': ' . ($row['privatemgr'] ? $_lang['private'] : $_lang['public']);
-            $title .= '[+lf+]' . $_lang['resource_opt_richtext'] . ': ' . ($row['richtext'] == 0 ? $_lang['no'] : $_lang['yes']);
-            $title .= '[+lf+]' . $_lang['page_data_searchable'] . ': ' . ($row['searchable'] == 0 ? $_lang['no'] : $_lang['yes']);
-            $title .= '[+lf+]' . $_lang['page_data_cacheable'] . ': ' . ($row['cacheable'] == 0 ? $_lang['no'] : $_lang['yes']);
-            $title = $app->htmlspecialchars($title);
-            $title = str_replace('[+lf+]', ' &#13;', $title);   // replace line-breaks with empty space as fall-back
-
-            $data = array(
-                'id' => $row['id'],
-                'pagetitle' => $row['pagetitle'],
-                'longtitle' => $row['longtitle'],
-                'menutitle' => $row['menutitle'],
-                'parent' => $parent,
-                'isfolder' => $row['isfolder'],
-                'published' => $row['published'],
-                'deleted' => $row['deleted'],
-                'type' => $row['type'],
-                'menuindex' => $row['menuindex'],
-                'donthit' => $row['donthit'],
-                'hidemenu' => $row['hidemenu'],
-                'alias' => $row['alias'],
-                'contenttype' => $row['contentType'],
-                'privateweb' => $row['privateweb'],
-                'privatemgr' => $row['privatemgr'],
-                'hasAccess' => $row['hasAccess'],
-                'template' => $row['template'],
+            $data = array_merge($row, [
                 'nodetitle' => $nodetitle,
                 'url' => $url,
-                'title' => $title,
                 'nodetitleDisplay' => $nodetitleDisplay,
                 'weblinkDisplay' => $weblinkDisplay,
                 'pageIdDisplay' => $pageIdDisplay,
@@ -263,8 +225,7 @@ class TreeService
                 'subMenuState' => '',
                 'level' => $level,
                 'isPrivate' => 0,
-                'roles' => $row['roles'] ?: ''
-            );
+            ]);
 
             $ph = $data;
             $ph['nodetitle_esc'] = addslashes($nodetitle);

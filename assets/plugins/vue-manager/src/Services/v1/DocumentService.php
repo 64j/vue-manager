@@ -83,7 +83,8 @@ class DocumentService implements ServiceInterface
                 $model->hydrate($data);
 
                 $this->setMeta([
-                    'templates' => $this->getTemplates((int) $data['template'])
+                    'templates' => $this->getTemplates((int) $data['template']),
+                    'types' => ['text/html', 'text/plain', 'text/xml']
                 ]);
             }
         }

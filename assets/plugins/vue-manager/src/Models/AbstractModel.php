@@ -131,7 +131,13 @@ abstract class AbstractModel implements JsonSerializable, ArrayableInterface
         $fn = fn($c) => '_' . strtolower($c[1]);
 
         foreach ($params as $key => $value) {
-            $k = preg_replace_callback('/([A-Z])/', $fn, $key);
+            try {
+                $property = new ReflectionProperty($this, $key);
+                preg_match('/@ORM\\\Column\(name=\"(.*?)\"/im', $property->getDocComment() ?: '', $matches);
+            } catch (\ReflectionException $e) {
+            }
+
+            $k = $matches[1] ?? preg_replace_callback('/([A-Z])/', $fn, $key);
 
             if (!isset($params[$k])) {
                 unset($params[$key]);
