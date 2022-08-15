@@ -20,12 +20,12 @@ class SystemSettings extends AbstractModel
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    public $settingName = '';
+    public string $settingName = '';
 
     /**
      * @var string|null
      *
      * @ORM\Column(name="setting_value", type="text", length=65535, nullable=true, options={"default"="NULL"})
      */
-    public $settingValue = null;
+    public ?string $settingValue = null;
 }
