@@ -26,7 +26,7 @@ class UserService implements ServiceInterface
     ];
 
     /**
-     * @var \VueManager\Models\v1\ManagerUsers
+     * @var ManagerUsers
      */
     protected ManagerUsers $model;
 
@@ -37,7 +37,8 @@ class UserService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\ManagerUsers
+     *
+     * @return ManagerUsers
      */
     public function create(array $params = []): ManagerUsers
     {
@@ -46,7 +47,8 @@ class UserService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\ManagerUsers
+     *
+     * @return ManagerUsers
      */
     public function read(array $params = []): ManagerUsers
     {
@@ -55,7 +57,8 @@ class UserService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\ManagerUsers
+     *
+     * @return ManagerUsers
      */
     public function update(array $params = []): ManagerUsers
     {
@@ -64,7 +67,8 @@ class UserService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\ManagerUsers
+     *
+     * @return ManagerUsers
      */
     public function delete(array $params = []): ManagerUsers
     {
@@ -73,7 +77,8 @@ class UserService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\ManagerUsers
+     *
+     * @return ManagerUsers
      */
     public function copy(array $params = []): ManagerUsers
     {

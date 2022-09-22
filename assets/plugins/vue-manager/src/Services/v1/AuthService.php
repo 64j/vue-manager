@@ -10,8 +10,9 @@ class AuthService
 {
     /**
      * @param array $params
+     *
      * @return array
-     * @throws \VueManager\Exceptions\UnauthorizedException
+     * @throws UnauthorizedException
      */
     public function login(array $params): array
     {
@@ -91,7 +92,7 @@ class AuthService
 
     /**
      * @return array
-     * @throws \VueManager\Exceptions\UnauthorizedException
+     * @throws UnauthorizedException
      */
     public function getUserByToken(): array
     {

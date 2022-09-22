@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace VueManager\Services\v1;
 
+use Exception;
+
 class SettingsService
 {
     /**
      * @param array $params
      * @return array[]
-     * @throws \Exception
+     * @throws Exception
      */
     public function get(array $params = []): array
     {

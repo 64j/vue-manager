@@ -9,7 +9,7 @@ trait CrudControllerTrait
     use ResponseTrait;
 
     /**
-     * @var \VueManager\Interfaces\ServiceInterface
+     * @var ServiceInterface
      */
     protected ServiceInterface $service;
 

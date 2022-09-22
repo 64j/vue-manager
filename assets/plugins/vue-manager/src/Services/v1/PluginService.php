@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace VueManager\Services\v1;
 
 use VueManager\Exceptions\NotFoundException;
+use VueManager\Exceptions\PermissionException;
 use VueManager\Interfaces\ServiceInterface;
 use VueManager\Models\v1\SitePlugins;
 use VueManager\Traits\ServiceMetaTrait;
@@ -27,7 +28,7 @@ class PluginService implements ServiceInterface
     ];
 
     /**
-     * @var \VueManager\Models\v1\SitePlugins
+     * @var SitePlugins
      */
     protected SitePlugins $model;
 
@@ -38,9 +39,10 @@ class PluginService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\SitePlugins
-     * @throws \VueManager\Exceptions\NotFoundException
-     * @throws \VueManager\Exceptions\PermissionException
+     *
+     * @return SitePlugins
+     * @throws NotFoundException
+     * @throws PermissionException
      */
     public function create(array $params = []): SitePlugins
     {
@@ -64,8 +66,9 @@ class PluginService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\SitePlugins
-     * @throws \VueManager\Exceptions\PermissionException
+     *
+     * @return SitePlugins
+     * @throws PermissionException
      */
     public function read(array $params = []): SitePlugins
     {
@@ -89,9 +92,10 @@ class PluginService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\SitePlugins
-     * @throws \VueManager\Exceptions\NotFoundException
-     * @throws \VueManager\Exceptions\PermissionException
+     *
+     * @return SitePlugins
+     * @throws NotFoundException
+     * @throws PermissionException
      */
     public function update(array $params = []): SitePlugins
     {
@@ -114,9 +118,10 @@ class PluginService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\SitePlugins
-     * @throws \VueManager\Exceptions\NotFoundException
-     * @throws \VueManager\Exceptions\PermissionException
+     *
+     * @return SitePlugins
+     * @throws NotFoundException
+     * @throws PermissionException
      */
     public function delete(array $params = []): SitePlugins
     {
@@ -136,9 +141,10 @@ class PluginService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\SitePlugins
-     * @throws \VueManager\Exceptions\NotFoundException
-     * @throws \VueManager\Exceptions\PermissionException
+     *
+     * @return SitePlugins
+     * @throws NotFoundException
+     * @throws PermissionException
      */
     public function copy(array $params = []): SitePlugins
     {
@@ -149,7 +155,7 @@ class PluginService implements ServiceInterface
     /**
      * @param array $params
      * @return array
-     * @throws \VueManager\Exceptions\PermissionException
+     * @throws PermissionException
      */
     public function list(array $params = []): array
     {

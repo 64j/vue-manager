@@ -26,7 +26,7 @@ class WebUserService implements ServiceInterface
     ];
 
     /**
-     * @var \VueManager\Models\v1\WebUsers
+     * @var WebUsers
      */
     protected WebUsers $model;
 
@@ -37,7 +37,8 @@ class WebUserService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\WebUsers
+     *
+     * @return WebUsers
      */
     public function create(array $params = []): WebUsers
     {
@@ -46,7 +47,8 @@ class WebUserService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\WebUsers
+     *
+     * @return WebUsers
      */
     public function read(array $params = []): WebUsers
     {
@@ -55,7 +57,8 @@ class WebUserService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\WebUsers
+     *
+     * @return WebUsers
      */
     public function update(array $params = []): WebUsers
     {
@@ -64,7 +67,8 @@ class WebUserService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\WebUsers
+     *
+     * @return WebUsers
      */
     public function delete(array $params = []): WebUsers
     {
@@ -73,7 +77,8 @@ class WebUserService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\WebUsers
+     *
+     * @return WebUsers
      */
     public function copy(array $params = []): WebUsers
     {

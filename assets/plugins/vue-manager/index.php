@@ -7,7 +7,7 @@ define('IN_MANAGER_MODE', true);
 
 require_once '../../../index.php';
 
-/** @var \DocumentParser $modx */
+/** @var DocumentParser $modx */
 $modx->db->connect();
 $modx->getSettings();
 
@@ -19,11 +19,11 @@ spl_autoload_register(function ($class) {
 });
 
 /**
- * @return \VueManager\Application
+ * @return Application
  */
 function vum(): Application
 {
-    return VueManager\Application::getInstance();
+    return Application::getInstance();
 }
 
 echo vum()->run();

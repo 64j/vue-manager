@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace VueManager\Controllers;
 
+use Exception;
 use VueManager\Traits\ResponseTrait;
 
 class SettingsController
@@ -28,7 +29,7 @@ class SettingsController
     /**
      * @param array $params
      * @return array[]
-     * @throws \Exception
+     * @throws Exception
      */
     public function actionGet(array $params = []): array
     {

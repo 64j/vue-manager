@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace VueManager\Services\v1;
 
 use VueManager\Exceptions\NotFoundException;
+use VueManager\Exceptions\PermissionException;
 use VueManager\Interfaces\ServiceInterface;
 use VueManager\Models\v1\SiteModules;
 use VueManager\Traits\ServiceMetaTrait;
@@ -27,7 +28,7 @@ class ModuleService implements ServiceInterface
     ];
 
     /**
-     * @var \VueManager\Models\v1\SiteModules
+     * @var SiteModules
      */
     protected SiteModules $model;
 
@@ -38,9 +39,10 @@ class ModuleService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\SiteModules
-     * @throws \VueManager\Exceptions\NotFoundException
-     * @throws \VueManager\Exceptions\PermissionException
+     *
+     * @return SiteModules
+     * @throws NotFoundException
+     * @throws PermissionException
      */
     public function create(array $params = []): SiteModules
     {
@@ -64,8 +66,9 @@ class ModuleService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\SiteModules
-     * @throws \VueManager\Exceptions\PermissionException
+     *
+     * @return SiteModules
+     * @throws PermissionException
      */
     public function read(array $params = []): SiteModules
     {
@@ -89,9 +92,10 @@ class ModuleService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\SiteModules
-     * @throws \VueManager\Exceptions\NotFoundException
-     * @throws \VueManager\Exceptions\PermissionException
+     *
+     * @return SiteModules
+     * @throws NotFoundException
+     * @throws PermissionException
      */
     public function update(array $params = []): SiteModules
     {
@@ -114,9 +118,10 @@ class ModuleService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\SiteModules
-     * @throws \VueManager\Exceptions\NotFoundException
-     * @throws \VueManager\Exceptions\PermissionException
+     *
+     * @return SiteModules
+     * @throws NotFoundException
+     * @throws PermissionException
      */
     public function delete(array $params = []): SiteModules
     {
@@ -136,9 +141,10 @@ class ModuleService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\SiteModules
-     * @throws \VueManager\Exceptions\NotFoundException
-     * @throws \VueManager\Exceptions\PermissionException
+     *
+     * @return SiteModules
+     * @throws NotFoundException
+     * @throws PermissionException
      */
     public function copy(array $params = []): SiteModules
     {
@@ -149,7 +155,7 @@ class ModuleService implements ServiceInterface
     /**
      * @param array $params
      * @return array
-     * @throws \VueManager\Exceptions\PermissionException
+     * @throws PermissionException
      */
     public function list(array $params = []): array
     {

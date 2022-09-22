@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace VueManager\Services\v1;
 
 use VueManager\Exceptions\NotFoundException;
+use VueManager\Exceptions\PermissionException;
 use VueManager\Interfaces\ServiceInterface;
 use VueManager\Models\v1\SiteTemplates;
 use VueManager\Traits\ServiceMetaTrait;
@@ -27,7 +28,7 @@ class TemplateService implements ServiceInterface
     ];
 
     /**
-     * @var \VueManager\Models\v1\SiteTemplates
+     * @var SiteTemplates
      */
     protected SiteTemplates $model;
 
@@ -38,9 +39,10 @@ class TemplateService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\SiteTemplates
-     * @throws \VueManager\Exceptions\NotFoundException
-     * @throws \VueManager\Exceptions\PermissionException
+     *
+     * @return SiteTemplates
+     * @throws NotFoundException
+     * @throws PermissionException
      */
     public function create(array $params = []): SiteTemplates
     {
@@ -65,7 +67,7 @@ class TemplateService implements ServiceInterface
     /**
      * @param array $params
      * @return SiteTemplates
-     * @throws \VueManager\Exceptions\PermissionException
+     * @throws PermissionException
      */
     public function read(array $params = []): SiteTemplates
     {
@@ -143,9 +145,10 @@ class TemplateService implements ServiceInterface
 
     /**
      * @param array $params
+     *
      * @return SiteTemplates
-     * @throws \VueManager\Exceptions\NotFoundException
-     * @throws \VueManager\Exceptions\PermissionException
+     * @throws NotFoundException
+     * @throws PermissionException
      */
     public function update(array $params = []): SiteTemplates
     {
@@ -201,9 +204,10 @@ class TemplateService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\SiteTemplates
-     * @throws \VueManager\Exceptions\NotFoundException
-     * @throws \VueManager\Exceptions\PermissionException
+     *
+     * @return SiteTemplates
+     * @throws NotFoundException
+     * @throws PermissionException
      */
     public function delete(array $params = []): SiteTemplates
     {
@@ -231,9 +235,10 @@ class TemplateService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\SiteTemplates
-     * @throws \VueManager\Exceptions\NotFoundException
-     * @throws \VueManager\Exceptions\PermissionException
+     *
+     * @return SiteTemplates
+     * @throws NotFoundException
+     * @throws PermissionException
      */
     public function copy(array $params = []): SiteTemplates
     {
@@ -244,7 +249,7 @@ class TemplateService implements ServiceInterface
     /**
      * @param array $params
      * @return array
-     * @throws \VueManager\Exceptions\PermissionException
+     * @throws PermissionException
      */
     public function list(array $params = []): array
     {

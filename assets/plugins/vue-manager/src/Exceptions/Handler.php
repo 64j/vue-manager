@@ -70,7 +70,7 @@ class Handler
     }
 
     /**
-     * @param \Throwable $e
+     * @param Throwable $e
      * @return void
      */
     protected function handleException(Throwable $e): void
@@ -102,7 +102,7 @@ class Handler
     /**
      * @param array $error
      * @param int|null $traceOffset
-     * @return \Error
+     * @return Error
      */
     protected function fatalErrorFromPhpError(array $error, int $traceOffset = null): Error
     {

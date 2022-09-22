@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace VueManager\Services\v1;
 
 use VueManager\Exceptions\NotFoundException;
+use VueManager\Exceptions\PermissionException;
 use VueManager\Interfaces\ServiceInterface;
 use VueManager\Models\v1\UserRoles;
 use VueManager\Traits\ServiceMetaTrait;
@@ -27,7 +28,7 @@ class RoleService implements ServiceInterface
     ];
 
     /**
-     * @var \VueManager\Models\v1\UserRoles
+     * @var UserRoles
      */
     protected UserRoles $model;
 
@@ -38,9 +39,10 @@ class RoleService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\UserRoles
-     * @throws \VueManager\Exceptions\NotFoundException
-     * @throws \VueManager\Exceptions\PermissionException
+     *
+     * @return UserRoles
+     * @throws NotFoundException
+     * @throws PermissionException
      */
     public function create(array $params = []): UserRoles
     {
@@ -63,8 +65,9 @@ class RoleService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\UserRoles
-     * @throws \VueManager\Exceptions\PermissionException
+     *
+     * @return UserRoles
+     * @throws PermissionException
      */
     public function read(array $params = []): UserRoles
     {
@@ -414,9 +417,10 @@ class RoleService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\UserRoles
-     * @throws \VueManager\Exceptions\NotFoundException
-     * @throws \VueManager\Exceptions\PermissionException
+     *
+     * @return UserRoles
+     * @throws NotFoundException
+     * @throws PermissionException
      */
     public function update(array $params = []): UserRoles
     {
@@ -441,9 +445,10 @@ class RoleService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\UserRoles
-     * @throws \VueManager\Exceptions\NotFoundException
-     * @throws \VueManager\Exceptions\PermissionException
+     *
+     * @return UserRoles
+     * @throws NotFoundException
+     * @throws PermissionException
      */
     public function delete(array $params = []): UserRoles
     {
@@ -467,8 +472,10 @@ class RoleService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\UserRoles
-     * @throws \VueManager\Exceptions\PermissionException
+     *
+     * @return UserRoles
+     * @throws NotFoundException
+     * @throws PermissionException
      */
     public function copy(array $params = []): UserRoles
     {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace VueManager\Services\v1;
 
 use VueManager\Exceptions\NotFoundException;
+use VueManager\Exceptions\PermissionException;
 use VueManager\Interfaces\ServiceInterface;
 use VueManager\Models\v1\SiteTmplvars;
 use VueManager\Traits\ServiceMetaTrait;
@@ -27,7 +28,7 @@ class TvService implements ServiceInterface
     ];
 
     /**
-     * @var \VueManager\Models\v1\SiteTmplvars
+     * @var SiteTmplvars
      */
     public SiteTmplvars $model;
 
@@ -38,9 +39,10 @@ class TvService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\SiteTmplvars
-     * @throws \VueManager\Exceptions\NotFoundException
-     * @throws \VueManager\Exceptions\PermissionException
+     *
+     * @return SiteTmplvars
+     * @throws NotFoundException
+     * @throws PermissionException
      */
     public function create(array $params = []): SiteTmplvars
     {
@@ -64,8 +66,9 @@ class TvService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\SiteTmplvars
-     * @throws \VueManager\Exceptions\PermissionException
+     *
+     * @return SiteTmplvars
+     * @throws PermissionException
      */
     public function read(array $params = []): SiteTmplvars
     {
@@ -89,9 +92,10 @@ class TvService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\SiteTmplvars
-     * @throws \VueManager\Exceptions\NotFoundException
-     * @throws \VueManager\Exceptions\PermissionException
+     *
+     * @return SiteTmplvars
+     * @throws NotFoundException
+     * @throws PermissionException
      */
     public function update(array $params = []): SiteTmplvars
     {
@@ -114,9 +118,10 @@ class TvService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\SiteTmplvars
-     * @throws \VueManager\Exceptions\NotFoundException
-     * @throws \VueManager\Exceptions\PermissionException
+     *
+     * @return SiteTmplvars
+     * @throws NotFoundException
+     * @throws PermissionException
      */
     public function delete(array $params = []): SiteTmplvars
     {
@@ -136,9 +141,10 @@ class TvService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\SiteTmplvars
-     * @throws \VueManager\Exceptions\NotFoundException
-     * @throws \VueManager\Exceptions\PermissionException
+     *
+     * @return SiteTmplvars
+     * @throws NotFoundException
+     * @throws PermissionException
      */
     public function copy(array $params = []): SiteTmplvars
     {
@@ -149,7 +155,7 @@ class TvService implements ServiceInterface
     /**
      * @param array $params
      * @return array
-     * @throws \VueManager\Exceptions\PermissionException
+     * @throws PermissionException
      */
     public function list(array $params = []): array
     {

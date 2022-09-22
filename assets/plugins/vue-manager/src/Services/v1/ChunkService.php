@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace VueManager\Services\v1;
 
 use VueManager\Exceptions\NotFoundException;
+use VueManager\Exceptions\PermissionException;
 use VueManager\Interfaces\ServiceInterface;
 use VueManager\Models\v1\SiteHtmlsnippets;
 use VueManager\Traits\ServiceMetaTrait;
@@ -27,7 +28,7 @@ class ChunkService implements ServiceInterface
     ];
 
     /**
-     * @var \VueManager\Models\v1\SiteHtmlsnippets
+     * @var SiteHtmlsnippets
      */
     protected SiteHtmlsnippets $model;
 
@@ -38,9 +39,10 @@ class ChunkService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\SiteHtmlsnippets
-     * @throws \VueManager\Exceptions\NotFoundException
-     * @throws \VueManager\Exceptions\PermissionException
+     *
+     * @return SiteHtmlsnippets
+     * @throws NotFoundException
+     * @throws PermissionException
      */
     public function create(array $params = []): SiteHtmlsnippets
     {
@@ -64,8 +66,9 @@ class ChunkService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\SiteHtmlsnippets
-     * @throws \VueManager\Exceptions\PermissionException
+     *
+     * @return SiteHtmlsnippets
+     * @throws PermissionException
      */
     public function read(array $params = []): SiteHtmlsnippets
     {
@@ -89,9 +92,10 @@ class ChunkService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\SiteHtmlsnippets
-     * @throws \VueManager\Exceptions\NotFoundException
-     * @throws \VueManager\Exceptions\PermissionException
+     *
+     * @return SiteHtmlsnippets
+     * @throws NotFoundException
+     * @throws PermissionException
      */
     public function update(array $params = []): SiteHtmlsnippets
     {
@@ -114,9 +118,10 @@ class ChunkService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\SiteHtmlsnippets
-     * @throws \VueManager\Exceptions\NotFoundException
-     * @throws \VueManager\Exceptions\PermissionException
+     *
+     * @return SiteHtmlsnippets
+     * @throws NotFoundException
+     * @throws PermissionException
      */
     public function delete(array $params = []): SiteHtmlsnippets
     {
@@ -136,9 +141,10 @@ class ChunkService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\SiteHtmlsnippets
-     * @throws \VueManager\Exceptions\NotFoundException
-     * @throws \VueManager\Exceptions\PermissionException
+     *
+     * @return SiteHtmlsnippets
+     * @throws NotFoundException
+     * @throws PermissionException
      */
     public function copy(array $params = []): SiteHtmlsnippets
     {
@@ -149,7 +155,7 @@ class ChunkService implements ServiceInterface
     /**
      * @param array $params
      * @return array
-     * @throws \VueManager\Exceptions\PermissionException
+     * @throws PermissionException
      */
     public function list(array $params = []): array
     {

@@ -20,7 +20,7 @@ class ActiveUserLocks extends AbstractModel
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    public $id;
+    public int $id;
 
     /**
      * @var string
@@ -34,26 +34,26 @@ class ActiveUserLocks extends AbstractModel
      *
      * @ORM\Column(name="internalKey", type="integer", nullable=false)
      */
-    public $internalkey = 0;
+    public int $internalKey = 0;
 
     /**
      * @var int
      *
      * @ORM\Column(name="elementType", type="integer", nullable=false)
      */
-    public $elementtype = 0;
+    public int $elementType = 0;
 
     /**
      * @var int
      *
      * @ORM\Column(name="elementId", type="integer", nullable=false)
      */
-    public $elementid = 0;
+    public int $elementId = 0;
 
     /**
      * @var int
      *
      * @ORM\Column(name="lasthit", type="integer", nullable=false)
      */
-    public $lasthit = 0;
+    public int $lasthit = 0;
 }

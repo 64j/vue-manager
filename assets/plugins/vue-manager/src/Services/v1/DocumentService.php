@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace VueManager\Services\v1;
 
 use VueManager\Exceptions\NotFoundException;
+use VueManager\Exceptions\PermissionException;
 use VueManager\Interfaces\ServiceInterface;
 use VueManager\Models\v1\SiteContent;
 use VueManager\Traits\ServiceMetaTrait;
@@ -27,7 +28,7 @@ class DocumentService implements ServiceInterface
     ];
 
     /**
-     * @var \VueManager\Models\v1\SiteContent
+     * @var SiteContent
      */
     protected SiteContent $model;
 
@@ -38,9 +39,10 @@ class DocumentService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\SiteContent
-     * @throws \VueManager\Exceptions\NotFoundException
-     * @throws \VueManager\Exceptions\PermissionException
+     *
+     * @return SiteContent
+     * @throws NotFoundException
+     * @throws PermissionException
      */
     public function create(array $params = []): SiteContent
     {
@@ -64,8 +66,9 @@ class DocumentService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\SiteContent
-     * @throws \VueManager\Exceptions\PermissionException
+     *
+     * @return SiteContent
+     * @throws PermissionException
      */
     public function read(array $params = []): SiteContent
     {
@@ -94,9 +97,10 @@ class DocumentService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\SiteContent
-     * @throws \VueManager\Exceptions\NotFoundException
-     * @throws \VueManager\Exceptions\PermissionException
+     *
+     * @return SiteContent
+     * @throws NotFoundException
+     * @throws PermissionException
      */
     public function update(array $params = []): SiteContent
     {
@@ -119,9 +123,10 @@ class DocumentService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\SiteContent
-     * @throws \VueManager\Exceptions\NotFoundException
-     * @throws \VueManager\Exceptions\PermissionException
+     *
+     * @return SiteContent
+     * @throws NotFoundException
+     * @throws PermissionException
      */
     public function delete(array $params = []): SiteContent
     {
@@ -141,9 +146,10 @@ class DocumentService implements ServiceInterface
 
     /**
      * @param array $params
-     * @return \VueManager\Models\v1\SiteContent
-     * @throws \VueManager\Exceptions\NotFoundException
-     * @throws \VueManager\Exceptions\PermissionException
+     *
+     * @return SiteContent
+     * @throws NotFoundException
+     * @throws PermissionException
      */
     public function copy(array $params = []): SiteContent
     {

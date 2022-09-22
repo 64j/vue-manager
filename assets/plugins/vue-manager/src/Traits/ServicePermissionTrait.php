@@ -17,7 +17,7 @@ trait ServicePermissionTrait
 
     /**
      * @return void
-     * @throws \VueManager\Exceptions\PermissionException
+     * @throws PermissionException
      */
     protected function hasPermissionsCreate()
     {
@@ -32,7 +32,7 @@ trait ServicePermissionTrait
 
     /**
      * @return void
-     * @throws \VueManager\Exceptions\PermissionException
+     * @throws PermissionException
      */
     protected function hasPermissionsRead()
     {
@@ -47,7 +47,7 @@ trait ServicePermissionTrait
 
     /**
      * @return void
-     * @throws \VueManager\Exceptions\PermissionException
+     * @throws PermissionException
      */
     protected function hasPermissionsUpdate()
     {
@@ -62,7 +62,7 @@ trait ServicePermissionTrait
 
     /**
      * @return void
-     * @throws \VueManager\Exceptions\PermissionException
+     * @throws PermissionException
      */
     protected function hasPermissionsDelete()
     {
@@ -77,7 +77,7 @@ trait ServicePermissionTrait
 
     /**
      * @return void
-     * @throws \VueManager\Exceptions\PermissionException
+     * @throws PermissionException
      */
     protected function hasPermissionsList()
     {

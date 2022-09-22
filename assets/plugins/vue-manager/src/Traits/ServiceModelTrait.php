@@ -7,12 +7,12 @@ use VueManager\Interfaces\ModelInterface;
 trait ServiceModelTrait
 {
     /**
-     * @var \VueManager\Interfaces\ModelInterface|null
+     * @var ModelInterface|null
      */
     protected ?ModelInterface $model = null;
 
     /**
-     * @return \VueManager\Interfaces\ModelInterface
+     * @return ModelInterface
      */
     public function getModel(): ModelInterface
     {

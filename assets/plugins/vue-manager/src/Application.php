@@ -8,6 +8,7 @@ use ErrorException;
 use VueManager\Controllers\AuthController;
 use VueManager\Exceptions\Handler;
 use VueManager\Exceptions\NotFoundException;
+use VueManager\Exceptions\UnauthorizedException;
 
 class Application
 {
@@ -46,8 +47,8 @@ class Application
     ];
 
     /**
-     * @throws \ErrorException
-     * @throws \VueManager\Exceptions\UnauthorizedException
+     * @throws ErrorException
+     * @throws UnauthorizedException
      */
     public function __construct()
     {
@@ -73,7 +74,7 @@ class Application
     }
 
     /**
-     * @return \VueManager\Application
+     * @return Application
      */
     public static function getInstance(): Application
     {
@@ -86,7 +87,7 @@ class Application
 
     /**
      * @return void
-     * @throws \ErrorException
+     * @throws ErrorException
      */
     protected function setCors(): void
     {
@@ -131,7 +132,7 @@ class Application
 
     /**
      * @return string
-     * @throws \VueManager\Exceptions\NotFoundException
+     * @throws NotFoundException
      */
     public function run(): string
     {
